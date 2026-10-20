@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Little Universe — Choose Your Universe</title>
+  <meta name="description" content="Our Little Universe: Tiga dunia kecil, satu galaksi persahabatan privat untuk Nyanya, Lala, dan Lele.">
+  
+  <!-- Google Fonts: Cinzel Decorative, Cormorant Garamond, and Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/orbit.css">
+  <link rel="stylesheet" href="/moments.css">
+</head>
+<body>
+  <!-- Ambient Audio / Cosmic Canvas Background -->
+  <div class="universe-container" id="universe-app">
+    
+    <!-- Canvas for interactive stars, nebula dust, and floating light particles -->
+    <canvas id="stars-canvas" class="stars-canvas"></canvas>
+
+    <!-- Layered Scenery Background -->
+    <div class="scenery-backdrop" id="scenery-backdrop">
+      <!-- Full HD Fantasy Universe Panorama -->
+      <div class="universe-panorama-bg" id="universe-panorama-bg"></div>
+
+      <!-- Deep Sky Gradient & Nebula layers -->
+      <div class="nebula-layer nebula-top"></div>
+      <div class="nebula-layer nebula-bottom"></div>
+      <div class="nebula-layer nebula-character" id="nebula-character"></div>
+
+      <!-- Foreground Magical Cloud & Flower Mist Layers -->
+      <div class="cloud-layer cloud-layer-back"></div>
+      <div class="cloud-layer cloud-layer-front"></div>
+      <div class="glow-vignette"></div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="main-content-wrapper">
+      
+      <!-- ============================================== -->
+      <!-- VIEW 1: CHARACTER SELECTION (INITIAL SCREEN)   -->
+      <!-- ============================================== -->
+      <section class="view-section view-selection active" id="view-selection" aria-label="Pemilihan Karakter">
+        
+        <!-- Header Top Bar -->
+        <header class="selection-header">
+          <!-- Top Left Quote -->
+          <div class="header-quote">
+            <p>Three little worlds,</p>
+            <p>one universe, and a friendship</p>
+            <p>that keeps growing.</p>
+          </div>
+
+          <!-- Top Center Universe Logo -->
+          <div class="header-logo-group">
+            <div class="planet-icon-wrapper" aria-hidden="true">
+              <svg class="planet-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="24" fill="url(#planet-grad)" />
+                <ellipse cx="50" cy="50" rx="46" ry="14" stroke="url(#ring-grad)" stroke-width="3" transform="rotate(-22 50 50)" />
+                <circle cx="28" cy="40" r="2" fill="#fff" class="sparkle-dot s1" />
+                <circle cx="72" cy="58" r="2.5" fill="#fff" class="sparkle-dot s2" />
+                <defs>
+                  <linearGradient id="planet-grad" x1="26" y1="26" x2="74" y2="74" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#E2D4FF" />
+                    <stop offset="0.5" stop-color="#A78BFA" />
+                    <stop offset="1" stop-color="#6D28D9" />
+                  </linearGradient>
+                  <linearGradient id="ring-grad" x1="4" y1="50" x2="96" y2="50" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FFE4F1" stop-opacity="0.8" />
+                    <stop offset="0.5" stop-color="#DDD6FE" />
+                    <stop offset="1" stop-color="#C084FC" stop-opacity="0.8" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <h1 class="universe-title">OUR LITTLE UNIVERSE</h1>
+            <div class="universe-subtitle">
+              <span class="sparkle-star">✧</span>
+              <span>Choose your universe</span>
+              <span class="sparkle-star">✧</span>
+            </div>
+          </div>
+
+          <!-- Top Right Moon / Theme Orb -->
+          <div class="header-right-group" style="justify-self: end; display: flex; align-items: center;">
+            <div class="header-right-orb" id="theme-orb" title="Moon phase of Our Universe">
+              <div class="moon-orb-glow"></div>
+              <svg class="moon-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 28C22.6274 28 28 22.6274 28 16C28 9.37258 22.6274 4 16 4C14.7738 4 13.5854 4.18437 12.4648 4.52734C17.5255 6.0716 21.2 10.7481 21.2 16.3C21.2 21.8519 17.5255 26.5284 12.4648 28.0727C13.5854 28.4156 14.7738 28.6 16 28Z" fill="url(#moon-grad)" />
+                <defs>
+                  <linearGradient id="moon-grad" x1="12" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FFF5EA" />
+                    <stop offset="0.5" stop-color="#E9D5FF" />
+                    <stop offset="1" stop-color="#C4B5FD" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </header>
+
+        <!-- Character Selection Cards Grid -->
+        <main class="cards-showcase-container">
+          <div class="character-cards-grid" role="region" aria-label="Daftar Karakter">
+            
+            <!-- CARD 1: NYANYA -->
+            <button class="character-card card-nyanya" data-character="nyanya" id="card-nyanya" aria-label="Pilih karakter Nyanya - Moonlit Shadow Witch">
+              <div class="card-ambient-aura"></div>
+              <div class="card-arch-frame">
+                <div class="card-inner-glow"></div>
+                <div class="card-ornament-top">
+                  <span class="char-symbol">☾</span>
+                </div>
+                <div class="card-image-wrapper">
+                  <img src="/assets/card_nyanya_hd_2x.png" alt="Nyanya Moonlit Shadow Witch" class="char-card-img" />
+                </div>
+                <div class="card-caption">
+                  <h2 class="char-name">Nyanya</h2>
+                  <p class="char-role">Moonlit Shadow Witch</p>
+                </div>
+              </div>
+              <div class="card-hover-border"></div>
+            </button>
+
+            <!-- CARD 2: LALA -->
+            <button class="character-card card-lala" data-character="lala" id="card-lala" aria-label="Pilih karakter Lala - The Everglow Fairy">
+              <div class="card-ambient-aura"></div>
+              <div class="card-arch-frame">
+                <div class="card-inner-glow"></div>
+                <div class="card-ornament-top">
+                  <span class="char-symbol">☼</span>
+                </div>
+                <div class="card-image-wrapper">
+                  <img src="/assets/card_lala_hd_2x.png" alt="Lala The Everglow Fairy" class="char-card-img" />
+                </div>
+                <div class="card-caption">
+                  <h2 class="char-name">Lala</h2>
+                  <p class="char-role">The Everglow Fairy</p>
+                </div>
+              </div>
+              <div class="card-hover-border"></div>
+            </button>
+
+            <!-- CARD 3: LELE -->
+            <button class="character-card card-lele" data-character="lele" id="card-lele" aria-label="Pilih karakter Lele - The Eclipse Guardian">
+              <div class="card-ambient-aura"></div>
+              <div class="card-arch-frame">
+                <div class="card-inner-glow"></div>
+                <div class="card-ornament-top">
+                  <span class="char-symbol">☾</span>
+                </div>
+                <div class="card-image-wrapper">
+                  <img src="/assets/card_lele_hd_2x.png" alt="Lele The Eclipse Guardian" class="char-card-img" />
+                </div>
+                <div class="card-caption">
+                  <h2 class="char-name">Lele</h2>
+                  <p class="char-role">The Eclipse Guardian</p>
+                </div>
+              </div>
+              <div class="card-hover-border"></div>
+            </button>
+
+          </div>
+        </main>
+
+        <!-- Selection Footer hint -->
+        <footer class="selection-footer">
+          <p class="footer-hint">Pilih salah satu karakter untuk memasuki gerbang universe masing-masing</p>
+        </footer>
+
+      </section>
+
+
+      <!-- ============================================== -->
+      <!-- VIEW 2: CHARACTER LOGIN (ACTIVE LOGIN SCREEN)  -->
+      <!-- ============================================== -->
+      <section class="view-section view-login" id="view-login" aria-label="Login Karakter" aria-hidden="true">
+        
+        <!-- Top Navigation Bar -->
+        <nav class="login-top-nav">
+          <button type="button" class="btn-back" id="btn-back" aria-label="Kembali ke pemilihan karakter">
+            <span class="back-arrow">←</span>
+            <span class="back-text">Kembali</span>
+          </button>
+
+          <div class="login-mini-logo">
+            <span class="mini-title">OUR LITTLE UNIVERSE</span>
+          </div>
+        </nav>
+
+        <!-- Login Split Container: Character Visual & Glassmorphism Card -->
+        <div class="login-content-container">
+          
+          <!-- LEFT: Big Character Visual & Aura -->
+          <div class="login-character-showcase">
+            <div class="character-aura-halo" id="char-aura-halo"></div>
+            <div class="character-glow-rings"></div>
+            <div class="character-portrait-wrapper" id="char-portrait-wrapper">
+              <img src="/assets/portrait_nyanya_hd_2x.png" alt="Karakter Terpilih" id="login-char-img" class="login-char-img" />
+            </div>
+            <!-- Character Floating Stars / Spells -->
+            <div class="char-magic-sparkles" aria-hidden="true">
+              <span class="magic-dot m1">✦</span>
+              <span class="magic-dot m2">✧</span>
+              <span class="magic-dot m3">✦</span>
+              <span class="magic-dot m4">⋆</span>
+            </div>
+          </div>
+
+          <!-- RIGHT: Glassmorphism Login Card -->
+          <div class="login-card-container">
+            <div class="glass-login-card" id="glass-login-card">
+              <div class="card-shimmer-highlight"></div>
+
+              <!-- Card Header -->
+              <div class="login-card-header">
+                <div class="char-title-row">
+                  <span class="login-char-icon" id="login-char-icon">☾</span>
+                  <h2 class="login-char-name" id="login-char-name">Nyanya</h2>
+                </div>
+                <p class="login-char-role" id="login-char-role">Moonlit Shadow Witch</p>
+              </div>
+
+              <!-- Greeting & Instructions -->
+              <div class="login-greeting-block">
+                <p class="greeting-lead">
+                  Selamat datang, <span id="login-greeting-name">Nyanya</span> <span class="sparkle">✦</span>
+                </p>
+                <p class="greeting-sub">Masukkan password akunmu untuk melanjutkan.</p>
+              </div>
+
+              <!-- Login Form -->
+              <form class="login-form" id="login-form" autocomplete="off" onsubmit="return false;">
+                
+                <!-- Email Input Group -->
+                <div class="input-field-group">
+                  <label for="email-input" class="input-label">Email Akun Universe</label>
+                  <div class="input-container">
+                    <input 
+                      type="email" 
+                      id="email-input" 
+                      class="form-input email-input" 
+                      placeholder="Email akun Firebase..." 
+                      required 
+                      aria-label="Email Akun Firebase"
+                    />
+                    <span class="input-icon-right" aria-hidden="true">✉</span>
+                  </div>
+                </div>
+
+                <!-- Password Input Group -->
+                <div class="input-field-group">
+                  <label for="password-input" class="input-label">Password</label>
+                  <div class="input-container">
+                    <input 
+                      type="password" 
+                      id="password-input" 
+                      class="form-input password-input" 
+                      placeholder="Masukkan password" 
+                      required 
+                      aria-label="Password Akun"
+                    />
+                    <button 
+                      type="button" 
+                      class="btn-toggle-password" 
+                      id="btn-toggle-password" 
+                      aria-label="Tampilkan password"
+                      title="Tampilkan / Sembunyikan password"
+                    >
+                      <!-- Eye open SVG -->
+                      <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <!-- Eye closed SVG -->
+                      <svg class="eye-icon eye-closed hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- Error / Validation hint -->
+                  <div class="input-feedback-msg" id="input-feedback"></div>
+                </div>
+
+                <!-- Primary Submit Button -->
+                <button type="submit" class="btn-universe-submit" id="btn-universe-submit">
+                  <span class="btn-spinner hidden" id="btn-spinner" aria-hidden="true"></span>
+                  <span class="btn-text" id="btn-submit-text">Masuk ke Universe</span>
+                  <span class="btn-star-icon" id="btn-star-icon">✦</span>
+                </button>
+
+                <!-- Secondary Switch Character Link -->
+                <div class="login-switch-action">
+                  <button type="button" class="btn-switch-other" id="btn-switch-other">
+                    <span>Pilih karakter lain</span>
+                    <span class="sparkle">✧</span>
+                  </button>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 3: PRIVATE UNIVERSE (AUTHENTICATED ONLY)  -->
+      <!-- ============================================== -->
+      <section class="view-section view-private" id="view-private-universe" aria-label="Ruang Privat Universe" aria-hidden="true">
+        
+        <!-- Private Universe Top Navigation -->
+        <nav class="private-top-nav">
+          <div class="private-brand">
+            <span class="planet-mini-icon">🪐</span>
+            <span class="private-title" id="private-universe-title">UNIVERSE SHADOW</span>
+          </div>
+
+          <!-- Quick Navigation in Dashboard Header -->
+          <div class="private-nav-shortcuts" style="display: flex; align-items: center; gap: 0.65rem; margin: 0 auto; flex-wrap: wrap;">
+            <button type="button" class="btn-nav-universe" id="btn-dash-open-orbit" title="Buka Our Little Orbit" style="background: rgba(192, 132, 252, 0.16); border-color: rgba(192, 132, 252, 0.4); color: #f3e8ff;">
+              <span>🪐</span>
+              <span>Our Little Orbit</span>
+            </button>
+            <button type="button" class="btn-nav-universe" id="btn-dash-open-moments" title="Buka Our Little Moments" style="background: rgba(244, 114, 182, 0.16); border-color: rgba(244, 114, 182, 0.4); color: #fce7f3;">
+              <span>📸</span>
+              <span>Our Little Moments</span>
+            </button>
+          </div>
+
+          <div class="private-user-badge">
+            <div class="user-avatar-dot" id="private-avatar-dot"></div>
+            <div class="user-meta">
+              <span class="user-name" id="private-user-name">Nyanya</span>
+              <span class="user-role" id="private-user-role">Moonlit Shadow Witch</span>
+            </div>
+            <button type="button" class="btn-logout" id="btn-logout" aria-label="Keluar dari sesi privat" title="Keluar dari Universe">
+              <span>Keluar</span>
+              <span class="logout-icon">⎋</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- Private Dashboard Content -->
+        <main class="private-dashboard-content">
+          <div class="universe-welcome-card" id="universe-welcome-card">
+            
+            <div class="welcome-header">
+              <span class="welcome-symbol" id="private-welcome-symbol">☾</span>
+              <h2 class="welcome-heading" id="private-welcome-heading">Selamat Datang di Dunia Pribadimu</h2>
+              <p class="welcome-sub" id="private-welcome-sub">Ruang privat persahabatan privat terautentikasi dan terlindungi oleh Firebase Authentication.</p>
+            </div>
+
+            <!-- Authenticated Session Credentials Audit Box -->
+            <div class="auth-audit-box">
+              <div class="audit-row">
+                <span class="audit-label">Status Keamanan:</span>
+                <span class="audit-badge verified">✦ Terautentikasi & Karakter Terverifikasi</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Karakter Terhubung:</span>
+                <span class="audit-val" id="audit-character-name">Nyanya (Moonlit Shadow Witch)</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Email Akun:</span>
+                <span class="audit-val" id="audit-email">-</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Firebase UID:</span>
+                <span class="audit-val code" id="audit-uid">-</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Universe:</span>
+                <span class="audit-val" id="audit-universe">-</span>
+              </div>
+            </div>
+
+            <!-- Cozy Universe Navigation Preview -->
+            <div class="universe-portals-grid">
+              <div class="portal-card portal-orbit-card" id="portal-open-orbit" style="cursor: pointer;">
+                <span class="portal-icon">🪐</span>
+                <h3 class="portal-title">Our Little Orbit</h3>
+                <p class="portal-desc">Kalender bersama & perencana meeting tiga sahabat.</p>
+                <span class="portal-badge" style="background: rgba(192, 132, 252, 0.25); color: #ffffff;">Buka Kalender ✦</span>
+              </div>
+              <div class="portal-card portal-moments-card" id="portal-open-moments" style="cursor: pointer;">
+                <span class="portal-icon">📸</span>
+                <h3 class="portal-title">Our Little Moments</h3>
+                <p class="portal-desc">Ruang berbagi foto harian, stories 24 jam & scrapbook tiga sahabat.</p>
+                <span class="portal-badge" style="background: rgba(244, 114, 182, 0.25); color: #ffffff;">Buka Scrapbook ✦</span>
+              </div>
+              <div class="portal-card">
+                <span class="portal-icon">📬</span>
+                <h3 class="portal-title">Little Post Office</h3>
+                <p class="portal-desc">Kotak surat digital privat sahabat.</p>
+                <span class="portal-badge">Siap untuk Fase 3</span>
+              </div>
+              <div class="portal-card">
+                <span class="portal-icon">🏰</span>
+                <h3 class="portal-title">Personal Town</h3>
+                <p class="portal-desc">Kota 2D interaktif milikmu.</p>
+                <span class="portal-badge">Aktif</span>
+              </div>
+              <div class="portal-card">
+                <span class="portal-icon">🌌</span>
+                <h3 class="portal-title">Galaxy Map</h3>
+                <p class="portal-desc">Peta hubungan ketiga universe sahabat.</p>
+                <span class="portal-badge">Aktif</span>
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 4: OUR LITTLE ORBIT (SHARED CALENDAR)     -->
+      <!-- ============================================== -->
+      <section class="view-section view-orbit" id="view-orbit" aria-label="Our Little Orbit Calendar" aria-hidden="true">
+        
+        <!-- Orbit Top Bar -->
+        <header class="orbit-top-bar">
+          <div class="orbit-brand-group">
+            <div class="orbit-brand-title-row">
+              <span class="orbit-icon-planet" aria-hidden="true">🪐</span>
+              <h1 class="orbit-main-title">OUR LITTLE ORBIT</h1>
+            </div>
+            <p class="orbit-subtitle">Three little worlds, one shared time.</p>
+          </div>
+
+          <div class="orbit-top-actions">
+            <!-- Active Perspective Badge -->
+            <div class="user-viewing-badge" id="orbit-user-badge">
+              <span class="badge-dot"></span>
+              <span>Melihat sebagai: <strong id="orbit-viewer-name">Nyanya</strong></span>
+            </div>
+
+            <button type="button" class="btn-nav-universe" id="btn-orbit-goto-moments" aria-label="Buka Our Little Moments" style="background: rgba(244, 114, 182, 0.18); border-color: rgba(244, 114, 182, 0.4); color: #fce7f3;">
+              <span>📸</span>
+              <span>Our Little Moments</span>
+            </button>
+
+            <!-- Return Button to Universe -->
+            <button type="button" class="btn-nav-universe" id="btn-orbit-back-universe" aria-label="Kembali ke Universe">
+              <span>←</span>
+              <span>Kembali ke Universe</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Main Planner Layout: Calendar + Sidebar -->
+        <div class="orbit-layout-grid">
+          
+          <!-- LEFT COLUMN: Calendar & Controls -->
+          <div class="orbit-calendar-column">
+            
+            <!-- Controls Card -->
+            <div class="calendar-controls-card">
+              <!-- Month Navigator -->
+              <div class="month-nav-group">
+                <button type="button" class="btn-month-nav" id="btn-orbit-prev" aria-label="Sebelumnya">‹</button>
+                <div class="current-month-display" id="orbit-month-display">Oktober 2026</div>
+                <button type="button" class="btn-month-nav" id="btn-orbit-next" aria-label="Berikutnya">›</button>
+                <button type="button" class="btn-today-pill" id="btn-orbit-today">Hari Ini</button>
+              </div>
+
+              <!-- View Mode Toggles -->
+              <div class="view-mode-toggles">
+                <button type="button" class="btn-toggle-view active" id="btn-view-month" data-mode="month">Bulanan</button>
+                <button type="button" class="btn-toggle-view" id="btn-view-week" data-mode="week">Mingguan</button>
+              </div>
+            </div>
+
+            <!-- Category Filter Bar -->
+            <div class="category-filter-bar" role="tablist" aria-label="Filter Kategori Kegiatan">
+              <button type="button" class="filter-chip active" data-category="all">
+                <span>✦</span> Semua
+              </button>
+              <button type="button" class="filter-chip" data-category="together">
+                <span>🌌</span> Kegiatan Bersama
+              </button>
+              <button type="button" class="filter-chip" data-category="meeting">
+                <span>🪐</span> Meeting Jarak Jauh
+              </button>
+              <button type="button" class="filter-chip" data-category="birthday">
+                <span>🎂</span> Ulang Tahun
+              </button>
+              <button type="button" class="filter-chip" data-category="reminder">
+                <span>⭐</span> Pengingat
+              </button>
+              <button type="button" class="filter-chip" data-category="personal">
+                <span>📖</span> Pribadi
+              </button>
+            </div>
+
+            <!-- Calendar Sheet Card -->
+            <div class="calendar-sheet-card">
+              <!-- Days of Week Header -->
+              <div class="calendar-days-header" id="calendar-days-header">
+                <div class="day-header-cell">Sen</div>
+                <div class="day-header-cell">Sel</div>
+                <div class="day-header-cell">Rab</div>
+                <div class="day-header-cell">Kam</div>
+                <div class="day-header-cell">Jum</div>
+                <div class="day-header-cell">Sab</div>
+                <div class="day-header-cell">Min</div>
+              </div>
+
+              <!-- Dynamic Days Grid -->
+              <div class="calendar-days-grid" id="orbit-days-grid">
+                <!-- Rendered dynamically by orbit_view.js -->
+              </div>
+            </div>
+
+            <!-- Selected Date Summary Strip -->
+            <div class="selected-day-strip" id="selected-day-strip">
+              <div class="selected-day-label">
+                <span>📅</span>
+                <span>Agenda pada: <strong id="strip-date-text">20 Oktober 2026</strong></span>
+              </div>
+              <button type="button" class="btn-today-pill" id="btn-strip-add-event">+ Tambah di Tanggal Ini</button>
+            </div>
+
+          </div>
+
+          <!-- RIGHT COLUMN: Sidebar (Actions, Meeting Invites, Upcoming Agendas) -->
+          <aside class="orbit-sidebar-column">
+            
+            <!-- Quick Actions -->
+            <div class="sidebar-action-group">
+              <button type="button" class="btn-orbit-primary" id="btn-open-create-event">
+                <span>✦</span>
+                <span>Buat Kegiatan</span>
+              </button>
+              <button type="button" class="btn-orbit-secondary" id="btn-open-propose-meeting">
+                <span>🪐</span>
+                <span>Ajukan Meeting</span>
+              </button>
+            </div>
+
+            <!-- Meeting Invitations Section -->
+            <div class="sidebar-section-card" id="meeting-proposals-section">
+              <div class="sidebar-card-header">
+                <h2 class="sidebar-heading">
+                  <span>🪐</span> Undangan Meeting Sahabat
+                </h2>
+                <span class="section-badge-counter" id="meeting-counter-badge">1 Aktif</span>
+              </div>
+
+              <div id="meeting-proposals-container">
+                <!-- Rendered dynamically with live response buttons -->
+              </div>
+            </div>
+
+            <!-- Upcoming Agendas List Section -->
+            <div class="sidebar-section-card">
+              <div class="sidebar-card-header">
+                <h2 class="sidebar-heading">
+                  <span>✨</span> Agenda Terdekat
+                </h2>
+                <span class="section-badge-counter" id="upcoming-counter-badge">6 Agenda</span>
+              </div>
+
+              <div class="upcoming-agendas-list" id="upcoming-agendas-list">
+                <!-- Rendered dynamically by orbit_view.js -->
+              </div>
+            </div>
+
+          </aside>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- ORBIT MODALS (CELESTIAL PLANNER DIALOGS)       -->
+      <!-- ============================================== -->
+
+      <!-- 1. MODAL: BUAT KEGIATAN -->
+      <div class="orbit-modal-overlay" id="modal-create-event" role="dialog" aria-modal="true" aria-labelledby="title-create-event">
+        <div class="orbit-modal-card">
+          <div class="modal-header-row">
+            <div class="modal-title-group">
+              <span class="modal-symbol">✦</span>
+              <h3 class="modal-title" id="title-create-event">Buat Kegiatan Baru</h3>
+            </div>
+            <button type="button" class="btn-close-modal" data-close-modal aria-label="Tutup modal">✕</button>
+          </div>
+
+          <form class="modal-form" id="form-create-event">
+            <div class="input-field-group">
+              <label for="event-title-input" class="input-label">Nama Kegiatan</label>
+              <input type="text" id="event-title-input" class="form-input" placeholder="Contoh: Nonton Konser Virtual, Belajar Bareng..." required />
+            </div>
+
+            <div class="input-field-group">
+              <label for="event-cat-input" class="input-label">Kategori Kegiatan</label>
+              <select id="event-cat-input" class="form-input" style="background: rgba(10, 7, 24, 0.85); color: #fff;">
+                <option value="together">🌌 Kegiatan Bersama</option>
+                <option value="birthday">🎂 Ulang Tahun</option>
+                <option value="reminder">⭐ Pengingat / Acara Penting</option>
+                <option value="personal">📖 Kegiatan Pribadi (Dibagikan)</option>
+              </select>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="input-field-group">
+                <label for="event-date-input" class="input-label">Tanggal</label>
+                <input type="date" id="event-date-input" class="form-input" required />
+              </div>
+              <div class="input-field-group">
+                <label for="event-time-input" class="input-label">Waktu (Opsional)</label>
+                <input type="time" id="event-time-input" class="form-input" value="19:00" />
+              </div>
+            </div>
+
+            <div class="input-field-group">
+              <label for="event-loc-input" class="input-label">Tempat / Ruang</label>
+              <input type="text" id="event-loc-input" class="form-input" placeholder="Contoh: Our Room Lounge, Google Meet, Rumah..." />
+            </div>
+
+            <div class="input-field-group">
+              <label for="event-desc-input" class="input-label">Catatan / Rencana</label>
+              <textarea id="event-desc-input" class="form-textarea" placeholder="Tambahkan detail, ide seru, atau pengingat..."></textarea>
+            </div>
+
+            <div class="modal-actions-row">
+              <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
+              <button type="submit" class="btn-modal-submit">Simpan Kegiatan ✦</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 2. MODAL: AJUKAN MEETING JARAK JAUH -->
+      <div class="orbit-modal-overlay" id="modal-propose-meeting" role="dialog" aria-modal="true" aria-labelledby="title-propose-meeting">
+        <div class="orbit-modal-card">
+          <div class="modal-header-row">
+            <div class="modal-title-group">
+              <span class="modal-symbol">🪐</span>
+              <h3 class="modal-title" id="title-propose-meeting">Ajukan Meeting Jarak Jauh</h3>
+            </div>
+            <button type="button" class="btn-close-modal" data-close-modal aria-label="Tutup modal">✕</button>
+          </div>
+
+          <form class="modal-form" id="form-propose-meeting">
+            <div class="input-field-group">
+              <label for="meeting-title-input" class="input-label">Agenda / Topik Meeting</label>
+              <input type="text" id="meeting-title-input" class="form-input" placeholder="Contoh: Evaluasi Proyek, Tukar Cerita Bulanan..." required />
+            </div>
+
+            <div class="form-grid-2">
+              <div class="input-field-group">
+                <label for="meeting-date-input" class="input-label">Usulan Tanggal</label>
+                <input type="date" id="meeting-date-input" class="form-input" required />
+              </div>
+              <div class="input-field-group">
+                <label for="meeting-time-input" class="input-label">Usulan Waktu</label>
+                <input type="time" id="meeting-time-input" class="form-input" value="20:00" required />
+              </div>
+            </div>
+
+            <div class="input-field-group">
+              <label for="meeting-loc-input" class="input-label">Platform Meeting</label>
+              <input type="text" id="meeting-loc-input" class="form-input" placeholder="Contoh: Google Meet, Discord Voice, Zoom..." value="Google Meet" />
+            </div>
+
+            <div class="input-field-group">
+              <label for="meeting-desc-input" class="input-label">Deskripsi & Catatan Undangan</label>
+              <textarea id="meeting-desc-input" class="form-textarea" placeholder="Jelaskan hal-hal yang ingin dibahas bersama..."></textarea>
+            </div>
+
+            <div class="modal-actions-row">
+              <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
+              <button type="submit" class="btn-modal-submit">Kirim Undangan Meeting ✦</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 3. MODAL: DETAIL KEGIATAN -->
+      <div class="orbit-modal-overlay" id="modal-event-detail" role="dialog" aria-modal="true" aria-labelledby="detail-event-title">
+        <div class="orbit-modal-card">
+          <div class="modal-header-row">
+            <div class="modal-title-group">
+              <span class="modal-symbol" id="detail-category-icon">✦</span>
+              <h3 class="modal-title" id="detail-event-title">Detail Kegiatan</h3>
+            </div>
+            <button type="button" class="btn-close-modal" data-close-modal aria-label="Tutup modal">✕</button>
+          </div>
+
+          <div class="auth-audit-box" style="margin-bottom: 0;">
+            <div class="audit-row">
+              <span class="audit-label">Kategori:</span>
+              <span class="audit-val" id="detail-category-badge">-</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-label">Tanggal & Waktu:</span>
+              <span class="audit-val" id="detail-event-datetime">-</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-label">Lokasi / Ruang:</span>
+              <span class="audit-val" id="detail-event-location">-</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-label">Pengaju:</span>
+              <span class="audit-val" id="detail-event-proposer">-</span>
+            </div>
+            <div class="audit-row">
+              <span class="audit-label">Status:</span>
+              <span class="audit-badge verified" id="detail-event-status">-</span>
+            </div>
+          </div>
+
+          <div class="input-field-group">
+            <label class="input-label">Catatan Kegiatan</label>
+            <p id="detail-event-desc" style="font-size: 0.88rem; color: #e2d9f3; line-height: 1.5; background: rgba(255,255,255,0.04); padding: 0.8rem 1rem; border-radius: 10px;">-</p>
+          </div>
+
+          <!-- Responses summary if meeting -->
+          <div id="detail-meeting-responses-section" class="meeting-responses-box" style="display: none;">
+            <div class="responses-header-row">
+              <span>Status Respons Peserta</span>
+            </div>
+            <div id="detail-responses-list" style="display: flex; flex-direction: column; gap: 0.4rem;"></div>
+          </div>
+
+          <div class="modal-actions-row">
+            <button type="button" class="btn-modal-cancel" data-close-modal>Tutup</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. MODAL: ALASAN PENOLAKAN MEETING -->
+      <div class="orbit-modal-overlay" id="modal-reject-reason" role="dialog" aria-modal="true" aria-labelledby="title-reject-reason">
+        <div class="orbit-modal-card">
+          <div class="modal-header-row">
+            <div class="modal-title-group">
+              <span class="modal-symbol" style="color: #fca5a5;">✕</span>
+              <h3 class="modal-title" id="title-reject-reason">Alasan Tidak Dapat Hadir</h3>
+            </div>
+            <button type="button" class="btn-close-modal" data-close-modal aria-label="Tutup modal">✕</button>
+          </div>
+
+          <form class="modal-form" id="form-reject-reason">
+            <input type="hidden" id="reject-event-id" />
+            <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.45;">
+              Beri tahu sahabat alasanmu tidak dapat hadir pada meeting ini agar mereka dapat memahaminya:
+            </p>
+            <div class="input-field-group">
+              <label for="reject-note-input" class="input-label">Alasan / Catatan</label>
+              <textarea id="reject-note-input" class="form-textarea" placeholder="Contoh: Ada jadwal ujian dadakan / ada acara keluarga..." required></textarea>
+            </div>
+
+            <div class="modal-actions-row">
+              <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
+              <button type="submit" class="btn-modal-submit" style="background: linear-gradient(135deg, #e11d48, #be123c);">Kirim Alasan & Tolak</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 5. MODAL: USULKAN WAKTU ALTERNATIF -->
+      <div class="orbit-modal-overlay" id="modal-propose-alt" role="dialog" aria-modal="true" aria-labelledby="title-propose-alt">
+        <div class="orbit-modal-card">
+          <div class="modal-header-row">
+            <div class="modal-title-group">
+              <span class="modal-symbol" style="color: #d8b4fe;">⇄</span>
+              <h3 class="modal-title" id="title-propose-alt">Usulkan Waktu Alternatif</h3>
+            </div>
+            <button type="button" class="btn-close-modal" data-close-modal aria-label="Tutup modal">✕</button>
+          </div>
+
+          <form class="modal-form" id="form-propose-alt">
+            <input type="hidden" id="alt-event-id" />
+            <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.45;">
+              Usulkan tanggal atau jam yang lebih pas untuk jadwalmu:
+            </p>
+
+            <div class="form-grid-2">
+              <div class="input-field-group">
+                <label for="alt-date-input" class="input-label">Tanggal Alternatif</label>
+                <input type="date" id="alt-date-input" class="form-input" required />
+              </div>
+              <div class="input-field-group">
+                <label for="alt-time-input" class="input-label">Jam Alternatif</label>
+                <input type="time" id="alt-time-input" class="form-input" value="20:30" required />
+              </div>
+            </div>
+
+            <div class="input-field-group">
+              <label for="alt-note-input" class="input-label">Alasan / Catatan Waktu Baru</label>
+              <textarea id="alt-note-input" class="form-textarea" placeholder="Contoh: Jam ini saya sudah selesai kelas/kerja..." required></textarea>
+            </div>
+
+            <div class="modal-actions-row">
+              <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
+              <button type="submit" class="btn-modal-submit" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">Kirim Usulan Waktu ✦</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- VIEW 5: OUR LITTLE MOMENTS (SCRAPBOOK & STORIES) -->
+      <!-- ============================================== -->
+      <section class="view-section view-moments" id="view-moments" aria-label="Our Little Moments Scrapbook" aria-hidden="true">
+        
+        <!-- Moments Top Bar -->
+        <header class="moments-top-bar">
+          <div class="moments-brand-group">
+            <div class="moments-title-row">
+              <span class="moments-camera-icon" aria-hidden="true">📸</span>
+              <h1 class="moments-main-title">OUR LITTLE MOMENTS</h1>
+            </div>
+            <p class="moments-subtitle">Little pieces of our everyday lives.</p>
+          </div>
+
+          <div class="moments-top-actions">
+            <!-- Active Perspective Badge -->
+            <div class="moments-viewer-badge" id="moments-viewer-badge">
+              <span class="badge-dot"></span>
+              <span>Melihat sebagai: <strong id="moments-viewer-name">Nyanya</strong> ✦</span>
+            </div>
+
+            <!-- Upload Button -->
+            <button type="button" class="btn-upload-moment" id="btn-open-upload-moment">
+              <span>+</span>
+              <span>Unggah Momen</span>
+            </button>
+
+            <!-- Quick Link to Orbit -->
+            <button type="button" class="btn-quick-orbit" id="btn-moments-goto-orbit" title="Buka Kalender Bersama Our Little Orbit">
+              <span>🪐</span>
+              <span>Our Little Orbit</span>
+            </button>
+
+            <!-- Return Button to Universe -->
+            <button type="button" class="btn-nav-return" id="btn-moments-back-universe" aria-label="Kembali ke Universe">
+              <span>←</span>
+              <span>Kembali</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Stories Tray (24h Daily Stories) -->
+        <div class="stories-section-container">
+          <div class="stories-section-header">
+            <h2 class="stories-heading">
+              <span>✨</span>
+              <span>Stories Sahabat</span>
+            </h2>
+            <span class="stories-24h-badge">⏳ Tayang 24 Jam</span>
+          </div>
+
+          <div class="stories-tray" id="stories-tray">
+            <!-- Rendered dynamically by moments_view.js -->
+          </div>
+        </div>
+
+        <!-- Moments Scrapbook Feed -->
+        <div class="moments-feed-container">
+          
+          <!-- Filter Bar -->
+          <div class="moments-filter-bar">
+            <div class="filter-pills-group" role="tablist" aria-label="Filter Scrapbook">
+              <button type="button" class="moments-filter-chip active" data-filter="all">
+                <span>✦</span> Semua
+              </button>
+              <button type="button" class="moments-filter-chip" data-filter="nyanya">
+                <span>☾</span> Nyanya
+              </button>
+              <button type="button" class="moments-filter-chip" data-filter="lala">
+                <span>☼</span> Lala
+              </button>
+              <button type="button" class="moments-filter-chip" data-filter="lele">
+                <span>☾</span> Lele
+              </button>
+              <button type="button" class="moments-filter-chip archive-chip" data-filter="archive">
+                <span>⭐</span> Arsip Kita
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrapbook Cards Grid -->
+          <div class="scrapbook-grid" id="scrapbook-grid">
+            <!-- Rendered dynamically by moments_view.js -->
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- MOMENTS MODALS (STORY VIEWER & UPLOAD)          -->
+      <!-- ============================================== -->
+
+      <!-- 1. FULLSCREEN STORY VIEWER MODAL -->
+      <div class="story-viewer-overlay" id="story-viewer-overlay" role="dialog" aria-modal="true" aria-labelledby="story-header-name">
+        <div class="story-viewer-card" id="story-viewer-card">
+          
+          <!-- Progress Bar at Top -->
+          <div class="story-progress-bar-container" id="story-progress-container">
+            <!-- Segments injected dynamically -->
+          </div>
+
+          <!-- Story Header -->
+          <div class="story-viewer-header">
+            <div class="story-viewer-author">
+              <img src="/assets/portrait_nyanya_hd_2x.png" alt="Author" id="story-header-avatar" class="story-header-avatar" />
+              <div class="story-header-meta">
+                <span class="story-header-name" id="story-header-name">Nyanya</span>
+                <span class="story-header-time" id="story-header-time">2 jam lalu</span>
+              </div>
+            </div>
+
+            <div class="story-header-actions">
+              <button type="button" class="btn-story-archive" id="btn-story-archive" title="Simpan ke Arsip Cerita">
+                ☆ Simpan ke Arsip
+              </button>
+              <button type="button" class="btn-story-close" id="btn-story-close" aria-label="Tutup Story">✕</button>
+            </div>
+          </div>
+
+          <!-- Image & Navigation Click Zones -->
+          <div class="story-image-container">
+            <img src="/assets/moment_coffee_study.jpg" alt="Story Moment" id="story-main-image" class="story-main-image" />
+            
+            <!-- Click zones for easy tap on mobile and desktop -->
+            <div class="story-nav-zone prev" id="story-zone-prev" title="Story Sebelumnya"></div>
+            <div class="story-nav-zone next" id="story-zone-next" title="Story Berikutnya"></div>
+
+            <button type="button" class="story-nav-arrow prev" id="story-nav-prev" aria-label="Sebelumnya">‹</button>
+            <button type="button" class="story-nav-arrow next" id="story-nav-next" aria-label="Berikutnya">›</button>
+          </div>
+
+          <!-- Bottom Caption & Quick React -->
+          <div class="story-bottom-bar">
+            <p class="story-caption-text" id="story-caption-text">Caption story...</p>
+            <div class="story-reaction-row">
+              <button type="button" class="story-quick-react-btn" id="btn-story-react">
+                <span>💖</span>
+                <span>Kirim Cinta (<span id="story-react-count">0</span>)</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2. MODAL UPLOAD MOMEN BARU -->
+      <div class="modal-upload-overlay" id="modal-upload-moment" role="dialog" aria-modal="true" aria-labelledby="title-upload-moment">
+        <div class="modal-upload-card">
+          <div class="modal-header-row">
+            <div class="modal-title-group">
+              <span class="modal-symbol" style="color: #f472b6;">📸</span>
+              <h3 class="modal-title" id="title-upload-moment">Bagikan Momen Harian</h3>
+            </div>
+            <button type="button" class="btn-close-modal" data-close-modal aria-label="Tutup modal">✕</button>
+          </div>
+
+          <form class="modal-form" id="form-upload-moment">
+            <!-- Hidden File Input -->
+            <input type="file" id="moment-file-input" accept="image/*" style="display: none;" />
+
+            <!-- Dropzone / Image Preview Area -->
+            <div class="upload-dropzone" id="upload-dropzone" title="Klik atau seret foto ke sini">
+              <div id="dropzone-prompt" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                <span class="dropzone-icon">📷</span>
+                <span class="dropzone-label">Pilih Foto dari Perangkat</span>
+                <span class="dropzone-sub">Klik atau seret file gambar JPG, PNG, atau WebP</span>
+              </div>
+              <div id="dropzone-preview" style="display: none; position: relative; width: 100%;">
+                <img src="" alt="Preview Momen" id="preview-image" class="preview-image-element" />
+                <button type="button" id="btn-remove-preview" class="btn-remove-preview" title="Hapus foto">✕</button>
+              </div>
+            </div>
+
+            <!-- Publication Target Option -->
+            <div class="input-field-group">
+              <label class="input-label">Tujuan Publikasi Momen</label>
+              <div class="upload-type-selector">
+                <div class="upload-type-option" data-type="story">
+                  <span>⏳</span>
+                  <strong>Stories</strong>
+                  <span style="font-size: 0.65rem; opacity: 0.8;">Tayang 24 Jam</span>
+                </div>
+                <div class="upload-type-option" data-type="feed">
+                  <span>📖</span>
+                  <strong>Scrapbook</strong>
+                  <span style="font-size: 0.65rem; opacity: 0.8;">Feed Permanen</span>
+                </div>
+                <div class="upload-type-option active" data-type="both">
+                  <span>✨</span>
+                  <strong>Keduanya</strong>
+                  <span style="font-size: 0.65rem; opacity: 0.8;">Story & Feed</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Caption -->
+            <div class="input-field-group">
+              <label for="moment-caption-input" class="input-label">Cerita / Caption Momen</label>
+              <textarea id="moment-caption-input" class="form-textarea" placeholder="Tuliskan sepotong ceritamu hari ini, hal kecil yang membuatmu tersenyum..." rows="3"></textarea>
+            </div>
+
+            <div class="modal-actions-row">
+              <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
+              <button type="submit" class="btn-modal-submit" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">Bagikan Momen ✦</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Notification Toast / Portal Modal -->
+    <div class="universe-toast" id="universe-toast" role="alert" aria-live="polite">
+      <div class="toast-content">
+        <span class="toast-star">✦</span>
+        <span class="toast-text" id="toast-text">Selamat datang di Our Little Universe!</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
