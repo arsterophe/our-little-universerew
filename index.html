@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Our Little Universe — Choose Your Universe</title>
-  <meta name="description" content="Our Little Universe: Tiga dunia kecil, satu galaksi persahabatan privat untuk Nyanya, Lala, dan Lele.">
-  
-  <!-- Google Fonts: Cinzel Decorative, Cormorant Garamond, and Plus Jakarta Sans -->
+  <meta name="description"
+    content="Our Little Universe: Tiga dunia kecil, satu galaksi persahabatan privat untuk Nyanya, Lala, dan Lele.">
+
+  <!-- Google Fonts: Cinzel, Cormorant Garamond, Plus Jakarta Sans, Alex Brush, and Great Vibes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/orbit.css">
   <link rel="stylesheet" href="/moments.css">
+  <link rel="stylesheet" href="/universes.css">
 </head>
+
 <body>
   <!-- Ambient Audio / Cosmic Canvas Background -->
   <div class="universe-container" id="universe-app">
-    
+
     <!-- Canvas for interactive stars, nebula dust, and floating light particles -->
     <canvas id="stars-canvas" class="stars-canvas"></canvas>
 
@@ -40,12 +46,12 @@
 
     <!-- MAIN APP WRAPPER -->
     <div class="main-content-wrapper">
-      
+
       <!-- ============================================== -->
       <!-- VIEW 1: CHARACTER SELECTION (INITIAL SCREEN)   -->
       <!-- ============================================== -->
       <section class="view-section view-selection active" id="view-selection" aria-label="Pemilihan Karakter">
-        
+
         <!-- Header Top Bar -->
         <header class="selection-header">
           <!-- Top Left Quote -->
@@ -60,7 +66,8 @@
             <div class="planet-icon-wrapper" aria-hidden="true">
               <svg class="planet-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="50" cy="50" r="24" fill="url(#planet-grad)" />
-                <ellipse cx="50" cy="50" rx="46" ry="14" stroke="url(#ring-grad)" stroke-width="3" transform="rotate(-22 50 50)" />
+                <ellipse cx="50" cy="50" rx="46" ry="14" stroke="url(#ring-grad)" stroke-width="3"
+                  transform="rotate(-22 50 50)" />
                 <circle cx="28" cy="40" r="2" fill="#fff" class="sparkle-dot s1" />
                 <circle cx="72" cy="58" r="2.5" fill="#fff" class="sparkle-dot s2" />
                 <defs>
@@ -85,12 +92,19 @@
             </div>
           </div>
 
-          <!-- Top Right Moon / Theme Orb -->
-          <div class="header-right-group" style="justify-self: end; display: flex; align-items: center;">
+          <!-- Top Right Moon / Theme Orb & Quick Universes Link -->
+          <div class="header-right-group" style="justify-self: end; display: flex; align-items: center; gap: 0.65rem;">
+            <button type="button" class="btn-nav-universe" id="btn-goto-universes-preview"
+              style="background: rgba(192, 132, 252, 0.18); border-color: rgba(192, 132, 252, 0.4); color: #f3e8ff;">
+              <span>🪐</span>
+              <span>Lihat Tiga Universe</span>
+            </button>
             <div class="header-right-orb" id="theme-orb" title="Moon phase of Our Universe">
               <div class="moon-orb-glow"></div>
               <svg class="moon-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 28C22.6274 28 28 22.6274 28 16C28 9.37258 22.6274 4 16 4C14.7738 4 13.5854 4.18437 12.4648 4.52734C17.5255 6.0716 21.2 10.7481 21.2 16.3C21.2 21.8519 17.5255 26.5284 12.4648 28.0727C13.5854 28.4156 14.7738 28.6 16 28Z" fill="url(#moon-grad)" />
+                <path
+                  d="M16 28C22.6274 28 28 22.6274 28 16C28 9.37258 22.6274 4 16 4C14.7738 4 13.5854 4.18437 12.4648 4.52734C17.5255 6.0716 21.2 10.7481 21.2 16.3C21.2 21.8519 17.5255 26.5284 12.4648 28.0727C13.5854 28.4156 14.7738 28.6 16 28Z"
+                  fill="url(#moon-grad)" />
                 <defs>
                   <linearGradient id="moon-grad" x1="12" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
                     <stop stop-color="#FFF5EA" />
@@ -106,28 +120,31 @@
         <!-- Character Selection Cards Grid -->
         <main class="cards-showcase-container">
           <div class="character-cards-grid" role="region" aria-label="Daftar Karakter">
-            
+
             <!-- CARD 1: NYANYA -->
-            <button class="character-card card-nyanya" data-character="nyanya" id="card-nyanya" aria-label="Pilih karakter Nyanya - Moonlit Shadow Witch">
+            <button class="character-card card-nyanya" data-character="nyanya" id="card-nyanya"
+              aria-label="Pilih karakter Nyanya - The Moonlit Shadow Witch">
               <div class="card-ambient-aura"></div>
               <div class="card-arch-frame">
                 <div class="card-inner-glow"></div>
                 <div class="card-ornament-top">
-                  <span class="char-symbol">☾</span>
+                  <span class="char-symbol">★</span>
                 </div>
                 <div class="card-image-wrapper">
-                  <img src="/assets/card_nyanya_hd_2x.png" alt="Nyanya Moonlit Shadow Witch" class="char-card-img" />
+                  <img src="/assets/card_nyanya_hd_2x.png" alt="Nyanya - The Moonlit Shadow Witch"
+                    class="char-card-img" />
                 </div>
                 <div class="card-caption">
                   <h2 class="char-name">Nyanya</h2>
-                  <p class="char-role">Moonlit Shadow Witch</p>
+                  <p class="char-role">The Moonlit Shadow Witch</p>
                 </div>
               </div>
               <div class="card-hover-border"></div>
             </button>
 
             <!-- CARD 2: LALA -->
-            <button class="character-card card-lala" data-character="lala" id="card-lala" aria-label="Pilih karakter Lala - The Everglow Fairy">
+            <button class="character-card card-lala" data-character="lala" id="card-lala"
+              aria-label="Pilih karakter Lala - The Everglow Fairy">
               <div class="card-ambient-aura"></div>
               <div class="card-arch-frame">
                 <div class="card-inner-glow"></div>
@@ -146,7 +163,8 @@
             </button>
 
             <!-- CARD 3: LELE -->
-            <button class="character-card card-lele" data-character="lele" id="card-lele" aria-label="Pilih karakter Lele - The Eclipse Guardian">
+            <button class="character-card card-lele" data-character="lele" id="card-lele"
+              aria-label="Pilih karakter Lele - The Eclipse Guardian">
               <div class="card-ambient-aura"></div>
               <div class="card-arch-frame">
                 <div class="card-inner-glow"></div>
@@ -179,7 +197,7 @@
       <!-- VIEW 2: CHARACTER LOGIN (ACTIVE LOGIN SCREEN)  -->
       <!-- ============================================== -->
       <section class="view-section view-login" id="view-login" aria-label="Login Karakter" aria-hidden="true">
-        
+
         <!-- Top Navigation Bar -->
         <nav class="login-top-nav">
           <button type="button" class="btn-back" id="btn-back" aria-label="Kembali ke pemilihan karakter">
@@ -194,13 +212,14 @@
 
         <!-- Login Split Container: Character Visual & Glassmorphism Card -->
         <div class="login-content-container">
-          
+
           <!-- LEFT: Big Character Visual & Aura -->
           <div class="login-character-showcase">
             <div class="character-aura-halo" id="char-aura-halo"></div>
             <div class="character-glow-rings"></div>
             <div class="character-portrait-wrapper" id="char-portrait-wrapper">
-              <img src="/assets/portrait_nyanya_hd_2x.png" alt="Karakter Terpilih" id="login-char-img" class="login-char-img" />
+              <img src="/assets/portrait_nyanya_hd_2x.png" alt="Karakter Terpilih" id="login-char-img"
+                class="login-char-img" />
             </div>
             <!-- Character Floating Stars / Spells -->
             <div class="char-magic-sparkles" aria-hidden="true">
@@ -219,10 +238,10 @@
               <!-- Card Header -->
               <div class="login-card-header">
                 <div class="char-title-row">
-                  <span class="login-char-icon" id="login-char-icon">☾</span>
+                  <span class="login-char-icon" id="login-char-icon">★</span>
                   <h2 class="login-char-name" id="login-char-name">Nyanya</h2>
                 </div>
-                <p class="login-char-role" id="login-char-role">Moonlit Shadow Witch</p>
+                <p class="login-char-role" id="login-char-role">The Moonlit Shadow Witch</p>
               </div>
 
               <!-- Greeting & Instructions -->
@@ -235,19 +254,13 @@
 
               <!-- Login Form -->
               <form class="login-form" id="login-form" autocomplete="off" onsubmit="return false;">
-                
+
                 <!-- Email Input Group -->
                 <div class="input-field-group">
                   <label for="email-input" class="input-label">Email Akun Universe</label>
                   <div class="input-container">
-                    <input 
-                      type="email" 
-                      id="email-input" 
-                      class="form-input email-input" 
-                      placeholder="Email akun Firebase..." 
-                      required 
-                      aria-label="Email Akun Firebase"
-                    />
+                    <input type="email" id="email-input" class="form-input email-input"
+                      placeholder="Email akun Firebase..." required aria-label="Email Akun Firebase" />
                     <span class="input-icon-right" aria-hidden="true">✉</span>
                   </div>
                 </div>
@@ -256,29 +269,22 @@
                 <div class="input-field-group">
                   <label for="password-input" class="input-label">Password</label>
                   <div class="input-container">
-                    <input 
-                      type="password" 
-                      id="password-input" 
-                      class="form-input password-input" 
-                      placeholder="Masukkan password" 
-                      required 
-                      aria-label="Password Akun"
-                    />
-                    <button 
-                      type="button" 
-                      class="btn-toggle-password" 
-                      id="btn-toggle-password" 
-                      aria-label="Tampilkan password"
-                      title="Tampilkan / Sembunyikan password"
-                    >
+                    <input type="password" id="password-input" class="form-input password-input"
+                      placeholder="Masukkan password" required aria-label="Password Akun" />
+                    <button type="button" class="btn-toggle-password" id="btn-toggle-password"
+                      aria-label="Tampilkan password" title="Tampilkan / Sembunyikan password">
                       <!-- Eye open SVG -->
-                      <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
                       </svg>
                       <!-- Eye closed SVG -->
-                      <svg class="eye-icon eye-closed hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                      <svg class="eye-icon eye-closed hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                          d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                        </path>
                         <line x1="1" y1="1" x2="23" y2="23"></line>
                       </svg>
                     </button>
@@ -312,120 +318,1131 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- VIEW 3: PRIVATE UNIVERSE (AUTHENTICATED ONLY)  -->
+      <!-- VIEW 3: THREE WORLDS UNIVERSES (REFERENCE DESIGN) -->
       <!-- ============================================== -->
-      <section class="view-section view-private" id="view-private-universe" aria-label="Ruang Privat Universe" aria-hidden="true">
-        
-        <!-- Private Universe Top Navigation -->
-        <nav class="private-top-nav">
-          <div class="private-brand">
-            <span class="planet-mini-icon">🪐</span>
-            <span class="private-title" id="private-universe-title">UNIVERSE SHADOW</span>
+      <section class="view-section view-universes" id="view-private-universe"
+        aria-label="Our Little Universe - Three Worlds" aria-hidden="true">
+
+        <!-- Background Atmospheric Scenery Layer -->
+        <div class="universes-scenery-backdrop" aria-hidden="true">
+          <div class="universes-bg-image"></div>
+          <div class="universes-atmosphere-vignette"></div>
+          <div class="universes-crescent-moon"></div>
+          <svg class="universes-constellations" viewBox="0 0 180 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="20" y1="30" x2="80" y2="45" stroke="rgba(255,255,255,0.4)" stroke-dasharray="2 2"
+              stroke-width="1" />
+            <line x1="80" y1="45" x2="130" y2="20" stroke="rgba(255,255,255,0.4)" stroke-dasharray="2 2"
+              stroke-width="1" />
+            <line x1="130" y1="20" x2="160" y2="70" stroke="rgba(255,255,255,0.4)" stroke-dasharray="2 2"
+              stroke-width="1" />
+            <circle cx="20" cy="30" r="2.5" fill="#fff" />
+            <circle cx="80" cy="45" r="3" fill="#fff" />
+            <circle cx="130" cy="20" r="2" fill="#fff" />
+            <circle cx="160" cy="70" r="3" fill="#fbcfe8" />
+          </svg>
+        </div>
+
+        <!-- Top Header Navigation Bar -->
+        <header class="universes-header">
+          <!-- Left: Brand Logo with Crescent Moon and Sparkle -->
+          <a href="#universes" class="univ-logo-group" id="univ-brand-logo" aria-label="Our Little Universe Home">
+            <div class="univ-logo-icon" aria-hidden="true">
+              <span>☾</span>
+              <span style="font-size: 0.8rem; margin-left: -4px; margin-top: -8px;">✦</span>
+            </div>
+            <div class="univ-logo-text">
+              <span>Our Little</span>
+              <span>Universe</span>
+            </div>
+          </a>
+
+          <!-- Center: Transparent Glass Pill Navigation -->
+          <div class="univ-nav-pill-wrapper">
+            <nav class="univ-nav-pill" role="navigation" aria-label="Main Navigation">
+              <button type="button" class="univ-nav-btn active" data-nav="universes" id="nav-btn-universes"
+                aria-current="page">
+                <span class="nav-icon">🪐</span>
+                <span class="nav-label">Universes</span>
+              </button>
+              <button type="button" class="univ-nav-btn" data-nav="messages" id="nav-btn-messages">
+                <span class="nav-icon">✉</span>
+                <span class="nav-label">Messages</span>
+              </button>
+              <button type="button" class="univ-nav-btn" data-nav="games" id="nav-btn-games">
+                <span class="nav-icon">🎮</span>
+                <span class="nav-label">Games</span>
+              </button>
+              <button type="button" class="univ-nav-btn" data-nav="gallery" id="nav-btn-gallery">
+                <span class="nav-icon">📸</span>
+                <span class="nav-label">Gallery</span>
+              </button>
+              <button type="button" class="univ-nav-btn" data-nav="more" id="nav-btn-more">
+                <span class="nav-icon">🎛</span>
+                <span class="nav-label">More</span>
+              </button>
+            </nav>
           </div>
 
-          <!-- Quick Navigation in Dashboard Header -->
-          <div class="private-nav-shortcuts" style="display: flex; align-items: center; gap: 0.65rem; margin: 0 auto; flex-wrap: wrap;">
-            <button type="button" class="btn-nav-universe" id="btn-dash-open-orbit" title="Buka Our Little Orbit" style="background: rgba(192, 132, 252, 0.16); border-color: rgba(192, 132, 252, 0.4); color: #f3e8ff;">
-              <span>🪐</span>
-              <span>Our Little Orbit</span>
-            </button>
-            <button type="button" class="btn-nav-universe" id="btn-dash-open-moments" title="Buka Our Little Moments" style="background: rgba(244, 114, 182, 0.16); border-color: rgba(244, 114, 182, 0.4); color: #fce7f3;">
-              <span>📸</span>
-              <span>Our Little Moments</span>
-            </button>
+          <!-- Right: User Profile Pill with Avatar & Sparkle -->
+          <div class="univ-profile-pill-wrapper" style="position: relative;">
+            <div class="univ-profile-pill" id="univ-profile-pill" title="Profil & Pengaturan Akun">
+              <img src="/assets/avatar_nyanya_hd.png" alt="Profil Pengguna" class="univ-profile-avatar"
+                id="univ-user-avatar" />
+              <span class="univ-profile-name" id="univ-user-greeting">Hello, Ale</span>
+              <span class="univ-profile-sparkle">✦</span>
+            </div>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="univ-dropdown-menu" id="univ-profile-dropdown" role="menu">
+              <button type="button" class="dropdown-item" id="btn-drop-orbit">
+                <span>🪐</span>
+                <span>Our Little Orbit (Kalender)</span>
+              </button>
+              <button type="button" class="dropdown-item" id="btn-drop-moments">
+                <span>📸</span>
+                <span>Our Little Moments (Feed & Stories)</span>
+              </button>
+              <button type="button" class="dropdown-item" id="btn-drop-switch">
+                <span>✧</span>
+                <span>Ganti Karakter Universe</span>
+              </button>
+              <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 0.2rem 0;"></div>
+              <button type="button" class="dropdown-item danger" id="btn-drop-logout">
+                <span>⎋</span>
+                <span>Keluar Sesi (Logout)</span>
+              </button>
+            </div>
           </div>
+        </header>
 
-          <div class="private-user-badge">
-            <div class="user-avatar-dot" id="private-avatar-dot"></div>
-            <div class="user-meta">
-              <span class="user-name" id="private-user-name">Nyanya</span>
-              <span class="user-role" id="private-user-role">Moonlit Shadow Witch</span>
-            </div>
-            <button type="button" class="btn-logout" id="btn-logout" aria-label="Keluar dari sesi privat" title="Keluar dari Universe">
-              <span>Keluar</span>
-              <span class="logout-icon">⎋</span>
-            </button>
+        <!-- Hero Script Title & Subtitles -->
+        <div class="universes-hero">
+          <div class="univ-hero-script-row">
+            <span class="univ-hero-star">✦</span>
+            <h1 class="univ-hero-title">Three worlds, one universe</h1>
+            <span class="univ-hero-star">✦</span>
           </div>
-        </nav>
-
-        <!-- Private Dashboard Content -->
-        <main class="private-dashboard-content">
-          <div class="universe-welcome-card" id="universe-welcome-card">
-            
-            <div class="welcome-header">
-              <span class="welcome-symbol" id="private-welcome-symbol">☾</span>
-              <h2 class="welcome-heading" id="private-welcome-heading">Selamat Datang di Dunia Pribadimu</h2>
-              <p class="welcome-sub" id="private-welcome-sub">Ruang privat persahabatan privat terautentikasi dan terlindungi oleh Firebase Authentication.</p>
-            </div>
-
-            <!-- Authenticated Session Credentials Audit Box -->
-            <div class="auth-audit-box">
-              <div class="audit-row">
-                <span class="audit-label">Status Keamanan:</span>
-                <span class="audit-badge verified">✦ Terautentikasi & Karakter Terverifikasi</span>
-              </div>
-              <div class="audit-row">
-                <span class="audit-label">Karakter Terhubung:</span>
-                <span class="audit-val" id="audit-character-name">Nyanya (Moonlit Shadow Witch)</span>
-              </div>
-              <div class="audit-row">
-                <span class="audit-label">Email Akun:</span>
-                <span class="audit-val" id="audit-email">-</span>
-              </div>
-              <div class="audit-row">
-                <span class="audit-label">Firebase UID:</span>
-                <span class="audit-val code" id="audit-uid">-</span>
-              </div>
-              <div class="audit-row">
-                <span class="audit-label">Universe:</span>
-                <span class="audit-val" id="audit-universe">-</span>
-              </div>
-            </div>
-
-            <!-- Cozy Universe Navigation Preview -->
-            <div class="universe-portals-grid">
-              <div class="portal-card portal-orbit-card" id="portal-open-orbit" style="cursor: pointer;">
-                <span class="portal-icon">🪐</span>
-                <h3 class="portal-title">Our Little Orbit</h3>
-                <p class="portal-desc">Kalender bersama & perencana meeting tiga sahabat.</p>
-                <span class="portal-badge" style="background: rgba(192, 132, 252, 0.25); color: #ffffff;">Buka Kalender ✦</span>
-              </div>
-              <div class="portal-card portal-moments-card" id="portal-open-moments" style="cursor: pointer;">
-                <span class="portal-icon">📸</span>
-                <h3 class="portal-title">Our Little Moments</h3>
-                <p class="portal-desc">Ruang berbagi foto harian, stories 24 jam & scrapbook tiga sahabat.</p>
-                <span class="portal-badge" style="background: rgba(244, 114, 182, 0.25); color: #ffffff;">Buka Scrapbook ✦</span>
-              </div>
-              <div class="portal-card">
-                <span class="portal-icon">📬</span>
-                <h3 class="portal-title">Little Post Office</h3>
-                <p class="portal-desc">Kotak surat digital privat sahabat.</p>
-                <span class="portal-badge">Siap untuk Fase 3</span>
-              </div>
-              <div class="portal-card">
-                <span class="portal-icon">🏰</span>
-                <h3 class="portal-title">Personal Town</h3>
-                <p class="portal-desc">Kota 2D interaktif milikmu.</p>
-                <span class="portal-badge">Aktif</span>
-              </div>
-              <div class="portal-card">
-                <span class="portal-icon">🌌</span>
-                <h3 class="portal-title">Galaxy Map</h3>
-                <p class="portal-desc">Peta hubungan ketiga universe sahabat.</p>
-                <span class="portal-badge">Aktif</span>
-              </div>
-            </div>
-
+          <div class="univ-hero-sub">
+            <p>Different vibes, same sky.</p>
+            <p>Choose your universe, and let's go!</p>
           </div>
+        </div>
+
+        <!-- Three Floating Islands Stage -->
+        <main class="universes-islands-stage" role="region" aria-label="Pilihan Tiga Universe">
+
+          <!-- ISLAND 1: KIDULT - NYANYA'S UNIVERSE -->
+          <button type="button" class="univ-island-card card-kidult" data-universe="kidult" data-char="nyanya"
+            aria-label="Buka Universe KIDULT - Nyanya's Universe">
+            <div class="island-art-wrapper">
+              <div class="island-ambient-glow"></div>
+              <div class="island-planetary-ring"></div>
+              <img src="/assets/island_kidult_floating.png" alt="KIDULT - Nyanya's Universe"
+                class="floating-island-image" />
+            </div>
+            <div class="island-avatar-badge">
+              <img src="/assets/avatar_nyanya_hd.png" alt="Nyanya - The Moonlit Shadow Witch" />
+            </div>
+            <div class="island-glass-card">
+              <h2 class="island-card-title"><span class="island-symbol-icon">★</span> KIDULT</h2>
+              <p class="island-card-sub">NYANYA'S UNIVERSE</p>
+            </div>
+            <p class="island-script-quote">Small joys make a big universe.</p>
+          </button>
+
+          <!-- ISLAND 2: TO YOU - LALA'S UNIVERSE -->
+          <button type="button" class="univ-island-card card-toyou" data-universe="to_you" data-char="lala"
+            aria-label="Buka Universe TO YOU - Lala's Universe">
+            <div class="island-art-wrapper">
+              <div class="island-ambient-glow"></div>
+              <div class="island-planetary-ring"></div>
+              <img src="/assets/island_toyou_floating.png" alt="TO YOU - Lala's Universe"
+                class="floating-island-image" />
+            </div>
+            <div class="island-avatar-badge">
+              <img src="/assets/avatar_lala_hd.png" alt="Lala - The Everglow Fairy" />
+            </div>
+            <div class="island-glass-card">
+              <h2 class="island-card-title"><span class="island-symbol-icon">☼</span> TO YOU</h2>
+              <p class="island-card-sub">LALA'S UNIVERSE</p>
+            </div>
+            <p class="island-script-quote">A little closer, for a brighter tomorrow.</p>
+          </button>
+
+          <!-- ISLAND 3: SHADOW - LELE'S UNIVERSE -->
+          <button type="button" class="univ-island-card card-shadow" data-universe="shadow" data-char="lele"
+            aria-label="Buka Universe SHADOW - Lele's Universe">
+            <div class="island-art-wrapper">
+              <div class="island-ambient-glow"></div>
+              <div class="island-planetary-ring"></div>
+              <img src="/assets/island_shadow_floating.png" alt="SHADOW - Lele's Universe"
+                class="floating-island-image" />
+            </div>
+            <div class="island-avatar-badge">
+              <img src="/assets/avatar_lele_hd.png" alt="Lele - The Eclipse Guardian" />
+            </div>
+            <div class="island-glass-card">
+              <h2 class="island-card-title"><span class="island-symbol-icon">☾</span> SHADOW</h2>
+              <p class="island-card-sub">LELE'S UNIVERSE</p>
+            </div>
+            <p class="island-script-quote">Same sky, different shadows.</p>
+          </button>
+
         </main>
+
+        <!-- Bottom Prompt Button -->
+        <footer class="universes-bottom-bar">
+          <button type="button" class="univ-bottom-btn" id="btn-which-universe" aria-label="Panduan memilih universe">
+            <span class="sparkle-gold">✦</span>
+            <span>Which universe will you visit today?</span>
+            <span class="sparkle-gold">✦</span>
+          </button>
+        </footer>
+
+        <!-- Hidden DOM Anchor elements to guarantee 100% backward-compatibility with existing scripts -->
+        <div style="display: none;" aria-hidden="true">
+          <span id="audit-character-name"></span>
+          <span id="audit-email"></span>
+          <span id="audit-uid"></span>
+          <span id="audit-universe"></span>
+          <span id="private-universe-title"></span>
+          <span id="private-user-name"></span>
+          <span id="private-user-role"></span>
+          <span id="private-welcome-symbol"></span>
+          <span id="private-welcome-heading"></span>
+          <button id="btn-logout"></button>
+          <button id="btn-dash-open-orbit"></button>
+          <button id="btn-dash-open-moments"></button>
+          <div id="portal-open-orbit"></div>
+          <div id="portal-open-moments"></div>
+        </div>
 
       </section>
 
       <!-- ============================================== -->
+      <!-- VIEW 3B: KIDULT — 2D DREAMY FANTASY WORLD      -->
+      <!-- ============================================== -->
+      <section class="view-section view-kidult-world" id="view-kidult-world" aria-label="KIDULT - 2D Fantasy World"
+        aria-hidden="true">
+
+        <!-- Full-screen 2D Storybook Environment Stage -->
+        <div class="kidult-2d-stage" id="kidult-2d-stage">
+          <!-- Main 2D Illustrated Island Environment -->
+          <img src="/assets/kidult_world_scene.jpg" alt="Dunia 2D KIDULT - Vanya's Universe" class="kidult-scene-img" />
+
+          <!-- Subtle Ambient Sunset & Galaxy Shimmer Overlays -->
+          <div class="kidult-sunset-glow" aria-hidden="true"></div>
+          <div class="kidult-river-shimmer" aria-hidden="true"></div>
+          <div class="kidult-fireflies" aria-hidden="true">
+            <span class="k-firefly f1">✦</span>
+            <span class="k-firefly f2">✧</span>
+            <span class="k-firefly f3">✦</span>
+            <span class="k-firefly f4">⋆</span>
+            <span class="k-firefly f5">✦</span>
+            <span class="k-firefly f6">✧</span>
+          </div>
+
+          <!-- TOP-LEFT HUD: Universe Title, Back Button & Nyanya Character Card -->
+          <div class="kidult-hud-topleft">
+            <div class="kidult-title-bar">
+              <button type="button" class="kidult-back-orb" id="btn-kidult-back"
+                title="Kembali ke Pemilihan Tiga Universe" aria-label="Kembali ke pemilihan universe">
+                <span class="back-star-icon">✦</span>
+                <span class="back-arrow-badge">←</span>
+              </button>
+              <div class="kidult-title-text">
+                <h1 class="kidult-main-heading">KIDULT</h1>
+                <p class="kidult-sub-heading">VANYA'S UNIVERSE</p>
+              </div>
+            </div>
+
+            <!-- Glassmorphism Character Identity Card (Matching Reference) -->
+            <div class="kidult-char-card" id="kidult-char-card">
+              <div class="kidult-char-avatar-wrap">
+                <img src="/assets/chibi_nyanya_avatar.png" alt="Chibi Nyanya - The Moonlit Shadow Witch"
+                  class="kidult-char-avatar" />
+              </div>
+              <div class="kidult-char-info">
+                <h2 class="kidult-char-name">Nyanya</h2>
+                <p class="kidult-char-role">The Moonlit Shadow Witch</p>
+                <p class="kidult-char-quote">Small joy, make a big universe.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOP-RIGHT HUD: Return Button & Greeting Pill -->
+          <div class="kidult-hud-topright">
+            <button type="button" class="kidult-return-pill" id="btn-kidult-return-univ"
+              aria-label="Kembali ke halaman pemilihan tiga universe">
+              <span>←</span>
+              <span>Pilih Universe</span>
+            </button>
+            <div class="kidult-user-pill" id="kidult-user-pill">
+              <img src="/assets/chibi_nyanya_avatar.png" alt="Vanya" class="kidult-user-avatar"
+                id="kidult-user-avatar" />
+              <span class="kidult-user-greeting" id="kidult-user-greeting">Hello, Vanya</span>
+              <span class="kidult-user-sparkle">✦</span>
+            </div>
+          </div>
+
+          <!-- ==================================================== -->
+          <!-- INTERACTIVE 2D WORLD HOTSPOTS (6 CONNECTED LOCATIONS)-->
+          <!-- ==================================================== -->
+
+          <!-- 1. RUMAH VANYA -->
+          <button type="button" class="kidult-hotspot hotspot-rumah" data-kidult-loc="rumah"
+            aria-label="Lokasi 1: Rumah Vanya">
+            <span class="hotspot-building-zone" aria-hidden="true"></span>
+            <span class="kidult-loc-pill">
+              <span class="loc-pill-icon">🏠</span>
+              <span class="loc-pill-text">Rumah</span>
+            </span>
+          </button>
+
+          <!-- 2. RUMAH KACA -->
+          <button type="button" class="kidult-hotspot hotspot-rumah-kaca" data-kidult-loc="rumah_kaca"
+            aria-label="Lokasi 2: Rumah Kaca">
+            <span class="hotspot-building-zone" aria-hidden="true"></span>
+            <span class="kidult-loc-pill">
+              <span class="loc-pill-icon">🌿</span>
+              <span class="loc-pill-text">Rumah Kaca</span>
+            </span>
+          </button>
+
+          <!-- 3. AREA TELESKOP BINTANG (STAR MESSAGES) -->
+          <button type="button" class="kidult-hotspot hotspot-teleskop" data-kidult-loc="teleskop"
+            aria-label="Lokasi 3: Star Messages (Teleskop Bintang)">
+            <span class="hotspot-building-zone" aria-hidden="true"></span>
+            <span class="kidult-loc-pill loc-pill-multiline">
+              <span class="loc-pill-icon">★</span>
+              <span class="loc-pill-stack">
+                <strong>Star Messages</strong>
+                <small>(Teleskop)</small>
+              </span>
+            </span>
+          </button>
+
+          <!-- 4. KOTAK POS -->
+          <button type="button" class="kidult-hotspot hotspot-kotak-pos" data-kidult-loc="kotak_pos"
+            aria-label="Lokasi 4: Kotak Pos">
+            <span class="hotspot-building-zone" aria-hidden="true"></span>
+            <span class="kidult-loc-pill">
+              <span class="loc-pill-icon">✉</span>
+              <span class="loc-pill-text">Kotak Pos</span>
+            </span>
+          </button>
+
+          <!-- 5. SUNGAI SENJA -->
+          <button type="button" class="kidult-hotspot hotspot-sungai-senja" data-kidult-loc="sungai_senja"
+            aria-label="Lokasi 5: Sungai Senja">
+            <span class="hotspot-building-zone" aria-hidden="true"></span>
+            <span class="kidult-loc-pill">
+              <span class="loc-pill-icon">🌊</span>
+              <span class="loc-pill-text">Sungai Senja</span>
+            </span>
+          </button>
+
+          <!-- 6. GAZEBO TEPI SUNGAI -->
+          <button type="button" class="kidult-hotspot hotspot-gazebo" data-kidult-loc="gazebo"
+            aria-label="Lokasi 6: Gazebo Tepi Sungai">
+            <span class="hotspot-building-zone" aria-hidden="true"></span>
+            <span class="kidult-loc-pill">
+              <span class="loc-pill-icon">🏛</span>
+              <span class="loc-pill-text">Gazebo</span>
+            </span>
+          </button>
+
+          <!-- INTERACTIVE CHIBI NYANYA ON THE PATH -->
+          <button type="button" class="kidult-chibi-actor" id="kidult-chibi-actor"
+            aria-label="Sapa Chibi Nyanya di jalan setapak">
+            <span class="chibi-speech-bubble" id="kidult-chibi-bubble">Selamat datang di KIDULT! Pilih lokasi untuk
+              dijelajahi ⭐</span>
+            <span class="chibi-glow-ring" aria-hidden="true"></span>
+          </button>
+
+          <!-- INTERACTIVE LOCATION DETAIL PANEL (OPENS WHEN ANY LOCATION IS CLICKED) -->
+          <aside class="kidult-location-panel" id="kidult-location-panel" role="dialog" aria-modal="false"
+            aria-labelledby="kidult-loc-title" aria-hidden="true">
+            <div class="kidult-panel-header">
+              <div class="kidult-panel-badge-row">
+                <span class="kidult-panel-icon" id="kidult-loc-icon">🏠</span>
+                <div>
+                  <span class="kidult-panel-tag" id="kidult-loc-tag">LOKASI DUNIA 2D · KIDULT</span>
+                  <h3 class="kidult-panel-title" id="kidult-loc-title">Rumah Vanya</h3>
+                </div>
+              </div>
+              <button type="button" class="kidult-panel-close" id="btn-close-kidult-panel"
+                aria-label="Tutup panel lokasi">✕</button>
+            </div>
+
+            <p class="kidult-panel-subtitle" id="kidult-loc-subtitle">Rumah Fantasi Berjendela Hangat & Atap Lavender
+            </p>
+            <p class="kidult-panel-desc" id="kidult-loc-desc">
+              Deskripsi suasana lokasi...
+            </p>
+
+            <div class="kidult-panel-highlight" id="kidult-loc-highlight">
+              ✨ Suasana: Tenang, hangat, dan bermandikan cahaya senja galaksi.
+            </div>
+
+            <div class="kidult-panel-actions" id="kidult-loc-actions">
+              <button type="button" class="kidult-panel-btn primary" id="btn-kidult-loc-action">
+                <span>✦</span>
+                <span id="kidult-loc-action-label">Interaksi Lokasi</span>
+              </button>
+              <button type="button" class="kidult-panel-btn secondary" id="btn-kidult-panel-dismiss">
+                Tutup
+              </button>
+            </div>
+          </aside>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 3C: TO YOU — 2D FAIRY FOREST WORLD        -->
+      <!-- ============================================== -->
+      <section class="view-section view-toyou-world" id="view-toyou-world" aria-label="TO YOU - Bella's 2D Fairy World"
+        aria-hidden="true">
+
+        <!-- Full-screen 2D Morning Fairy Forest Environment Stage (100vw x 100vh like KIDULT) -->
+        <div class="toyou-2d-stage" id="toyou-2d-stage">
+
+          <!-- LAYER 1: Main Crisp 2D Illustrated Fairy Island Environment -->
+          <div class="toyou-parallax-layer layer-island-base" data-parallax-depth="0.18">
+            <img src="/assets/toyou_world_scene.jpg"
+              alt="Dunia 2D TO YOU - Bella's Universe (Lala - The Everglow Fairy)" class="toyou-scene-img"
+              fetchpriority="high" decoding="async" />
+          </div>
+
+          <!-- LAYER 2: Drifting Sky Clouds & Morning Sunbeams (God-Rays) -->
+          <div class="toyou-parallax-layer layer-sky-atmosphere" data-parallax-depth="0.32" aria-hidden="true">
+            <div class="toyou-cloud-wisp cw-1"></div>
+            <div class="toyou-cloud-wisp cw-2"></div>
+            <div class="toyou-cloud-wisp cw-3"></div>
+            <div class="toyou-cloud-wisp cw-4"></div>
+            <div class="toyou-sunbeam-glow"></div>
+            <div class="toyou-sun-rays">
+              <span class="sun-ray r1"></span>
+              <span class="sun-ray r2"></span>
+              <span class="sun-ray r3"></span>
+            </div>
+          </div>
+
+          <!-- LAYER 3: Warm Building Window Glows, Flowing Stream & Waterfall Mist -->
+          <div class="toyou-parallax-layer layer-world-ambient" data-parallax-depth="0.48" aria-hidden="true">
+            <!-- Warm Window Lights on Fairy House, Atelier, Gazebo & Garden Lamps -->
+            <div class="toyou-window-glows">
+              <span class="win-glow wg-rumah-1"></span>
+              <span class="win-glow wg-rumah-2"></span>
+              <span class="win-glow wg-atelier-1"></span>
+              <span class="win-glow wg-atelier-2"></span>
+              <span class="win-glow wg-gazebo"></span>
+              <span class="win-glow wg-lamp-1"></span>
+              <span class="win-glow wg-lamp-2"></span>
+            </div>
+
+            <!-- Flowing Stream Ripples, Water Shimmer & Waterfall Cascades -->
+            <div class="toyou-stream-shimmer"></div>
+            <div class="toyou-river-ripples">
+              <span class="river-ripple rp-1"></span>
+              <span class="river-ripple rp-2"></span>
+              <span class="river-ripple rp-3"></span>
+              <span class="river-ripple rp-4"></span>
+              <span class="river-ripple rp-5"></span>
+              <span class="waterfall-cascade wf-left"></span>
+              <span class="waterfall-cascade wf-center"></span>
+              <span class="waterfall-cascade wf-right"></span>
+            </div>
+          </div>
+
+          <!-- LAYER 4: Swaying Blossoms, Floating Flower Petals, Fairy Dust & Animated SVG Butterflies -->
+          <div class="toyou-parallax-layer layer-flora-fauna" data-parallax-depth="0.82" aria-hidden="true">
+            <!-- Gentle Wind-Swaying Flower & Leaf Highlights -->
+            <div class="toyou-foliage-sway">
+              <span class="sway-cluster sc-1">🌸</span>
+              <span class="sway-cluster sc-2">🌿</span>
+              <span class="sway-cluster sc-3">🌸</span>
+              <span class="sway-cluster sc-4">🌼</span>
+              <span class="sway-cluster sc-5">🌸</span>
+            </div>
+
+            <!-- Drifting Pastel Blossoms on the Morning Breeze -->
+            <div class="toyou-drifting-petals">
+              <span class="f-petal p1"></span>
+              <span class="f-petal p2"></span>
+              <span class="f-petal p3"></span>
+              <span class="f-petal p4"></span>
+              <span class="f-petal p5"></span>
+              <span class="f-petal p6"></span>
+              <span class="f-petal p7"></span>
+              <span class="f-petal p8"></span>
+            </div>
+
+            <!-- Animated 2D Butterflies with Wing-Flapping along Varied Meadow Paths -->
+            <div class="toyou-butterflies-field">
+              <div class="toyou-bf bf-path-1">
+                <svg viewBox="0 0 32 28" class="bf-svg bf-peach">
+                  <path class="wing-l" d="M15 14 C6 2, 1 6, 3 14 C1 20, 8 25, 15 17 Z" />
+                  <path class="wing-r" d="M17 14 C26 2, 31 6, 29 14 C31 20, 24 25, 17 17 Z" />
+                  <ellipse cx="16" cy="15" rx="1.2" ry="5" fill="#78350f" />
+                </svg>
+              </div>
+              <div class="toyou-bf bf-path-2">
+                <svg viewBox="0 0 32 28" class="bf-svg bf-gold">
+                  <path class="wing-l" d="M15 14 C6 2, 1 6, 3 14 C1 20, 8 25, 15 17 Z" />
+                  <path class="wing-r" d="M17 14 C26 2, 31 6, 29 14 C31 20, 24 25, 17 17 Z" />
+                  <ellipse cx="16" cy="15" rx="1.2" ry="5" fill="#78350f" />
+                </svg>
+              </div>
+              <div class="toyou-bf bf-path-3">
+                <svg viewBox="0 0 32 28" class="bf-svg bf-sky">
+                  <path class="wing-l" d="M15 14 C6 2, 1 6, 3 14 C1 20, 8 25, 15 17 Z" />
+                  <path class="wing-r" d="M17 14 C26 2, 31 6, 29 14 C31 20, 24 25, 17 17 Z" />
+                  <ellipse cx="16" cy="15" rx="1.2" ry="5" fill="#1e3a8a" />
+                </svg>
+              </div>
+              <div class="toyou-bf bf-path-4">
+                <svg viewBox="0 0 32 28" class="bf-svg bf-pink">
+                  <path class="wing-l" d="M15 14 C6 2, 1 6, 3 14 C1 20, 8 25, 15 17 Z" />
+                  <path class="wing-r" d="M17 14 C26 2, 31 6, 29 14 C31 20, 24 25, 17 17 Z" />
+                  <ellipse cx="16" cy="15" rx="1.2" ry="5" fill="#831843" />
+                </svg>
+              </div>
+              <div class="toyou-bf bf-path-5">
+                <svg viewBox="0 0 32 28" class="bf-svg bf-gold">
+                  <path class="wing-l" d="M15 14 C6 2, 1 6, 3 14 C1 20, 8 25, 15 17 Z" />
+                  <path class="wing-r" d="M17 14 C26 2, 31 6, 29 14 C31 20, 24 25, 17 17 Z" />
+                  <ellipse cx="16" cy="15" rx="1.2" ry="5" fill="#78350f" />
+                </svg>
+              </div>
+              <div class="toyou-bf bf-path-6">
+                <svg viewBox="0 0 32 28" class="bf-svg bf-peach">
+                  <path class="wing-l" d="M15 14 C6 2, 1 6, 3 14 C1 20, 8 25, 15 17 Z" />
+                  <path class="wing-r" d="M17 14 C26 2, 31 6, 29 14 C31 20, 24 25, 17 17 Z" />
+                  <ellipse cx="16" cy="15" rx="1.2" ry="5" fill="#78350f" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Twinkling Fairy Light Motes -->
+            <div class="toyou-fairy-motes">
+              <span class="t-mote m1">✦</span>
+              <span class="t-mote m2">✧</span>
+              <span class="t-mote m3">✦</span>
+              <span class="t-mote m4">⋆</span>
+              <span class="t-mote m5">✦</span>
+              <span class="t-mote m6">✧</span>
+              <span class="t-mote m7">✦</span>
+              <span class="t-mote m8">⋆</span>
+            </div>
+          </div>
+
+          <!-- TOP-LEFT HUD: Universe Title, Sun Emblem & Lala Character Card -->
+          <div class="toyou-hud-topleft">
+            <div class="toyou-title-bar">
+              <button type="button" class="toyou-sun-orb" id="btn-toyou-back-top"
+                title="Kembali ke Pemilihan Tiga Universe" aria-label="Kembali ke pemilihan universe">
+                <span class="sun-orb-icon">☼</span>
+              </button>
+              <div class="toyou-title-text">
+                <h1 class="toyou-main-heading">TO YOU</h1>
+                <p class="toyou-sub-heading">BELLA'S UNIVERSE</p>
+              </div>
+            </div>
+
+            <!-- Character Identity Card Overlay (Lala - The Everglow Fairy) -->
+            <div class="toyou-char-card" id="toyou-char-card" title="Lala — The Everglow Fairy (Bella's Universe)">
+              <div class="toyou-char-avatar-wrap">
+                <img src="/assets/chibi_lala_avatar.png" alt="Chibi Lala - The Everglow Fairy"
+                  class="toyou-char-avatar" />
+              </div>
+              <div class="toyou-char-info">
+                <h2 class="toyou-char-name"><span class="toyou-sun-symbol">☼</span> Lala</h2>
+                <p class="toyou-char-role">The Everglow Fairy</p>
+                <p class="toyou-char-quote">Small joy, make a big universe.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOP-RIGHT HUD: Greeting Pill & Quick Location Directory ("Mau ke mana dulu, Lala?") -->
+          <div class="toyou-hud-topright">
+            <div class="toyou-user-pill" id="toyou-user-pill">
+              <img src="/assets/chibi_lala_avatar.png" alt="Bella" class="toyou-user-avatar" id="toyou-user-avatar" />
+              <span class="toyou-user-greeting" id="toyou-user-greeting">Hello, Bella</span>
+              <span class="toyou-user-sparkle">✦</span>
+            </div>
+
+            <!-- Quick Directory Menu Matching Reference ("Mau ke mana dulu, Lala?") -->
+            <nav class="toyou-quick-menu" aria-label="Daftar Lokasi Dunia TO YOU">
+              <p class="toyou-quick-title">Mau ke mana dulu,<br>Lala?</p>
+              <button type="button" class="toyou-quick-item" data-toyou-nav="rumah">
+                <span class="q-icon">🏠</span>
+                <span>Rumah</span>
+              </button>
+              <button type="button" class="toyou-quick-item" data-toyou-nav="atelier">
+                <span class="q-icon">👗</span>
+                <span>Atelier (Galeri Busana)</span>
+              </button>
+              <button type="button" class="toyou-quick-item" data-toyou-nav="ladang_kupu">
+                <span class="q-icon">🦋</span>
+                <span>Taman Kupu-kupu</span>
+              </button>
+              <button type="button" class="toyou-quick-item" data-toyou-nav="teleskop">
+                <span class="q-icon">🔭</span>
+                <span>Teleskop</span>
+              </button>
+              <button type="button" class="toyou-quick-item" data-toyou-nav="gazebo">
+                <span class="q-icon">🏛</span>
+                <span>Gazebo</span>
+              </button>
+              <button type="button" class="toyou-quick-item" data-toyou-nav="kotak_pos">
+                <span class="q-icon">✉</span>
+                <span>Kotak Pos</span>
+              </button>
+            </nav>
+          </div>
+
+          <!-- ==================================================== -->
+          <!-- INTERACTIVE 2D WORLD HOTSPOTS (6 CONNECTED LOCATIONS)-->
+          <!-- ==================================================== -->
+
+          <!-- A. RUMAH BELLA -->
+          <button type="button" class="toyou-hotspot hotspot-toyou-rumah" data-toyou-loc="rumah"
+            aria-label="Lokasi A: Rumah Bella">
+            <span class="toyou-building-zone" aria-hidden="true"></span>
+            <span class="toyou-loc-pill">
+              <span class="toyou-pill-icon">🏠</span>
+              <span class="toyou-pill-text">Rumah</span>
+            </span>
+            <span class="toyou-hover-hint" aria-hidden="true">✦ Klik untuk masuk ke Rumah Bella</span>
+          </button>
+
+          <!-- B. GALERI BUSANA — ATELIER -->
+          <button type="button" class="toyou-hotspot hotspot-toyou-atelier" data-toyou-loc="atelier"
+            aria-label="Lokasi B: Galeri Busana - Atelier">
+            <span class="toyou-building-zone" aria-hidden="true"></span>
+            <span class="toyou-loc-pill">
+              <span class="toyou-pill-icon">👗</span>
+              <span class="toyou-pill-text">Atelier (Galeri Busana)</span>
+            </span>
+            <span class="toyou-hover-hint" aria-hidden="true">✦ Klik untuk melihat Galeri Busana</span>
+          </button>
+
+          <!-- C. TELESKOP -->
+          <button type="button" class="toyou-hotspot hotspot-toyou-teleskop" data-toyou-loc="teleskop"
+            aria-label="Lokasi C: Teleskop">
+            <span class="toyou-building-zone" aria-hidden="true"></span>
+            <span class="toyou-loc-pill">
+              <span class="toyou-pill-icon">★</span>
+              <span class="toyou-pill-text">Teleskop</span>
+            </span>
+            <span class="toyou-hover-hint" aria-hidden="true">✦ Amati langit pagi & pesan sahabat</span>
+          </button>
+
+          <!-- D. GAZEBO -->
+          <button type="button" class="toyou-hotspot hotspot-toyou-gazebo" data-toyou-loc="gazebo"
+            aria-label="Lokasi D: Gazebo">
+            <span class="toyou-building-zone" aria-hidden="true"></span>
+            <span class="toyou-loc-pill">
+              <span class="toyou-pill-icon">🏛</span>
+              <span class="toyou-pill-text">Gazebo</span>
+            </span>
+            <span class="toyou-hover-hint" aria-hidden="true">✦ Bersantai di Gazebo tepi sungai</span>
+          </button>
+
+          <!-- E. LADANG KUPU-KUPU -->
+          <button type="button" class="toyou-hotspot hotspot-toyou-kupu" data-toyou-loc="ladang_kupu"
+            aria-label="Lokasi E: Ladang Kupu-kupu">
+            <span class="toyou-building-zone" aria-hidden="true"></span>
+            <span class="toyou-loc-pill">
+              <span class="toyou-pill-icon">🦋</span>
+              <span class="toyou-pill-text">Ladang Kupu-kupu</span>
+            </span>
+            <span class="toyou-hover-hint" aria-hidden="true">✦ Jelajahi Ladang Kupu-kupu</span>
+          </button>
+
+          <!-- F. KOTAK POS -->
+          <button type="button" class="toyou-hotspot hotspot-toyou-kotakpos" data-toyou-loc="kotak_pos"
+            aria-label="Lokasi F: Kotak Pos">
+            <span class="toyou-building-zone" aria-hidden="true"></span>
+            <span class="toyou-loc-pill">
+              <span class="toyou-pill-icon">✉</span>
+              <span class="toyou-pill-text">Kotak Pos</span>
+            </span>
+            <span class="toyou-hover-hint" aria-hidden="true">✦ Buka surat sahabat di Kotak Pos</span>
+          </button>
+
+          <!-- INTERACTIVE CHIBI LALA ON THE GARDEN PATH (WITH FLUTTERING FAIRY WINGS & IDLE AURA) -->
+          <button type="button" class="toyou-chibi-actor" id="toyou-chibi-actor"
+            aria-label="Sapa Chibi Lala di jalan setapak taman peri">
+            <span class="toyou-speech-bubble" id="toyou-chibi-bubble">Selamat pagi dari TO YOU! Mau mampir ke lokasi
+              mana dulu? 🌞🌸</span>
+            <span class="toyou-lala-wings" aria-hidden="true">
+              <span class="lala-wing wing-left"></span>
+              <span class="lala-wing wing-right"></span>
+            </span>
+            <span class="toyou-chibi-ring" aria-hidden="true"></span>
+          </button>
+
+          <!-- BOTTOM-LEFT QUOTE & BOTTOM-RIGHT BACK BUTTON -->
+          <div class="toyou-bottom-quote" aria-hidden="true">
+            <span>✦</span> A little closer, for a brighter tomorrow. <span>✦</span>
+          </div>
+
+          <button type="button" class="toyou-back-btn" id="btn-toyou-back"
+            aria-label="Kembali ke halaman pemilihan universe">
+            <span>←</span>
+            <span>Kembali ke Universe</span>
+          </button>
+
+          <!-- COMPACT INTERACTIVE LOCATION DETAIL PANEL -->
+          <aside class="toyou-location-panel" id="toyou-location-panel" role="dialog" aria-modal="false"
+            aria-labelledby="toyou-loc-title" aria-hidden="true">
+            <div class="toyou-panel-header">
+              <div class="toyou-panel-badge-row">
+                <span class="toyou-panel-icon" id="toyou-loc-icon">🏠</span>
+                <div>
+                  <span class="toyou-panel-tag" id="toyou-loc-tag">DUNIA PERI · TO YOU</span>
+                  <h3 class="toyou-panel-title" id="toyou-loc-title">Rumah Bella</h3>
+                </div>
+              </div>
+              <button type="button" class="toyou-panel-close" id="btn-close-toyou-panel"
+                aria-label="Tutup panel lokasi">✕</button>
+            </div>
+
+            <p class="toyou-panel-subtitle" id="toyou-loc-subtitle">Rumah Peri Berjendela Hangat & Atap Peach Lembut</p>
+            <p class="toyou-panel-desc" id="toyou-loc-desc">
+              Deskripsi singkat lokasi...
+            </p>
+
+            <div class="toyou-panel-highlight" id="toyou-loc-highlight">
+              🌞 Suasana pagi cerah di hutan peri TO YOU.
+            </div>
+
+            <div class="toyou-panel-actions">
+              <button type="button" class="toyou-panel-btn primary" id="btn-toyou-loc-action">
+                <span>☼</span>
+                <span id="toyou-loc-action-label">Jelajahi Lokasi</span>
+              </button>
+              <button type="button" class="toyou-panel-btn secondary" id="btn-toyou-panel-dismiss">
+                Tutup
+              </button>
+            </div>
+          </aside>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 3D: SHADOW — 2D CRYSTAL MOON SANCTUARY    -->
+      <!-- ============================================== -->
+      <section class="view-section view-shadow-world" id="view-shadow-world"
+        aria-label="SHADOW - Lele's 2D Crystal Moon Sanctuary World" aria-hidden="true">
+
+        <!-- Full-screen 2D Night Crystal Moon Sanctuary Stage (100vw x 100vh) -->
+        <div class="shadow-2d-stage" id="shadow-2d-stage">
+
+          <!-- LAYER 1: Main Crisp 2D Illustrated Crystal Moon Sanctuary Environment -->
+          <div class="shadow-parallax-layer layer-shadow-base" data-parallax-depth="0.14">
+            <img src="/assets/shadow_world_scene.jpg"
+              alt="Dunia 2D SHADOW - Crystal Moon Sanctuary (Lele - The Eclipse Guardian)" class="shadow-scene-img"
+              decoding="async" width="2048" height="1152" />
+          </div>
+
+          <!-- LAYER 2: Starry Night Sky Twinkles, Crescent Moon Halo & Thin Drifting Mist -->
+          <div class="shadow-parallax-layer layer-shadow-sky" data-parallax-depth="0.3" aria-hidden="true">
+            <div class="shadow-moon-halo"></div>
+            <div class="shadow-stars-field">
+              <span class="shadow-star-twinkle st-1">✦</span>
+              <span class="shadow-star-twinkle st-2">✧</span>
+              <span class="shadow-star-twinkle st-3">⋆</span>
+              <span class="shadow-star-twinkle st-4">✦</span>
+              <span class="shadow-star-twinkle st-5">✧</span>
+              <span class="shadow-star-twinkle st-6">⋆</span>
+              <span class="shadow-star-twinkle st-7">✦</span>
+              <span class="shadow-star-twinkle st-8">✧</span>
+            </div>
+            <div class="shadow-mist-wisp mist-1"></div>
+            <div class="shadow-mist-wisp mist-2"></div>
+            <div class="shadow-mist-wisp mist-3"></div>
+            <div class="shadow-mist-wisp mist-4"></div>
+          </div>
+
+          <!-- LAYER 3: Pulsing Crystal Radiance, Bathing Pool Ripples & Crystal Stream Reflections -->
+          <div class="shadow-parallax-layer layer-shadow-ambient" data-parallax-depth="0.48" aria-hidden="true">
+            <!-- Soft Pulsing Blue-Violet & Silvery Crystal Glows on Buildings -->
+            <div class="shadow-crystal-glows">
+              <span class="shadow-crystal-pulse cr-tower"></span>
+              <span class="shadow-crystal-pulse cr-tower-win"></span>
+              <span class="shadow-crystal-pulse cr-gallery"></span>
+              <span class="shadow-crystal-pulse cr-observatory"></span>
+              <span class="shadow-crystal-pulse cr-gazebo"></span>
+              <span class="shadow-crystal-pulse cr-mailbox"></span>
+              <span class="shadow-crystal-pulse cr-right-cluster"></span>
+            </div>
+
+            <!-- Outdoor Bathing Pool Moonlit Shimmer & Concentric Ripples -->
+            <div class="shadow-pool-shimmer"></div>
+            <div class="shadow-water-effects">
+              <span class="shadow-pool-ring pr-1"></span>
+              <span class="shadow-pool-ring pr-2"></span>
+              <span class="shadow-pool-ring pr-3"></span>
+              <span class="shadow-river-ripple sr-1"></span>
+              <span class="shadow-river-ripple sr-2"></span>
+              <span class="shadow-river-ripple sr-3"></span>
+              <span class="shadow-river-ripple sr-4"></span>
+              <span class="shadow-waterfall-shimmer swf-left"></span>
+              <span class="shadow-waterfall-shimmer swf-center"></span>
+            </div>
+          </div>
+
+          <!-- LAYER 4: Floating Crystal Particles, Fireflies & Gently Swaying Hydrangea/Snowdrop Blossoms -->
+          <div class="shadow-parallax-layer layer-shadow-flora" data-parallax-depth="0.8" aria-hidden="true">
+            <!-- Gentle Breeze Shimmer on Hydrangea & Snowdrop Flower Fields -->
+            <div class="shadow-flower-sway-field">
+              <span class="shadow-flower-sway fs-hydrangea-1"></span>
+              <span class="shadow-flower-sway fs-hydrangea-2"></span>
+              <span class="shadow-flower-sway fs-hydrangea-3"></span>
+              <span class="shadow-flower-sway fs-snowdrop-1"></span>
+              <span class="shadow-flower-sway fs-snowdrop-2"></span>
+            </div>
+
+            <!-- Drifting Blue-Violet Hydrangea & White Snowdrop Petals -->
+            <div class="shadow-petals-field">
+              <span class="shadow-petal-drift sp-1"></span>
+              <span class="shadow-petal-drift sp-2"></span>
+              <span class="shadow-petal-drift sp-3"></span>
+              <span class="shadow-petal-drift sp-4"></span>
+              <span class="shadow-petal-drift sp-5"></span>
+              <span class="shadow-petal-drift sp-6"></span>
+            </div>
+
+            <!-- Floating Silvery-Violet Crystal Motes Near Crystal Structures -->
+            <div class="shadow-crystal-particles">
+              <span class="shadow-crystal-particle cp-1">❖</span>
+              <span class="shadow-crystal-particle cp-2">✧</span>
+              <span class="shadow-crystal-particle cp-3">❖</span>
+              <span class="shadow-crystal-particle cp-4">✦</span>
+              <span class="shadow-crystal-particle cp-5">❖</span>
+              <span class="shadow-crystal-particle cp-6">✧</span>
+              <span class="shadow-crystal-particle cp-7">✦</span>
+            </div>
+
+            <!-- Slow-Moving Fireflies Around the Hydrangea Meadow, Bathing Pool & Crystal Stream -->
+            <div class="shadow-fireflies-field">
+              <span class="shadow-firefly ff-1"></span>
+              <span class="shadow-firefly ff-2"></span>
+              <span class="shadow-firefly ff-3"></span>
+              <span class="shadow-firefly ff-4"></span>
+              <span class="shadow-firefly ff-5"></span>
+              <span class="shadow-firefly ff-6"></span>
+              <span class="shadow-firefly ff-7"></span>
+              <span class="shadow-firefly ff-8"></span>
+            </div>
+          </div>
+
+          <!-- TOP-LEFT HUD: Crescent Moon Emblem, Universe Title & Lele Character Identity Card -->
+          <div class="shadow-hud-topleft">
+            <div class="shadow-title-bar">
+              <button type="button" class="shadow-moon-orb" id="btn-shadow-back-top"
+                title="Kembali ke Pemilihan Tiga Universe" aria-label="Kembali ke pemilihan universe">
+                <span class="moon-orb-icon">☾</span>
+              </button>
+              <div class="shadow-title-text">
+                <h1 class="shadow-main-heading">SHADOW —</h1>
+                <p class="shadow-sub-heading">LELE'S UNIVERSE ✦</p>
+              </div>
+            </div>
+
+            <!-- Character Identity Card Overlay (Lele - The Eclipse Guardian) -->
+            <div class="shadow-char-card" id="shadow-char-card" title="Lele — The Eclipse Guardian (Crystal Moon Sanctuary)">
+              <div class="shadow-char-avatar-wrap">
+                <img src="/assets/chibi_lele_avatar.png" alt="Chibi Lele - The Eclipse Guardian"
+                  class="shadow-char-avatar" fetchpriority="low" width="76" height="76" />
+              </div>
+              <div class="shadow-char-info">
+                <h2 class="shadow-char-name"><span class="shadow-moon-symbol">✦</span> Lele</h2>
+                <p class="shadow-char-role">The Eclipse Guardian</p>
+                <p class="shadow-char-quote">Find your light in the darkness.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOP-RIGHT HUD: Greeting Pill & Quick Location Directory ("Mau ke mana dulu, Lele?") -->
+          <div class="shadow-hud-topright">
+            <div class="shadow-user-pill" id="shadow-user-pill">
+              <img src="/assets/chibi_lele_avatar.png" alt="Lele" class="shadow-user-avatar" id="shadow-user-avatar"
+                fetchpriority="low" width="42" height="42" />
+              <span class="shadow-user-greeting" id="shadow-user-greeting">Hello, Lele</span>
+              <span class="shadow-user-sparkle">✦ ☽</span>
+            </div>
+
+            <!-- Quick Directory Menu Matching Reference ("Mau ke mana dulu, Lele?") -->
+            <nav class="shadow-quick-menu" aria-label="Daftar Lokasi Dunia SHADOW">
+              <p class="shadow-quick-title">Mau ke mana dulu,<br>Lele?</p>
+              <button type="button" class="shadow-quick-item" data-shadow-nav="rumah_kristal">
+                <span class="sq-icon">🏰</span>
+                <span>Rumah Kristal</span>
+              </button>
+              <button type="button" class="shadow-quick-item" data-shadow-nav="galeri_seni">
+                <span class="sq-icon">🖼</span>
+                <span>Galeri Seni</span>
+              </button>
+              <button type="button" class="shadow-quick-item" data-shadow-nav="teleskop">
+                <span class="sq-icon">🔭</span>
+                <span>Teleskop</span>
+              </button>
+              <button type="button" class="shadow-quick-item" data-shadow-nav="gazebo">
+                <span class="sq-icon">🏛</span>
+                <span>Gazebo</span>
+              </button>
+              <button type="button" class="shadow-quick-item" data-shadow-nav="ladang_bunga">
+                <span class="sq-icon">🌸</span>
+                <span>Ladang Bunga (Hydrangea)</span>
+              </button>
+              <button type="button" class="shadow-quick-item" data-shadow-nav="kolam_berendam">
+                <span class="sq-icon">💧</span>
+                <span>Kolam &amp; Sungai Kristal</span>
+              </button>
+              <button type="button" class="shadow-quick-item" data-shadow-nav="kotak_pos">
+                <span class="sq-icon">✉</span>
+                <span>Kotak Pos</span>
+              </button>
+            </nav>
+          </div>
+
+          <!-- ==================================================== -->
+          <!-- INTERACTIVE 2D WORLD HOTSPOTS (CRYSTAL MOON SANCTUARY)-->
+          <!-- ==================================================== -->
+
+          <!-- A. MENARA KRISTAL — RUMAH LELE -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-rumah" data-shadow-loc="rumah_kristal"
+            aria-label="Lokasi A: Menara Kristal - Rumah Lele">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">☾</span>
+              <span class="shadow-pill-text">Rumah<br>Kristal</span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Masuk ke Menara Kristal — Rumah Lele</span>
+          </button>
+
+          <!-- B. OBSERVATORIUM KRISTAL — TELESKOP -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-teleskop" data-shadow-loc="teleskop"
+            aria-label="Lokasi B: Observatorium Kristal - Teleskop">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">🔭</span>
+              <span class="shadow-pill-text">Teleskop</span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Amati bulan sabit &amp; bintang malam</span>
+          </button>
+
+          <!-- C. GAZEBO KRISTAL -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-gazebo" data-shadow-loc="gazebo"
+            aria-label="Lokasi C: Gazebo Kristal">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">💎</span>
+              <span class="shadow-pill-text">Gazebo</span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Bersantai di Gazebo Kristal tepi sungai</span>
+          </button>
+
+          <!-- D. KOTAK POS KRISTAL -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-kotakpos" data-shadow-loc="kotak_pos"
+            aria-label="Lokasi D: Kotak Pos Kristal">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">✉</span>
+              <span class="shadow-pill-text">Kotak Pos</span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Periksa surat sahabat di Kotak Pos Kristal</span>
+          </button>
+
+          <!-- E. LADANG BUNGA (HYDRANGEA & SNOWDROP) -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-bunga" data-shadow-loc="ladang_bunga"
+            aria-label="Lokasi E: Ladang Bunga Hydrangea dan Snowdrop">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">🌸</span>
+              <span class="shadow-pill-text">Ladang Bunga<br><small>(Hydrangea)</small></span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Jelajahi Ladang Hydrangea &amp; Snowdrop</span>
+          </button>
+
+          <!-- F1. KOLAM BERENDAM KRISTAL -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-kolam" data-shadow-loc="kolam_berendam"
+            aria-label="Lokasi F: Kolam Berendam dan Sungai Kristal">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">💧</span>
+              <span class="shadow-pill-text">Kolam<br>Berendam</span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Berendam tenang di bawah pantulan cahaya bulan</span>
+          </button>
+
+          <!-- F2. SUNGAI KRISTAL -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-sungai" data-shadow-loc="sungai_kristal"
+            aria-label="Lokasi F: Sungai Kristal">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">✧</span>
+              <span class="shadow-pill-text">Sungai Kristal</span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Nikmati aliran Sungai Kristal berbintang</span>
+          </button>
+
+          <!-- G. GALERI SENI KRISTAL -->
+          <button type="button" class="shadow-hotspot hotspot-shadow-galeri" data-shadow-loc="galeri_seni"
+            aria-label="Lokasi G: Galeri Seni Kristal">
+            <span class="shadow-building-zone" aria-hidden="true"></span>
+            <span class="shadow-loc-pill">
+              <span class="shadow-pill-icon">🎨</span>
+              <span class="shadow-pill-text">Galeri Seni</span>
+            </span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Lihat pajangan lukisan malam di Galeri Seni</span>
+          </button>
+
+          <!-- INTERACTIVE CHIBI LELE ON THE COBBLESTONE PATH (WITH DARK ECLIPSE WINGS & CRYSTAL AURA) -->
+          <button type="button" class="shadow-chibi-actor" id="shadow-chibi-actor"
+            aria-label="Sapa Chibi Lele — The Eclipse Guardian di jalan setapak Crystal Moon Sanctuary">
+            <span class="shadow-speech-bubble" id="shadow-chibi-bubble">Selamat datang di Crystal Moon Sanctuary! Pilih lokasi kristal untuk dijelajahi 🌙💎</span>
+            <span class="shadow-lele-wings" aria-hidden="true">
+              <span class="lele-wing wing-left"></span>
+              <span class="lele-wing wing-right"></span>
+            </span>
+            <span class="shadow-chibi-ring" aria-hidden="true"></span>
+          </button>
+
+          <!-- BOTTOM-RIGHT BACK BUTTON -->
+          <button type="button" class="shadow-back-btn" id="btn-shadow-back"
+            aria-label="Kembali ke halaman pemilihan universe">
+            <span>←</span>
+            <span>Kembali ke Universe</span>
+          </button>
+
+          <!-- COMPACT INTERACTIVE LOCATION DETAIL PANEL (SHADOW THEME) -->
+          <aside class="shadow-location-panel" id="shadow-location-panel" role="dialog" aria-modal="false"
+            aria-labelledby="shadow-loc-title" aria-hidden="true">
+            <div class="shadow-panel-header">
+              <div class="shadow-panel-badge-row">
+                <span class="shadow-panel-icon" id="shadow-loc-icon">🏰</span>
+                <div>
+                  <span class="shadow-panel-tag" id="shadow-loc-tag">CRYSTAL MOON SANCTUARY · SHADOW</span>
+                  <h3 class="shadow-panel-title" id="shadow-loc-title">Menara Kristal — Rumah Lele</h3>
+                </div>
+              </div>
+              <button type="button" class="shadow-panel-close" id="btn-close-shadow-panel"
+                aria-label="Tutup panel lokasi">✕</button>
+            </div>
+
+            <p class="shadow-panel-subtitle" id="shadow-loc-subtitle">Menara Kristal Transparan Berornamen Bulan Sabit</p>
+            <p class="shadow-panel-desc" id="shadow-loc-desc">
+              Deskripsi singkat lokasi...
+            </p>
+
+            <div class="shadow-panel-highlight" id="shadow-loc-highlight">
+              🌙 Cahaya kristal biru-ungu &amp; keperakan bersinar tenang di malam berbintang.
+            </div>
+
+            <div class="shadow-panel-actions">
+              <button type="button" class="shadow-panel-btn primary" id="btn-shadow-loc-action">
+                <span>☾</span>
+                <span id="btn-shadow-loc-action-label">Jelajahi Lokasi</span>
+              </button>
+              <button type="button" class="shadow-panel-btn secondary" id="btn-shadow-panel-dismiss">
+                Tutup
+              </button>
+            </div>
+          </aside>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- UNIVERSES INTERACTIVE MODALS                   -->
+      <!-- ============================================== -->
+
+      <!-- 1. UNIVERSE EXPLORER MODAL -->
+      <div class="univ-modal-overlay" id="univ-modal-explorer" role="dialog" aria-modal="true"
+        aria-labelledby="univ-modal-title">
+        <div class="univ-modal-card">
+          <div class="univ-modal-header">
+            <div class="univ-modal-title-row">
+              <img src="/assets/avatar_nyanya_hd.png" alt="Nyanya - The Moonlit Shadow Witch" id="univ-modal-avatar"
+                class="univ-modal-avatar" />
+              <div>
+                <h3 class="univ-modal-title" id="univ-modal-title">★ KIDULT</h3>
+                <div class="univ-modal-owner" id="univ-modal-owner">NYANYA'S UNIVERSE</div>
+                <div class="univ-modal-char-meta" style="font-size: 0.8rem; color: #e9d5ff; margin-top: 0.15rem;">
+                  <strong id="univ-modal-char-name">Nyanya</strong> · <span id="univ-modal-char-role">The Moonlit Shadow
+                    Witch</span>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="univ-modal-close" data-close-univ-modal aria-label="Tutup dialog">✕</button>
+          </div>
+
+          <p id="univ-modal-quote"
+            style="font-family: 'Alex Brush', cursive; font-size: 1.5rem; color: #fce7f3; margin-top: 0; margin-bottom: 0.8rem; text-align: center;">
+            "Same sky, different shadows."</p>
+
+          <div class="univ-modal-desc-box" id="univ-modal-desc">
+            Deskripsi dunia fantasi karakter...
+          </div>
+
+          <div class="univ-modal-actions-grid">
+            <button type="button" class="univ-action-tile" id="btn-modal-open-orbit">
+              <span class="tile-icon">🪐</span>
+              <span>Our Little Orbit</span>
+            </button>
+            <button type="button" class="univ-action-tile" id="btn-modal-open-moments">
+              <span class="tile-icon">📸</span>
+              <span>Our Little Moments</span>
+            </button>
+            <button type="button" class="univ-action-tile" id="btn-modal-visit-town">
+              <span class="tile-icon">🏰</span>
+              <span>Kunjungi Kota 2D</span>
+            </button>
+            <button type="button" class="univ-action-tile" id="btn-modal-switch-char">
+              <span class="tile-icon">✧</span>
+              <span>Pilih Sesi Ini</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. INFO MODAL (MESSAGES & GAMES) -->
+      <div class="univ-modal-overlay" id="univ-modal-info" role="dialog" aria-modal="true"
+        aria-labelledby="univ-info-title">
+        <div class="univ-modal-card" style="max-width: 480px;">
+          <div class="univ-modal-header">
+            <h3 class="univ-modal-title" id="univ-info-title">Info Fitur</h3>
+            <button type="button" class="univ-modal-close" data-close-univ-modal aria-label="Tutup dialog">✕</button>
+          </div>
+
+          <div class="univ-modal-desc-box" id="univ-info-desc" style="font-size: 0.95rem; line-height: 1.65;">
+            Deskripsi fitur...
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="button" class="univ-nav-btn active" data-close-univ-modal style="padding: 0.6rem 1.4rem;">
+              Mengerti ✦
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
       <!-- VIEW 4: OUR LITTLE ORBIT (SHARED CALENDAR)     -->
       <!-- ============================================== -->
-      <section class="view-section view-orbit" id="view-orbit" aria-label="Our Little Orbit Calendar" aria-hidden="true">
-        
+      <section class="view-section view-orbit" id="view-orbit" aria-label="Our Little Orbit Calendar"
+        aria-hidden="true">
+
         <!-- Orbit Top Bar -->
         <header class="orbit-top-bar">
           <div class="orbit-brand-group">
@@ -443,13 +1460,16 @@
               <span>Melihat sebagai: <strong id="orbit-viewer-name">Nyanya</strong></span>
             </div>
 
-            <button type="button" class="btn-nav-universe" id="btn-orbit-goto-moments" aria-label="Buka Our Little Moments" style="background: rgba(244, 114, 182, 0.18); border-color: rgba(244, 114, 182, 0.4); color: #fce7f3;">
+            <button type="button" class="btn-nav-universe" id="btn-orbit-goto-moments"
+              aria-label="Buka Our Little Moments"
+              style="background: rgba(244, 114, 182, 0.18); border-color: rgba(244, 114, 182, 0.4); color: #fce7f3;">
               <span>📸</span>
               <span>Our Little Moments</span>
             </button>
 
             <!-- Return Button to Universe -->
-            <button type="button" class="btn-nav-universe" id="btn-orbit-back-universe" aria-label="Kembali ke Universe">
+            <button type="button" class="btn-nav-universe" id="btn-orbit-back-universe"
+              aria-label="Kembali ke Universe">
               <span>←</span>
               <span>Kembali ke Universe</span>
             </button>
@@ -458,10 +1478,10 @@
 
         <!-- Main Planner Layout: Calendar + Sidebar -->
         <div class="orbit-layout-grid">
-          
+
           <!-- LEFT COLUMN: Calendar & Controls -->
           <div class="orbit-calendar-column">
-            
+
             <!-- Controls Card -->
             <div class="calendar-controls-card">
               <!-- Month Navigator -->
@@ -474,7 +1494,8 @@
 
               <!-- View Mode Toggles -->
               <div class="view-mode-toggles">
-                <button type="button" class="btn-toggle-view active" id="btn-view-month" data-mode="month">Bulanan</button>
+                <button type="button" class="btn-toggle-view active" id="btn-view-month"
+                  data-mode="month">Bulanan</button>
                 <button type="button" class="btn-toggle-view" id="btn-view-week" data-mode="week">Mingguan</button>
               </div>
             </div>
@@ -533,7 +1554,7 @@
 
           <!-- RIGHT COLUMN: Sidebar (Actions, Meeting Invites, Upcoming Agendas) -->
           <aside class="orbit-sidebar-column">
-            
+
             <!-- Quick Actions -->
             <div class="sidebar-action-group">
               <button type="button" class="btn-orbit-primary" id="btn-open-create-event">
@@ -585,7 +1606,8 @@
       <!-- ============================================== -->
 
       <!-- 1. MODAL: BUAT KEGIATAN -->
-      <div class="orbit-modal-overlay" id="modal-create-event" role="dialog" aria-modal="true" aria-labelledby="title-create-event">
+      <div class="orbit-modal-overlay" id="modal-create-event" role="dialog" aria-modal="true"
+        aria-labelledby="title-create-event">
         <div class="orbit-modal-card">
           <div class="modal-header-row">
             <div class="modal-title-group">
@@ -598,7 +1620,8 @@
           <form class="modal-form" id="form-create-event">
             <div class="input-field-group">
               <label for="event-title-input" class="input-label">Nama Kegiatan</label>
-              <input type="text" id="event-title-input" class="form-input" placeholder="Contoh: Nonton Konser Virtual, Belajar Bareng..." required />
+              <input type="text" id="event-title-input" class="form-input"
+                placeholder="Contoh: Nonton Konser Virtual, Belajar Bareng..." required />
             </div>
 
             <div class="input-field-group">
@@ -624,12 +1647,14 @@
 
             <div class="input-field-group">
               <label for="event-loc-input" class="input-label">Tempat / Ruang</label>
-              <input type="text" id="event-loc-input" class="form-input" placeholder="Contoh: Our Room Lounge, Google Meet, Rumah..." />
+              <input type="text" id="event-loc-input" class="form-input"
+                placeholder="Contoh: Our Room Lounge, Google Meet, Rumah..." />
             </div>
 
             <div class="input-field-group">
               <label for="event-desc-input" class="input-label">Catatan / Rencana</label>
-              <textarea id="event-desc-input" class="form-textarea" placeholder="Tambahkan detail, ide seru, atau pengingat..."></textarea>
+              <textarea id="event-desc-input" class="form-textarea"
+                placeholder="Tambahkan detail, ide seru, atau pengingat..."></textarea>
             </div>
 
             <div class="modal-actions-row">
@@ -641,7 +1666,8 @@
       </div>
 
       <!-- 2. MODAL: AJUKAN MEETING JARAK JAUH -->
-      <div class="orbit-modal-overlay" id="modal-propose-meeting" role="dialog" aria-modal="true" aria-labelledby="title-propose-meeting">
+      <div class="orbit-modal-overlay" id="modal-propose-meeting" role="dialog" aria-modal="true"
+        aria-labelledby="title-propose-meeting">
         <div class="orbit-modal-card">
           <div class="modal-header-row">
             <div class="modal-title-group">
@@ -654,7 +1680,8 @@
           <form class="modal-form" id="form-propose-meeting">
             <div class="input-field-group">
               <label for="meeting-title-input" class="input-label">Agenda / Topik Meeting</label>
-              <input type="text" id="meeting-title-input" class="form-input" placeholder="Contoh: Evaluasi Proyek, Tukar Cerita Bulanan..." required />
+              <input type="text" id="meeting-title-input" class="form-input"
+                placeholder="Contoh: Evaluasi Proyek, Tukar Cerita Bulanan..." required />
             </div>
 
             <div class="form-grid-2">
@@ -670,12 +1697,14 @@
 
             <div class="input-field-group">
               <label for="meeting-loc-input" class="input-label">Platform Meeting</label>
-              <input type="text" id="meeting-loc-input" class="form-input" placeholder="Contoh: Google Meet, Discord Voice, Zoom..." value="Google Meet" />
+              <input type="text" id="meeting-loc-input" class="form-input"
+                placeholder="Contoh: Google Meet, Discord Voice, Zoom..." value="Google Meet" />
             </div>
 
             <div class="input-field-group">
               <label for="meeting-desc-input" class="input-label">Deskripsi & Catatan Undangan</label>
-              <textarea id="meeting-desc-input" class="form-textarea" placeholder="Jelaskan hal-hal yang ingin dibahas bersama..."></textarea>
+              <textarea id="meeting-desc-input" class="form-textarea"
+                placeholder="Jelaskan hal-hal yang ingin dibahas bersama..."></textarea>
             </div>
 
             <div class="modal-actions-row">
@@ -687,7 +1716,8 @@
       </div>
 
       <!-- 3. MODAL: DETAIL KEGIATAN -->
-      <div class="orbit-modal-overlay" id="modal-event-detail" role="dialog" aria-modal="true" aria-labelledby="detail-event-title">
+      <div class="orbit-modal-overlay" id="modal-event-detail" role="dialog" aria-modal="true"
+        aria-labelledby="detail-event-title">
         <div class="orbit-modal-card">
           <div class="modal-header-row">
             <div class="modal-title-group">
@@ -722,7 +1752,9 @@
 
           <div class="input-field-group">
             <label class="input-label">Catatan Kegiatan</label>
-            <p id="detail-event-desc" style="font-size: 0.88rem; color: #e2d9f3; line-height: 1.5; background: rgba(255,255,255,0.04); padding: 0.8rem 1rem; border-radius: 10px;">-</p>
+            <p id="detail-event-desc"
+              style="font-size: 0.88rem; color: #e2d9f3; line-height: 1.5; background: rgba(255,255,255,0.04); padding: 0.8rem 1rem; border-radius: 10px;">
+              -</p>
           </div>
 
           <!-- Responses summary if meeting -->
@@ -740,7 +1772,8 @@
       </div>
 
       <!-- 4. MODAL: ALASAN PENOLAKAN MEETING -->
-      <div class="orbit-modal-overlay" id="modal-reject-reason" role="dialog" aria-modal="true" aria-labelledby="title-reject-reason">
+      <div class="orbit-modal-overlay" id="modal-reject-reason" role="dialog" aria-modal="true"
+        aria-labelledby="title-reject-reason">
         <div class="orbit-modal-card">
           <div class="modal-header-row">
             <div class="modal-title-group">
@@ -757,19 +1790,22 @@
             </p>
             <div class="input-field-group">
               <label for="reject-note-input" class="input-label">Alasan / Catatan</label>
-              <textarea id="reject-note-input" class="form-textarea" placeholder="Contoh: Ada jadwal ujian dadakan / ada acara keluarga..." required></textarea>
+              <textarea id="reject-note-input" class="form-textarea"
+                placeholder="Contoh: Ada jadwal ujian dadakan / ada acara keluarga..." required></textarea>
             </div>
 
             <div class="modal-actions-row">
               <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
-              <button type="submit" class="btn-modal-submit" style="background: linear-gradient(135deg, #e11d48, #be123c);">Kirim Alasan & Tolak</button>
+              <button type="submit" class="btn-modal-submit"
+                style="background: linear-gradient(135deg, #e11d48, #be123c);">Kirim Alasan & Tolak</button>
             </div>
           </form>
         </div>
       </div>
 
       <!-- 5. MODAL: USULKAN WAKTU ALTERNATIF -->
-      <div class="orbit-modal-overlay" id="modal-propose-alt" role="dialog" aria-modal="true" aria-labelledby="title-propose-alt">
+      <div class="orbit-modal-overlay" id="modal-propose-alt" role="dialog" aria-modal="true"
+        aria-labelledby="title-propose-alt">
         <div class="orbit-modal-card">
           <div class="modal-header-row">
             <div class="modal-title-group">
@@ -798,12 +1834,14 @@
 
             <div class="input-field-group">
               <label for="alt-note-input" class="input-label">Alasan / Catatan Waktu Baru</label>
-              <textarea id="alt-note-input" class="form-textarea" placeholder="Contoh: Jam ini saya sudah selesai kelas/kerja..." required></textarea>
+              <textarea id="alt-note-input" class="form-textarea"
+                placeholder="Contoh: Jam ini saya sudah selesai kelas/kerja..." required></textarea>
             </div>
 
             <div class="modal-actions-row">
               <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
-              <button type="submit" class="btn-modal-submit" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">Kirim Usulan Waktu ✦</button>
+              <button type="submit" class="btn-modal-submit"
+                style="background: linear-gradient(135deg, #7c3aed, #a855f7);">Kirim Usulan Waktu ✦</button>
             </div>
           </form>
         </div>
@@ -812,8 +1850,9 @@
       <!-- ============================================== -->
       <!-- VIEW 5: OUR LITTLE MOMENTS (SCRAPBOOK & STORIES) -->
       <!-- ============================================== -->
-      <section class="view-section view-moments" id="view-moments" aria-label="Our Little Moments Scrapbook" aria-hidden="true">
-        
+      <section class="view-section view-moments" id="view-moments" aria-label="Our Little Moments Scrapbook"
+        aria-hidden="true">
+
         <!-- Moments Top Bar -->
         <header class="moments-top-bar">
           <div class="moments-brand-group">
@@ -838,13 +1877,15 @@
             </button>
 
             <!-- Quick Link to Orbit -->
-            <button type="button" class="btn-quick-orbit" id="btn-moments-goto-orbit" title="Buka Kalender Bersama Our Little Orbit">
+            <button type="button" class="btn-quick-orbit" id="btn-moments-goto-orbit"
+              title="Buka Kalender Bersama Our Little Orbit">
               <span>🪐</span>
               <span>Our Little Orbit</span>
             </button>
 
             <!-- Return Button to Universe -->
-            <button type="button" class="btn-nav-return" id="btn-moments-back-universe" aria-label="Kembali ke Universe">
+            <button type="button" class="btn-nav-return" id="btn-moments-back-universe"
+              aria-label="Kembali ke Universe">
               <span>←</span>
               <span>Kembali</span>
             </button>
@@ -868,7 +1909,7 @@
 
         <!-- Moments Scrapbook Feed -->
         <div class="moments-feed-container">
-          
+
           <!-- Filter Bar -->
           <div class="moments-filter-bar">
             <div class="filter-pills-group" role="tablist" aria-label="Filter Scrapbook">
@@ -904,9 +1945,10 @@
       <!-- ============================================== -->
 
       <!-- 1. FULLSCREEN STORY VIEWER MODAL -->
-      <div class="story-viewer-overlay" id="story-viewer-overlay" role="dialog" aria-modal="true" aria-labelledby="story-header-name">
+      <div class="story-viewer-overlay" id="story-viewer-overlay" role="dialog" aria-modal="true"
+        aria-labelledby="story-header-name">
         <div class="story-viewer-card" id="story-viewer-card">
-          
+
           <!-- Progress Bar at Top -->
           <div class="story-progress-bar-container" id="story-progress-container">
             <!-- Segments injected dynamically -->
@@ -915,7 +1957,8 @@
           <!-- Story Header -->
           <div class="story-viewer-header">
             <div class="story-viewer-author">
-              <img src="/assets/portrait_nyanya_hd_2x.png" alt="Author" id="story-header-avatar" class="story-header-avatar" />
+              <img src="/assets/portrait_nyanya_hd_2x.png" alt="Author" id="story-header-avatar"
+                class="story-header-avatar" />
               <div class="story-header-meta">
                 <span class="story-header-name" id="story-header-name">Nyanya</span>
                 <span class="story-header-time" id="story-header-time">2 jam lalu</span>
@@ -932,8 +1975,9 @@
 
           <!-- Image & Navigation Click Zones -->
           <div class="story-image-container">
-            <img src="/assets/moment_coffee_study.jpg" alt="Story Moment" id="story-main-image" class="story-main-image" />
-            
+            <img src="/assets/moment_coffee_study.jpg" alt="Story Moment" id="story-main-image"
+              class="story-main-image" />
+
             <!-- Click zones for easy tap on mobile and desktop -->
             <div class="story-nav-zone prev" id="story-zone-prev" title="Story Sebelumnya"></div>
             <div class="story-nav-zone next" id="story-zone-next" title="Story Berikutnya"></div>
@@ -957,7 +2001,8 @@
       </div>
 
       <!-- 2. MODAL UPLOAD MOMEN BARU -->
-      <div class="modal-upload-overlay" id="modal-upload-moment" role="dialog" aria-modal="true" aria-labelledby="title-upload-moment">
+      <div class="modal-upload-overlay" id="modal-upload-moment" role="dialog" aria-modal="true"
+        aria-labelledby="title-upload-moment">
         <div class="modal-upload-card">
           <div class="modal-header-row">
             <div class="modal-title-group">
@@ -973,7 +2018,8 @@
 
             <!-- Dropzone / Image Preview Area -->
             <div class="upload-dropzone" id="upload-dropzone" title="Klik atau seret foto ke sini">
-              <div id="dropzone-prompt" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+              <div id="dropzone-prompt"
+                style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
                 <span class="dropzone-icon">📷</span>
                 <span class="dropzone-label">Pilih Foto dari Perangkat</span>
                 <span class="dropzone-sub">Klik atau seret file gambar JPG, PNG, atau WebP</span>
@@ -1009,12 +2055,15 @@
             <!-- Caption -->
             <div class="input-field-group">
               <label for="moment-caption-input" class="input-label">Cerita / Caption Momen</label>
-              <textarea id="moment-caption-input" class="form-textarea" placeholder="Tuliskan sepotong ceritamu hari ini, hal kecil yang membuatmu tersenyum..." rows="3"></textarea>
+              <textarea id="moment-caption-input" class="form-textarea"
+                placeholder="Tuliskan sepotong ceritamu hari ini, hal kecil yang membuatmu tersenyum..."
+                rows="3"></textarea>
             </div>
 
             <div class="modal-actions-row">
               <button type="button" class="btn-modal-cancel" data-close-modal>Batal</button>
-              <button type="submit" class="btn-modal-submit" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">Bagikan Momen ✦</button>
+              <button type="submit" class="btn-modal-submit"
+                style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">Bagikan Momen ✦</button>
             </div>
           </form>
         </div>
@@ -1034,4 +2083,5 @@
 
   <script type="module" src="/main.js"></script>
 </body>
+
 </html>

@@ -18,6 +18,7 @@ import { initOrbitView } from './orbit_view.js';
 import { setActiveUserCharacter } from './orbit.js';
 import { initMomentsView } from './moments_view.js';
 import { setActiveUserCharacter as setActiveUserMoments } from './moments.js';
+import { initUniversesView } from './universes_view.js';
 
 
 
@@ -26,14 +27,16 @@ const CHARACTERS = {
   nyanya: {
     id: 'nyanya',
     name: 'Nyanya',
-    role: 'Moonlit Shadow Witch',
-    symbol: '☾',
+    role: 'The Moonlit Shadow Witch',
+    symbol: '★',
     themeClass: 'theme-nyanya',
     portrait: '/assets/portrait_nyanya_hd_2x.png',
     cardImg: '/assets/card_nyanya_hd_2x.png',
+    avatar: '/assets/avatar_nyanya_hd.png',
     greeting: 'Selamat datang, Nyanya ✦',
     accentColor: '#c084fc',
-    universe: 'SHADOW'
+    universe: 'KIDULT',
+    ownerName: 'Alenda'
   },
   lala: {
     id: 'lala',
@@ -43,9 +46,11 @@ const CHARACTERS = {
     themeClass: 'theme-lala',
     portrait: '/assets/portrait_lala_hd_2x.png',
     cardImg: '/assets/card_lala_hd_2x.png',
+    avatar: '/assets/avatar_lala_hd.png',
     greeting: 'Selamat datang, Lala ✦',
     accentColor: '#f472b6',
-    universe: 'TO YOU'
+    universe: 'TO YOU',
+    ownerName: 'Bella'
   },
   lele: {
     id: 'lele',
@@ -55,9 +60,11 @@ const CHARACTERS = {
     themeClass: 'theme-lele',
     portrait: '/assets/portrait_lele_hd_2x.png',
     cardImg: '/assets/card_lele_hd_2x.png',
+    avatar: '/assets/avatar_lele_hd.png',
     greeting: 'Selamat datang, Lele ✦',
     accentColor: '#818cf8',
-    universe: 'KIDULT'
+    universe: 'SHADOW',
+    ownerName: 'Vanya'
   }
 };
 
@@ -65,6 +72,7 @@ const CHARACTERS = {
 let activeCharacterKey = null;
 let currentAuthenticatedUser = null;
 let isSubmitting = false;
+let isPreviewingUniverses = false;
 
 // DOM Elements: Views
 const viewSelection = document.getElementById('view-selection');
@@ -110,11 +118,12 @@ const auditUid = document.getElementById('audit-uid');
 const auditUniverse = document.getElementById('audit-universe');
 
 // Initialize Application
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   initStarsCanvas();
   setupEventListeners();
   initAuthObserver();
-  initOrbitView({
+  
+  window.orbitController = initOrbitView({
     onShowToast: showToast,
     onTriggerSparkle: (x, y) => {
       if (typeof window.triggerSparkleBurst === 'function') {
@@ -122,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-  initMomentsView({
+
+  window.momentsController = initMomentsView({
     onShowToast: showToast,
     onTriggerSparkle: (x, y) => {
       if (typeof window.triggerSparkleBurst === 'function') {
@@ -130,7 +140,56 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-});
+
+  window.universesController = initUniversesView({
+    onShowToast: showToast,
+    onTriggerSparkle: (x, y) => {
+      if (typeof window.triggerSparkleBurst === 'function') {
+        window.triggerSparkleBurst(x, y);
+      }
+    },
+    onNavigateOrbit: (fromView) => {
+      if (window.orbitController && typeof window.orbitController.openOrbit === 'function') {
+        window.orbitController.openOrbit(fromView);
+      }
+    },
+    onNavigateMoments: (fromView) => {
+      if (window.momentsController && typeof window.momentsController.openMoments === 'function') {
+        window.momentsController.openMoments(fromView);
+      }
+    },
+    onSwitchCharacter: (charKey) => {
+      if (charKey && CHARACTERS[charKey]) {
+        selectCharacter(charKey);
+      } else {
+        returnToSelection();
+      }
+    },
+    onLogout: handleLogout
+  });
+
+  // Setup preview button on Selection page
+  const btnGotoUniverses = document.getElementById('btn-goto-universes-preview');
+  if (btnGotoUniverses) {
+    btnGotoUniverses.addEventListener('click', () => {
+      showUniversesView();
+    });
+  }
+
+  const univBrandLogo = document.getElementById('univ-brand-logo');
+  if (univBrandLogo) {
+    univBrandLogo.addEventListener('click', (e) => {
+      e.preventDefault();
+      showToast('✧ Our Little Universe: Tiga dunia, satu langit persahabatan ✧');
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
 
 // Setup Firebase Authentication State Observer
@@ -156,7 +215,7 @@ function initAuthObserver() {
           return;
         }
       }
-    } else {
+    } else if (!isPreviewingUniverses) {
       // If signed out, ensure private universe view is locked down
       lockdownPrivateUniverse();
     }
@@ -299,6 +358,21 @@ function returnToSelection() {
   if (viewPrivateUniverse) {
     viewPrivateUniverse.classList.remove('active');
     viewPrivateUniverse.setAttribute('aria-hidden', 'true');
+  }
+  const viewKidult = document.getElementById('view-kidult-world');
+  if (viewKidult) {
+    viewKidult.classList.remove('active');
+    viewKidult.setAttribute('aria-hidden', 'true');
+  }
+  const viewToYou = document.getElementById('view-toyou-world');
+  if (viewToYou) {
+    viewToYou.classList.remove('active');
+    viewToYou.setAttribute('aria-hidden', 'true');
+  }
+  const viewShadow = document.getElementById('view-shadow-world');
+  if (viewShadow) {
+    viewShadow.classList.remove('active');
+    viewShadow.setAttribute('aria-hidden', 'true');
   }
 
   setTimeout(() => {
@@ -487,6 +561,58 @@ function renderPrivateUniverse(user, characterConfig) {
 
   viewPrivateUniverse.classList.add('active');
   viewPrivateUniverse.setAttribute('aria-hidden', 'false');
+
+  // Update Universes Profile display
+  if (window.universesController && typeof window.universesController.updateUserProfile === 'function') {
+    window.universesController.updateUserProfile(characterConfig.id);
+  }
+}
+
+// Helper to open Universes view anytime
+function showUniversesView() {
+  isPreviewingUniverses = true;
+  if (viewSelection) {
+    viewSelection.classList.remove('active');
+    viewSelection.setAttribute('aria-hidden', 'true');
+  }
+  if (viewLogin) {
+    viewLogin.classList.remove('active');
+    viewLogin.setAttribute('aria-hidden', 'true');
+  }
+  const viewOrbit = document.getElementById('view-orbit');
+  if (viewOrbit) {
+    viewOrbit.classList.remove('active');
+    viewOrbit.setAttribute('aria-hidden', 'true');
+  }
+  const viewMoments = document.getElementById('view-moments');
+  if (viewMoments) {
+    viewMoments.classList.remove('active');
+    viewMoments.setAttribute('aria-hidden', 'true');
+  }
+  const viewKidult = document.getElementById('view-kidult-world');
+  if (viewKidult) {
+    viewKidult.classList.remove('active');
+    viewKidult.setAttribute('aria-hidden', 'true');
+  }
+  const viewToYou = document.getElementById('view-toyou-world');
+  if (viewToYou) {
+    viewToYou.classList.remove('active');
+    viewToYou.setAttribute('aria-hidden', 'true');
+  }
+  const viewShadow = document.getElementById('view-shadow-world');
+  if (viewShadow) {
+    viewShadow.classList.remove('active');
+    viewShadow.setAttribute('aria-hidden', 'true');
+  }
+
+  if (viewPrivateUniverse) {
+    viewPrivateUniverse.classList.add('active');
+    viewPrivateUniverse.setAttribute('aria-hidden', 'false');
+  }
+
+  if (window.universesController && typeof window.universesController.updateUserProfile === 'function') {
+    window.universesController.updateUserProfile(activeCharacterKey || 'nyanya');
+  }
 }
 
 // Lockdown Private Universe (If user logs out or session is terminated)
@@ -510,6 +636,7 @@ function lockdownPrivateUniverse() {
 // Handle Logout
 async function handleLogout() {
   try {
+    isPreviewingUniverses = false;
     await logoutFirebase();
     currentAuthenticatedUser = null;
     activeCharacterKey = null;

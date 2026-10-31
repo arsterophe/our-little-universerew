@@ -14,10 +14,10 @@ export const INITIAL_STORIES = [
     id: 'story-nyanya-1',
     author: 'nyanya',
     authorName: 'Nyanya',
-    authorRole: 'Moonlit Shadow Witch',
-    avatar: '/assets/portrait_nyanya_hd_2x.png',
+    authorRole: 'The Moonlit Shadow Witch',
+    avatar: '/assets/avatar_nyanya_hd.png',
     photoUrl: '/assets/moment_coffee_study.jpg',
-    caption: 'Seduh latte hangat bertabur bintang sambil nulis jurnal & mantra malam ☾✨ Menemani revisi portofolio bab 3!',
+    caption: 'Seduh latte hangat bertabur bintang sambil nulis jurnal & mantra malam ⭐✨ Menemani revisi portofolio bab 3!',
     timestamp: Date.now() - 2.5 * 3600 * 1000, // 2.5 hours ago
     timeAgo: '2 jam lalu',
     viewed: false,
@@ -29,7 +29,7 @@ export const INITIAL_STORIES = [
     author: 'lala',
     authorName: 'Lala',
     authorRole: 'The Everglow Fairy',
-    avatar: '/assets/portrait_lala_hd_2x.png',
+    avatar: '/assets/avatar_lala_hd.png',
     photoUrl: '/assets/moment_fairy_tea.jpg',
     caption: 'Pesta teh mungil di taman mawar bareng macarons lavender buatan sendiri 🌸🍰 Manisnya pas banget!',
     timestamp: Date.now() - 6 * 3600 * 1000, // 6 hours ago
@@ -48,8 +48,8 @@ export const INITIAL_MOMENTS = [
     id: 'moment-1',
     author: 'nyanya',
     authorName: 'Nyanya (Alenda)',
-    authorRole: 'Moonlit Shadow Witch',
-    authorAvatar: '/assets/portrait_nyanya_hd_2x.png',
+    authorRole: 'The Moonlit Shadow Witch',
+    authorAvatar: '/assets/avatar_nyanya_hd.png',
     photoUrl: '/assets/moment_coffee_study.jpg',
     timestamp: 'Hari ini, 16:40 WIB',
     createdAt: Date.now() - 2 * 3600 * 1000,
@@ -57,14 +57,14 @@ export const INITIAL_MOMENTS = [
     likes: 14,
     likedByMe: false,
     isArchived: true,
-    location: 'Universe SHADOW Studio'
+    location: 'Universe KIDULT Studio'
   },
   {
     id: 'moment-2',
     author: 'lala',
     authorName: 'Lala (Bella)',
     authorRole: 'The Everglow Fairy',
-    authorAvatar: '/assets/portrait_lala_hd_2x.png',
+    authorAvatar: '/assets/avatar_lala_hd.png',
     photoUrl: '/assets/moment_fairy_tea.jpg',
     timestamp: 'Hari ini, 12:15 WIB',
     createdAt: Date.now() - 6 * 3600 * 1000,
@@ -79,15 +79,15 @@ export const INITIAL_MOMENTS = [
     author: 'lele',
     authorName: 'Lele (Vanya)',
     authorRole: 'The Eclipse Guardian',
-    authorAvatar: '/assets/portrait_lele_hd_2x.png',
+    authorAvatar: '/assets/avatar_lele_hd.png',
     photoUrl: '/assets/moment_stargazing.jpg',
     timestamp: 'Kemarin, 21:00 WIB',
     createdAt: Date.now() - 24 * 3600 * 1000,
-    caption: 'Menemukan konstelasi baru di balkon barat. Udaranya sejuk dan damai banget. Mengirimkan pelukan kosmik dari Universe KIDULT untuk Nyanya & Lala 🌙🖤',
+    caption: 'Menemukan konstelasi baru di balkon barat. Udaranya sejuk dan damai banget. Mengirimkan pelukan kosmik dari Universe SHADOW untuk Nyanya & Lala 🌙🖤',
     likes: 27,
     likedByMe: true,
     isArchived: true,
-    location: 'Observatorium Langit Kidult'
+    location: 'Observatorium Langit Shadow'
   }
 ];
 
@@ -97,17 +97,17 @@ export const CHARACTERS_MOMENTS = {
     id: 'nyanya',
     name: 'Nyanya',
     fullName: 'Nyanya (Alenda)',
-    role: 'Moonlit Shadow Witch',
-    avatar: '/assets/portrait_nyanya_hd_2x.png',
+    role: 'The Moonlit Shadow Witch',
+    avatar: '/assets/avatar_nyanya_hd.png',
     accentColor: '#c084fc',
-    symbol: '☾'
+    symbol: '★'
   },
   lala: {
     id: 'lala',
     name: 'Lala',
     fullName: 'Lala (Bella)',
     role: 'The Everglow Fairy',
-    avatar: '/assets/portrait_lala_hd_2x.png',
+    avatar: '/assets/avatar_lala_hd.png',
     accentColor: '#f472b6',
     symbol: '☼'
   },
@@ -116,7 +116,7 @@ export const CHARACTERS_MOMENTS = {
     name: 'Lele',
     fullName: 'Lele (Vanya)',
     role: 'The Eclipse Guardian',
-    avatar: '/assets/portrait_lele_hd_2x.png',
+    avatar: '/assets/avatar_lele_hd.png',
     accentColor: '#818cf8',
     symbol: '☾'
   }

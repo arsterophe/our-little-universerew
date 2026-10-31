@@ -142,6 +142,21 @@ export function initMomentsView(options = {}) {
       viewOrbit.classList.remove('active');
       viewOrbit.setAttribute('aria-hidden', 'true');
     }
+    const viewKidultWorld = document.getElementById('view-kidult-world');
+    if (viewKidultWorld) {
+      viewKidultWorld.classList.remove('active');
+      viewKidultWorld.setAttribute('aria-hidden', 'true');
+    }
+    const viewToYouWorld = document.getElementById('view-toyou-world');
+    if (viewToYouWorld) {
+      viewToYouWorld.classList.remove('active');
+      viewToYouWorld.setAttribute('aria-hidden', 'true');
+    }
+    const viewShadowWorld = document.getElementById('view-shadow-world');
+    if (viewShadowWorld) {
+      viewShadowWorld.classList.remove('active');
+      viewShadowWorld.setAttribute('aria-hidden', 'true');
+    }
 
     if (viewMoments) {
       viewMoments.classList.add('active');
@@ -159,9 +174,22 @@ export function initMomentsView(options = {}) {
       viewMoments.setAttribute('aria-hidden', 'true');
     }
 
+    const viewKidultWorld = document.getElementById('view-kidult-world');
+    const viewToYouWorld = document.getElementById('view-toyou-world');
+    const viewShadowWorld = document.getElementById('view-shadow-world');
+
     if (previousViewId === 'view-orbit' && viewOrbit) {
       viewOrbit.classList.add('active');
       viewOrbit.setAttribute('aria-hidden', 'false');
+    } else if (previousViewId === 'view-kidult-world' && viewKidultWorld) {
+      viewKidultWorld.classList.add('active');
+      viewKidultWorld.setAttribute('aria-hidden', 'false');
+    } else if (previousViewId === 'view-toyou-world' && viewToYouWorld) {
+      viewToYouWorld.classList.add('active');
+      viewToYouWorld.setAttribute('aria-hidden', 'false');
+    } else if (previousViewId === 'view-shadow-world' && viewShadowWorld) {
+      viewShadowWorld.classList.add('active');
+      viewShadowWorld.setAttribute('aria-hidden', 'false');
     } else if (previousViewId === 'view-private-universe' && viewPrivateUniverse) {
       viewPrivateUniverse.classList.add('active');
       viewPrivateUniverse.setAttribute('aria-hidden', 'false');

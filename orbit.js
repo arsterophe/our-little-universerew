@@ -36,7 +36,7 @@ export const INITIAL_ORBIT_EVENTS = [
     time: '20:00',
     location: 'Google Meet / Orbit Call',
     proposer: 'nyanya',
-    proposerName: 'Nyanya (Moonlit Shadow Witch)',
+    proposerName: 'Nyanya (The Moonlit Shadow Witch)',
     description: 'Bahas ide kado akhir tahun, jadwal libur kuliah/kerja, dan update cerita satu bulan ini.',
     participants: ['nyanya', 'lala', 'lele'],
     status: 'pending',
@@ -53,14 +53,14 @@ export const INITIAL_ORBIT_EVENTS = [
   },
   {
     id: 'evt-3',
-    title: 'Ulang Tahun Nyanya (Alenda) 🎂🌙',
+    title: 'Ulang Tahun Nyanya (Alenda) 🎂⭐',
     category: 'birthday',
     date: '2026-10-28',
     time: '00:00',
-    location: 'Universe SHADOW',
+    location: 'Universe KIDULT',
     proposer: 'lala',
     proposerName: 'Lala (The Everglow Fairy)',
-    description: 'Hari spesial untuk Moonlit Shadow Witch kita! Kirim surat Little Post Office & hadiah virtual.',
+    description: 'Hari spesial untuk The Moonlit Shadow Witch kita! Kirim surat Little Post Office & hadiah virtual.',
     participants: ['nyanya', 'lala', 'lele'],
     status: 'confirmed',
     responses: {
@@ -127,9 +127,9 @@ export const INITIAL_ORBIT_EVENTS = [
     category: 'birthday',
     date: '2026-11-27',
     time: '00:00',
-    location: 'Universe KIDULT',
+    location: 'Universe SHADOW',
     proposer: 'nyanya',
-    proposerName: 'Nyanya (Moonlit Shadow Witch)',
+    proposerName: 'Nyanya (The Moonlit Shadow Witch)',
     description: 'Hari kelahiran The Eclipse Guardian! Malam konstelasi bintang dan kenangan.',
     participants: ['nyanya', 'lala', 'lele'],
     status: 'confirmed',
@@ -341,7 +341,7 @@ export function respondToMeeting(eventId, userChar, responseType, note = '', alt
 // Helpers
 export function getCharacterDisplayName(key) {
   const map = {
-    nyanya: 'Nyanya (Moonlit Shadow Witch)',
+    nyanya: 'Nyanya (The Moonlit Shadow Witch)',
     lala: 'Lala (The Everglow Fairy)',
     lele: 'Lele (The Eclipse Guardian)'
   };

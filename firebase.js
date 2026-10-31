@@ -69,8 +69,9 @@ export const CHARACTER_AUTH_RULES = {
   nyanya: {
     id: 'nyanya',
     name: 'Nyanya',
-    role: 'Moonlit Shadow Witch',
-    universe: 'SHADOW',
+    role: 'The Moonlit Shadow Witch',
+    universe: 'KIDULT',
+    ownerName: 'Alenda',
     expectedEmail: (getEnv('VITE_NYANYA_EMAIL') || '').toLowerCase(),
     expectedUid: getEnv('VITE_NYANYA_UID') || ''
   },
@@ -79,6 +80,7 @@ export const CHARACTER_AUTH_RULES = {
     name: 'Lala',
     role: 'The Everglow Fairy',
     universe: 'TO YOU',
+    ownerName: 'Bella',
     expectedEmail: (getEnv('VITE_LALA_EMAIL') || '').toLowerCase(),
     expectedUid: getEnv('VITE_LALA_UID') || ''
   },
@@ -86,7 +88,8 @@ export const CHARACTER_AUTH_RULES = {
     id: 'lele',
     name: 'Lele',
     role: 'The Eclipse Guardian',
-    universe: 'KIDULT',
+    universe: 'SHADOW',
+    ownerName: 'Vanya',
     expectedEmail: (getEnv('VITE_LELE_EMAIL') || '').toLowerCase(),
     expectedUid: getEnv('VITE_LELE_UID') || ''
   }
