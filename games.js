@@ -322,6 +322,11 @@ gameRecordsCache = loadGamesCacheFromStorage();
 bestieMissionProgress = loadMissionsCacheFromStorage();
 
 export function setActiveUserCharacter(charKey) {
+  if (charKey === null || charKey === undefined || charKey === '') {
+    activeUserCharacter = null;
+    notifyGameListeners();
+    return;
+  }
   if (['nyanya', 'lala', 'lele'].includes(charKey)) {
     activeUserCharacter = charKey;
     notifyGameListeners();

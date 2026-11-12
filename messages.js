@@ -122,6 +122,11 @@ export function getActiveUserCharacter() {
 }
 
 export function setActiveUserCharacter(charKey) {
+  if (charKey === null || charKey === undefined || charKey === '') {
+    activeUserCharacter = null;
+    notifyConversationListeners();
+    return;
+  }
   if (CHARACTERS_MESSAGES[charKey]) {
     activeUserCharacter = charKey;
     // Ensure active conversation includes the new character

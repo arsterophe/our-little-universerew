@@ -8,11 +8,11 @@
 .view-universes {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.5rem 2.5rem 2rem;
+  padding: clamp(0.75rem, 1.5vh, 1.35rem) clamp(1.25rem, 2.5vw, 2.5rem);
   box-sizing: border-box;
   color: #ffffff;
   overflow-x: hidden;
@@ -45,8 +45,9 @@
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  opacity: 0.95;
-  filter: saturate(1.1) brightness(1.02);
+  opacity: 0.55;
+  transform: scale(1.04);
+  filter: blur(8px) saturate(1.15) brightness(0.62);
 }
 
 /* Atmospheric Overlay: Soft Midnight Vignette and Starlight */
@@ -56,7 +57,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 50% 45%, rgba(26, 18, 58, 0) 30%, rgba(13, 8, 30, 0.5) 75%, rgba(7, 4, 18, 0.85) 100%);
+  background: radial-gradient(circle at 50% 42%, rgba(28, 18, 62, 0.25) 0%, rgba(15, 9, 36, 0.68) 65%, rgba(7, 4, 18, 0.9) 100%);
   pointer-events: none;
 }
 
@@ -166,19 +167,25 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.univ-nav-pill::-webkit-scrollbar {
+  display: none;
 }
 
 .univ-nav-btn {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.48rem 1.05rem;
+  gap: 0.4rem;
+  padding: 0.44rem clamp(0.58rem, 0.78vw, 0.96rem);
   border-radius: 999px;
   background: transparent;
   border: 1px solid transparent;
   color: rgba(255, 255, 255, 0.78);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.82rem;
+  font-size: clamp(0.75rem, 0.82vw, 0.82rem);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -267,8 +274,8 @@
   position: relative;
   z-index: 10;
   text-align: center;
-  margin-top: 1.2rem;
-  margin-bottom: 0.8rem;
+  margin-top: clamp(0.25rem, 0.9vh, 0.85rem);
+  margin-bottom: clamp(0.2rem, 0.8vh, 0.65rem);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -302,47 +309,183 @@
 
 .univ-hero-title {
   font-family: 'Alex Brush', 'Great Vibes', cursive;
-  font-size: 3.2rem;
+  font-size: clamp(2.15rem, 3.2vw, 2.95rem);
   font-weight: 400;
   color: #ffffff;
   letter-spacing: 0.02em;
   text-shadow: 0 0 25px rgba(244, 114, 182, 0.6), 0 0 45px rgba(192, 132, 252, 0.4), 0 2px 10px rgba(0, 0, 0, 0.8);
   margin: 0;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .univ-hero-sub {
-  margin-top: 0.4rem;
+  margin-top: 0.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
 }
 
 .univ-hero-sub p {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: rgba(243, 232, 255, 0.9);
   letter-spacing: 0.04em;
   margin: 0;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
 }
 
-/* --- THREE FLOATING ISLANDS ROW --- */
-.universes-islands-stage {
+/* --- SEVEN FLOATING ISLANDS STAGE (HORIZONTAL DRAGGABLE / SWIPEABLE PLANET ROW) --- */
+.universes-stage-shell {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1300px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.4rem, 1vw, 0.9rem);
+}
+
+.univ-stage-arrow {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(233, 213, 255, 0.38);
+  background: radial-gradient(circle at 30% 30%, rgba(192, 132, 252, 0.28), rgba(20, 12, 48, 0.55));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #fef08a;
+  font-size: 1.85rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(192, 132, 252, 0.35), 0 0 10px rgba(254, 240, 138, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  padding: 0 0 2px;
+}
+
+.univ-stage-arrow:hover:not(:disabled) {
+  transform: scale(1.08);
+  border-color: rgba(254, 240, 138, 0.72);
+  box-shadow: 0 0 26px rgba(192, 132, 252, 0.6), 0 0 16px rgba(254, 240, 138, 0.45);
+  color: #ffffff;
+}
+
+.univ-stage-arrow:focus-visible {
+  outline: 2px solid #fef08a;
+  outline-offset: 2px;
+}
+
+.univ-stage-arrow.is-disabled,
+.univ-stage-arrow:disabled {
+  opacity: 0.24;
+  cursor: default;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.universes-islands-stage {
+  position: relative;
+  z-index: 10;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: clamp(1rem, 2vw, 2.1rem);
   align-items: flex-start;
-  padding: 0.5rem 0.5rem 1rem;
+  padding: 0.35rem 0.5rem 0.75rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  touch-action: pan-x pan-y;
+}
+
+.universes-nav-indicator {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.25rem auto 0.15rem;
+}
+
+.univ-nav-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.univ-nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(233, 213, 255, 0.45);
+  background: rgba(255, 255, 255, 0.18);
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.univ-nav-dot:hover {
+  background: rgba(233, 213, 255, 0.65);
+  transform: scale(1.2);
+}
+
+.univ-nav-dot.is-active {
+  width: 24px;
+  background: linear-gradient(90deg, #e879f9, #fef08a);
+  border-color: rgba(254, 240, 138, 0.85);
+  box-shadow: 0 0 12px rgba(232, 121, 249, 0.65), 0 0 8px rgba(254, 240, 138, 0.45);
+}
+
+.universes-drag-hint {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  color: rgba(243, 232, 255, 0.78);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.universes-drag-hint.is-dismissed {
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+}
+
+.universes-islands-stage::-webkit-scrollbar {
+  display: none;
+}
+
+.universes-islands-stage.is-dragging {
+  scroll-behavior: auto;
+  cursor: grabbing;
+  user-select: none;
+}
+
+.universes-islands-stage.is-dragging .univ-island-card {
+  cursor: grabbing;
 }
 
 .univ-island-card {
   position: relative;
+  flex: 0 0 calc((100% - 2 * clamp(1rem, 2vw, 2.1rem)) / 3);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -364,8 +507,8 @@
 .island-art-wrapper {
   position: relative;
   width: 100%;
-  max-width: 330px;
-  height: 290px;
+  max-width: clamp(170px, 15.5vw, 225px);
+  height: clamp(148px, 19vh, 195px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -382,6 +525,22 @@
 
 .card-shadow .island-art-wrapper {
   animation: floatShadow 6.8s ease-in-out infinite alternate 0.6s;
+}
+
+.card-pinwheel .island-art-wrapper {
+  animation: floatPinwheel 7s ease-in-out infinite alternate 0.9s;
+}
+
+.card-yawn .island-art-wrapper {
+  animation: floatShadow 6.9s ease-in-out infinite alternate 0.4s;
+}
+
+.card-usagain .island-art-wrapper {
+  animation: floatToYou 7.1s ease-in-out infinite alternate 1.1s;
+}
+
+.card-ash .island-art-wrapper {
+  animation: floatKidult 6.6s ease-in-out infinite alternate 0.7s;
 }
 
 @keyframes floatKidult {
@@ -426,6 +585,20 @@
   }
 }
 
+@keyframes floatPinwheel {
+  0% {
+    transform: translateY(-1px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(-0.35deg);
+  }
+
+  100% {
+    transform: translateY(-3px) rotate(0.35deg);
+  }
+}
+
 /* Island Artwork Image */
 .floating-island-image {
   width: 100%;
@@ -447,12 +620,12 @@
   position: absolute;
   top: 45%;
   left: 50%;
-  width: 260px;
-  height: 260px;
+  width: clamp(160px, 16vw, 215px);
+  height: clamp(160px, 16vw, 215px);
   transform: translate(-50%, -50%);
   border-radius: 50%;
   opacity: 0.4;
-  filter: blur(40px);
+  filter: blur(34px);
   pointer-events: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
@@ -484,6 +657,56 @@
   background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(99, 102, 241, 0.35) 60%, transparent 80%);
 }
 
+.card-pinwheel {
+  --island-glow: rgba(147, 197, 253, 0.65);
+  --card-border: rgba(191, 219, 254, 0.45);
+}
+
+.card-pinwheel .island-ambient-glow {
+  background: radial-gradient(circle, rgba(147, 197, 253, 0.5) 0%, rgba(192, 132, 252, 0.28) 60%, transparent 80%);
+}
+
+.card-pinwheel .floating-island-image,
+.card-yawn .floating-island-image,
+.card-usagain .floating-island-image,
+.card-ash .floating-island-image {
+  width: clamp(136px, 12.8vw, 178px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center center;
+  -webkit-mask-image: radial-gradient(circle, #000 58%, rgba(0, 0, 0, 0.82) 67%, transparent 74%);
+  mask-image: radial-gradient(circle, #000 58%, rgba(0, 0, 0, 0.82) 67%, transparent 74%);
+}
+
+.card-yawn {
+  --island-glow: rgba(192, 132, 252, 0.65);
+  --card-border: rgba(216, 180, 254, 0.45);
+}
+
+.card-yawn .island-ambient-glow {
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.52) 0%, rgba(129, 140, 248, 0.28) 60%, transparent 80%);
+}
+
+.card-usagain {
+  --island-glow: rgba(244, 114, 182, 0.62);
+  --card-border: rgba(251, 207, 232, 0.45);
+}
+
+.card-usagain .island-ambient-glow {
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.48) 0%, rgba(192, 132, 252, 0.3) 60%, transparent 80%);
+}
+
+.card-ash {
+  --island-glow: rgba(148, 163, 184, 0.65);
+  --card-border: rgba(203, 213, 225, 0.45);
+}
+
+.card-ash .island-ambient-glow {
+  background: radial-gradient(circle, rgba(148, 163, 184, 0.5) 0%, rgba(99, 102, 241, 0.28) 60%, transparent 80%);
+}
+
 .univ-island-card:hover .island-ambient-glow {
   opacity: 0.85;
   transform: translate(-50%, -50%) scale(1.15);
@@ -494,8 +717,8 @@
   position: absolute;
   top: 52%;
   left: 50%;
-  width: 290px;
-  height: 70px;
+  width: clamp(185px, 17.5vw, 245px);
+  height: clamp(46px, 5vh, 60px);
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.7);
   box-shadow: 0 0 16px rgba(255, 255, 255, 0.8), inset 0 0 12px rgba(255, 255, 255, 0.4);
@@ -514,10 +737,10 @@
 /* Character Avatar Circle overlapping above the Card */
 .island-avatar-badge {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  margin-bottom: -16px;
+  margin-bottom: -14px;
   z-index: 15;
   padding: 2px;
   background: linear-gradient(135deg, #ffffff 0%, #fed7aa 50%, #f472b6 100%);
@@ -531,6 +754,22 @@
 
 .card-shadow .island-avatar-badge {
   background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #6366f1 100%);
+}
+
+.card-pinwheel .island-avatar-badge {
+  background: linear-gradient(135deg, #ffffff 0%, #bae6fd 50%, #a5b4fc 100%);
+}
+
+.card-yawn .island-avatar-badge {
+  background: linear-gradient(135deg, #ffffff 0%, #e9d5ff 50%, #a855f7 100%);
+}
+
+.card-usagain .island-avatar-badge {
+  background: linear-gradient(135deg, #ffffff 0%, #fbcfe8 50%, #c084fc 100%);
+}
+
+.card-ash .island-avatar-badge {
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #64748b 100%);
 }
 
 .island-avatar-badge img {
@@ -551,9 +790,9 @@
   position: relative;
   z-index: 12;
   width: 100%;
-  max-width: 250px;
-  padding: 1.25rem 1.4rem 0.95rem;
-  border-radius: 20px;
+  max-width: 225px;
+  padding: 1.05rem 1rem 0.8rem;
+  border-radius: 18px;
   background: rgba(30, 20, 58, 0.48);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -574,11 +813,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   font-family: 'Cinzel', serif;
-  font-size: 1.25rem;
+  font-size: clamp(1.02rem, 1.25vw, 1.18rem);
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   color: #ffffff;
   margin: 0;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
@@ -601,13 +840,29 @@
   color: #c084fc;
 }
 
+.card-pinwheel .island-symbol-icon {
+  color: #bae6fd;
+}
+
+.card-yawn .island-symbol-icon {
+  color: #e9d5ff;
+}
+
+.card-usagain .island-symbol-icon {
+  color: #fbcfe8;
+}
+
+.card-ash .island-symbol-icon {
+  color: #e2e8f0;
+}
+
 .island-card-sub {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   color: rgba(226, 212, 255, 0.85);
-  margin-top: 0.3rem;
+  margin-top: 0.25rem;
   margin-bottom: 0;
   text-transform: uppercase;
 }
@@ -615,20 +870,44 @@
 /* Elegant Handwritten Script Quote underneath each card */
 .island-script-quote {
   font-family: 'Alex Brush', 'Great Vibes', cursive;
-  font-size: 1.55rem;
+  font-size: clamp(1.12rem, 1.32vw, 1.32rem);
   font-weight: 400;
   color: #fce7f3;
-  margin-top: 0.75rem;
+  margin-top: 0.45rem;
   margin-bottom: 0;
+  min-height: 2.35em;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   text-align: center;
   letter-spacing: 0.02em;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 18px rgba(244, 114, 182, 0.4);
-  line-height: 1.25;
+  line-height: 1.2;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .card-shadow .island-script-quote {
   color: #e9d5ff;
+}
+
+.card-pinwheel .island-script-quote {
+  color: #e0f2fe;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 18px rgba(147, 197, 253, 0.45);
+}
+
+.card-yawn .island-script-quote {
+  color: #f3e8ff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 18px rgba(192, 132, 252, 0.45);
+}
+
+.card-usagain .island-script-quote {
+  color: #fce7f3;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 18px rgba(244, 114, 182, 0.45);
+}
+
+.card-ash .island-script-quote {
+  color: #e2e8f0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 18px rgba(148, 163, 184, 0.45);
 }
 
 .univ-island-card:hover .island-script-quote {
@@ -643,8 +922,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: clamp(0.5rem, 1.2vh, 1rem);
+  margin-bottom: 0.25rem;
 }
 
 .univ-bottom-btn {
@@ -894,6 +1173,17 @@
     padding: 1.2rem 1.5rem 1.8rem;
   }
 
+  .universes-header {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    justify-items: center;
+  }
+
+  .univ-nav-pill {
+    max-width: calc(100vw - 3rem);
+    overflow-x: auto;
+  }
+
   .universes-hero {
     margin-top: 0.8rem;
     margin-bottom: 0.4rem;
@@ -904,7 +1194,13 @@
   }
 
   .universes-islands-stage {
-    gap: 1.2rem;
+    max-width: 760px;
+    gap: 1.4rem;
+    padding: 0.5rem 0.75rem 0.75rem;
+  }
+
+  .univ-island-card {
+    flex: 0 0 calc((100% - 1.4rem) / 2);
   }
 
   .island-art-wrapper {
@@ -942,10 +1238,20 @@
   }
 
   .universes-islands-stage {
-    grid-template-columns: 1fr;
-    max-width: 380px;
-    gap: 2.5rem;
+    max-width: 100%;
+    gap: 1.25rem;
+    padding: 0.75rem 0.75rem 1rem;
     margin-top: 1rem;
+  }
+
+  .univ-stage-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.45rem;
+  }
+
+  .univ-island-card {
+    flex: 0 0 min(290px, 78vw);
   }
 
   .island-art-wrapper {

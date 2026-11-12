@@ -117,7 +117,8 @@ button {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: radial-gradient(circle at 50% 20%, #2b1754 0%, #150e2d 45%, #080614 100%);
   transition: background var(--transition-slow);
 }
@@ -489,6 +490,7 @@ body.theme-lele .universe-panorama-bg {
 
 .character-cards-grid {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 2.2rem;
@@ -499,7 +501,7 @@ body.theme-lele .universe-panorama-bg {
 /* Character Card Common */
 .character-card {
   position: relative;
-  flex: 1;
+  flex: 0 1 275px;
   max-width: 275px;
   min-width: 230px;
   height: 420px;
@@ -542,6 +544,10 @@ body.theme-lele .universe-panorama-bg {
   background: radial-gradient(circle at 50% 40%, rgba(99, 102, 241, 0.55) 0%, rgba(124, 58, 237, 0.25) 60%, transparent 100%);
 }
 
+.card-abil .card-ambient-aura {
+  background: radial-gradient(circle at 50% 40%, rgba(147, 197, 253, 0.5) 0%, rgba(148, 163, 184, 0.25) 60%, transparent 100%);
+}
+
 /* Card Arched Frame */
 .card-arch-frame {
   position: relative;
@@ -575,6 +581,12 @@ body.theme-lele .universe-panorama-bg {
   background: linear-gradient(180deg, rgba(20, 25, 65, 0.75) 0%, rgba(10, 15, 40, 0.85) 100%);
   border: 1.5px solid rgba(165, 180, 252, 0.65);
   box-shadow: 0 0 25px rgba(99, 102, 241, 0.35), 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+.card-abil .card-arch-frame {
+  background: linear-gradient(180deg, rgba(22, 30, 52, 0.78) 0%, rgba(10, 14, 28, 0.88) 100%);
+  border: 1.5px solid rgba(191, 219, 254, 0.65);
+  box-shadow: 0 0 25px rgba(147, 197, 253, 0.32), 0 15px 35px rgba(0, 0, 0, 0.6);
 }
 
 /* Card Ornament Top */
@@ -662,6 +674,10 @@ body.theme-lele .universe-panorama-bg {
 .card-nyanya .char-role { color: #d8b4fe; }
 .card-lala .char-role { color: #fed7aa; }
 .card-lele .char-role { color: #c7d2fe; }
+.card-abil .char-role { color: #bae6fd; }
+.card-akhira .char-role { color: #e9d5ff; }
+.card-ela .char-role { color: #fbcfe8; }
+.card-ruben .char-role { color: #cbd5e1; }
 
 /* Hover Effects on Cards */
 .character-card:hover {
@@ -695,6 +711,11 @@ body.theme-lele .universe-panorama-bg {
 .card-lele:hover .card-arch-frame {
   border-color: #c7d2fe;
   box-shadow: 0 0 35px rgba(99, 102, 241, 0.6), 0 20px 45px rgba(0, 0, 0, 0.75);
+}
+
+.card-abil:hover .card-arch-frame {
+  border-color: #e0f2fe;
+  box-shadow: 0 0 35px rgba(147, 197, 253, 0.6), 0 20px 45px rgba(0, 0, 0, 0.75);
 }
 
 /* Selection Footer Hint */

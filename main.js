@@ -67,6 +67,62 @@ const CHARACTERS = {
     accentColor: '#818cf8',
     universe: 'SHADOW',
     ownerName: 'Alenda'
+  },
+  abil: {
+    id: 'abil',
+    name: 'Abil',
+    role: 'PINWHEEL ☁️',
+    symbol: '☁️',
+    themeClass: 'theme-abil',
+    portrait: '/assets/portrait_abil_hd.jpg',
+    cardImg: '/assets/card_abil_hd.jpg',
+    avatar: '/assets/avatar_abil_hd.jpg',
+    greeting: 'Selamat datang, Abil ☁️',
+    accentColor: '#93c5fd',
+    universe: 'PINWHEEL',
+    ownerName: 'Abil'
+  },
+  akhira: {
+    id: 'akhira',
+    name: 'Akhira',
+    role: 'YAWN ⚡',
+    symbol: '⚡',
+    themeClass: 'theme-akhira',
+    portrait: '/assets/portrait_akhira_hd.jpg',
+    cardImg: '/assets/card_akhira_hd.jpg',
+    avatar: '/assets/avatar_akhira_hd.jpg',
+    greeting: 'Selamat datang, Akhira ⚡',
+    accentColor: '#c084fc',
+    universe: 'YAWN',
+    ownerName: 'Akhira'
+  },
+  ela: {
+    id: 'ela',
+    name: 'Ela',
+    role: 'US AGAIN 🌸',
+    symbol: '🌸',
+    themeClass: 'theme-ela',
+    portrait: '/assets/portrait_ela_hd.jpg',
+    cardImg: '/assets/card_ela_hd.jpg',
+    avatar: '/assets/avatar_ela_hd.jpg',
+    greeting: 'Selamat datang, Ela 🌸',
+    accentColor: '#f472b6',
+    universe: 'US AGAIN',
+    ownerName: 'Ela'
+  },
+  ruben: {
+    id: 'ruben',
+    name: 'Ruben',
+    role: 'ASH ❄️',
+    symbol: '❄️',
+    themeClass: 'theme-ruben',
+    portrait: '/assets/portrait_ruben_hd.jpg',
+    cardImg: '/assets/card_ruben_hd.jpg',
+    avatar: '/assets/avatar_ruben_hd.jpg',
+    greeting: 'Selamat datang, Ruben ❄️',
+    accentColor: '#94a3b8',
+    universe: 'ASH',
+    ownerName: 'Ruben'
   }
 };
 
@@ -297,6 +353,9 @@ export async function ensureStoriesController() {
           }
         }
       });
+      if (currentAuthenticatedUser && activeCharacterKey) {
+        window.storiesController.syncActiveUser(activeCharacterKey, currentAuthenticatedUser);
+      }
       return window.storiesController;
     });
   }
@@ -645,8 +704,11 @@ function initAuthObserver() {
           viewPrivateUniverse?.classList.contains('active')
         );
 
-        // Only auto-restore universe if user had an active session inside a universe before reload
-        if (storedActiveSession === verifiedChar || isWorldActive) {
+        // Only auto-restore universe if user had an explicit active session inside a universe before reload
+        // and no conflicting character selection is active. Never auto-enter a universe when unselected.
+        const hasExplicitSession = Boolean(storedActiveSession && storedActiveSession === verifiedChar);
+        const selectionMatches = !activeCharacterKey || activeCharacterKey === verifiedChar;
+        if ((hasExplicitSession || isWorldActive) && selectionMatches && !viewLogin?.classList.contains('active')) {
           activeCharacterKey = verifiedChar;
           sessionStorage.setItem('activeUniverseSession', verifiedChar);
           dbSyncUserProfile(user, verifiedChar).catch((e) => console.warn('User profile sync notice:', e));
@@ -661,6 +723,14 @@ function initAuthObserver() {
 
         // On landing / selection screen, do NOT bypass character selection
         console.log('Sesi Firebase terdeteksi, menunggu aksi pengguna di layar pemilihan/login.');
+        hideInitialLoader();
+        return;
+      } else {
+        sessionStorage.removeItem('activeUniverseSession');
+        await logoutFirebase();
+        currentAuthenticatedUser = null;
+        activeCharacterKey = null;
+        lockdownPrivateUniverse();
         hideInitialLoader();
         return;
       }
@@ -755,9 +825,10 @@ async function selectCharacter(charKey) {
   }
 
   // 2. Prepare Login View for the chosen character
+  // Do NOT pre-bind stories active identity before Firebase authentication succeeds
   setActiveUserCharacter(charKey);
   setActiveUserMoments(charKey);
-  setActiveUserStories(charKey);
+  setActiveUserStories(null);
   setActiveUserMessages(charKey);
   setActiveUserGames(charKey);
   
@@ -765,7 +836,7 @@ async function selectCharacter(charKey) {
   ensureUniversesController().catch(() => {});
 
   if (window.storiesController?.syncActiveUser) {
-    window.storiesController.syncActiveUser(charKey);
+    window.storiesController.syncActiveUser(null, null);
   }
   if (window.photoboothController?.syncPhotoboothActiveCharacter) {
     window.photoboothController.syncPhotoboothActiveCharacter(charKey, 'session');
@@ -781,7 +852,7 @@ async function selectCharacter(charKey) {
   }
 
   // Update theme class on body
-  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele');
+  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil', 'theme-akhira', 'theme-ela', 'theme-ruben');
   document.body.classList.add(char.themeClass);
 
   // Populate Login Card with Character Data
@@ -1051,12 +1122,16 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
 
   // CRITICAL: ALWAYS verify the canonical character strictly from verified Firebase UID (Single Source of Truth)
   const verifiedCharKey = identifyUserCharacter(user);
-  const charId = verifiedCharKey || characterConfig?.id;
+  const charId = verifiedCharKey;
 
   const validUniverses = {
     nyanya: 'KIDULT',
     lala: 'TO YOU',
-    lele: 'SHADOW'
+    lele: 'SHADOW',
+    abil: 'PINWHEEL',
+    akhira: 'YAWN',
+    ela: 'US AGAIN',
+    ruben: 'ASH'
   };
 
   if (!charId || !validUniverses[charId]) {
@@ -1071,11 +1146,11 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
   const char = CHARACTERS[charId] || CHARACTER_AUTH_RULES[charId] || characterConfig;
   setActiveUserCharacter(charId);
   setActiveUserMoments(charId);
-  setActiveUserStories(charId);
+  setActiveUserStories(charId, user);
   setActiveUserMessages(charId);
   setActiveUserGames(charId);
   if (window.storiesController?.syncActiveUser) {
-    window.storiesController.syncActiveUser(charId);
+    window.storiesController.syncActiveUser(charId, user);
   }
   if (window.photoboothController?.syncPhotoboothActiveCharacter) {
     window.photoboothController.syncPhotoboothActiveCharacter(charId, 'firebase');
@@ -1094,7 +1169,7 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
   }
 
   // Set theme on body
-  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele');
+  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil', 'theme-akhira', 'theme-ela', 'theme-ruben');
   document.body.classList.add(char.themeClass);
 
   // Populate private header & user metadata
@@ -1215,10 +1290,10 @@ async function showUniversesView() {
     viewPrivateUniverse.setAttribute('aria-hidden', 'false');
   }
 
-  if (window.universesController && typeof window.universesController.updateUserProfile === 'function') {
-    window.universesController.updateUserProfile(activeCharacterKey || 'nyanya');
-  }
   if (activeCharacterKey) {
+    if (window.universesController && typeof window.universesController.updateUserProfile === 'function') {
+      window.universesController.updateUserProfile(activeCharacterKey);
+    }
     setActiveUserCharacter(activeCharacterKey);
     setActiveUserMoments(activeCharacterKey);
   }
@@ -1254,6 +1329,12 @@ function lockdownPrivateUniverse() {
     }
   });
 
+  // Clear active stories state when private universe locks down
+  setActiveUserStories(null);
+  if (window.storiesController?.syncActiveUser) {
+    window.storiesController.syncActiveUser(null, null);
+  }
+
   // Clear private data from DOM
   if (auditEmail) auditEmail.textContent = '-';
   if (auditUid) auditUid.textContent = '-';
@@ -1263,7 +1344,15 @@ function lockdownPrivateUniverse() {
   if (!viewLogin.classList.contains('active') && !activeCharacterKey) {
     viewSelection.classList.add('active');
     viewSelection.setAttribute('aria-hidden', 'false');
-    document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele');
+    document.body.classList.remove(
+      'theme-nyanya',
+      'theme-lala',
+      'theme-lele',
+      'theme-abil',
+      'theme-akhira',
+      'theme-ela',
+      'theme-ruben'
+    );
   }
 }
 
@@ -1271,6 +1360,10 @@ function lockdownPrivateUniverse() {
 async function handleLogout() {
   try {
     sessionStorage.removeItem('activeUniverseSession');
+    try {
+      localStorage.removeItem('olu_active_char_v1');
+      localStorage.removeItem('olu_pb_active_char');
+    } catch (_) {}
     isPreviewingUniverses = false;
     if (window.universesController?.cleanupUniverseStateOnLogout) {
       window.universesController.cleanupUniverseStateOnLogout();
@@ -1279,6 +1372,14 @@ async function handleLogout() {
     await logoutFirebase();
     currentAuthenticatedUser = null;
     activeCharacterKey = null;
+    setActiveUserCharacter(null);
+    setActiveUserMoments(null);
+    setActiveUserStories(null);
+    setActiveUserMessages(null);
+    setActiveUserGames(null);
+    if (window.storiesController?.syncActiveUser) {
+      window.storiesController.syncActiveUser(null, null);
+    }
 
     lockdownPrivateUniverse();
     showToast('Anda telah keluar dari ruang privat Universe ✧');

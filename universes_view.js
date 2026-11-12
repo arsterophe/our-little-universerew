@@ -20,6 +20,7 @@ import {
   flushPendingUniverseSave,
   cleanupUniverseStateOnLogout
 } from './universe_state.js';
+import { initShadowKingdomFx } from './shadow_kingdom_fx.js';
 
 // Universe Definitions matching the Reference Mockup and PRD
 export const UNIVERSE_DATA = {
@@ -73,6 +74,74 @@ export const UNIVERSE_DATA = {
     palette: 'Dark Indigo, Deep Violet, & Cosmic Blue-Purple',
     description: 'Pulau fantasi gothic elegan dengan kastel gelap bertingkat, menara observatorium astronomi, layar proyeksi terbuka di bawah langit malam, pepohonan misterius berembun violet, dan planet bercincin di latar belakang.',
     accentColor: '#818cf8'
+  },
+  pinwheel: {
+    id: 'pinwheel',
+    charKey: 'abil',
+    charName: 'Abil',
+    charRole: 'PINWHEEL ☁️',
+    name: 'PINWHEEL',
+    owner: "ABIL'S UNIVERSE",
+    ownerName: 'Abil',
+    symbol: '☁️',
+    avatar: '/assets/avatar_abil_hd.jpg',
+    characterArt: '/assets/card_abil_hd.jpg',
+    islandArt: '/assets/island_pinwheel_floating.jpg',
+    quote: 'Quiet winds, drifting clouds.',
+    palette: 'Moonlight Silver, Sky Mist, & Midnight Blue',
+    description: 'Universe PINWHEEL ☁️ milik Abil sedang disiapkan secara khusus. Menunggu desain dan konsep dunia lengkap dari pemiliknya.',
+    accentColor: '#93c5fd'
+  },
+  yawn: {
+    id: 'yawn',
+    charKey: 'akhira',
+    charName: 'Akhira',
+    charRole: 'YAWN ⚡',
+    name: 'YAWN',
+    owner: "AKHIRA'S UNIVERSE",
+    ownerName: 'Akhira',
+    symbol: '⚡',
+    avatar: '/assets/avatar_akhira_hd.jpg',
+    characterArt: '/assets/card_akhira_hd.jpg',
+    islandArt: '/assets/island_yawn_floating.jpg',
+    quote: 'Soft tides, dreaming pearls.',
+    palette: 'Abyssal Lavender, Pearl Mist, & Starlight Violet',
+    description: 'Universe YAWN ⚡ milik Akhira sedang disiapkan secara khusus. Menunggu desain dan konsep dunia lengkap dari pemiliknya.',
+    accentColor: '#c084fc'
+  },
+  us_again: {
+    id: 'us_again',
+    charKey: 'ela',
+    charName: 'Ela',
+    charRole: 'US AGAIN 🌸',
+    name: 'US AGAIN',
+    owner: "ELA'S UNIVERSE",
+    ownerName: 'Ela',
+    symbol: '🌸',
+    avatar: '/assets/avatar_ela_hd.jpg',
+    characterArt: '/assets/card_ela_hd.jpg',
+    islandArt: '/assets/island_usagain_floating.jpg',
+    quote: 'Petals drift back to where we met.',
+    palette: 'Moonlit Blossom, Plum Ink, & Lantern Gold',
+    description: 'Universe US AGAIN 🌸 milik Ela sedang disiapkan secara khusus. Menunggu desain dan konsep dunia lengkap dari pemiliknya.',
+    accentColor: '#f472b6'
+  },
+  ash: {
+    id: 'ash',
+    charKey: 'ruben',
+    charName: 'Ruben',
+    charRole: 'ASH ❄️',
+    name: 'ASH',
+    owner: "RUBEN'S UNIVERSE",
+    ownerName: 'Ruben',
+    symbol: '❄️',
+    avatar: '/assets/avatar_ruben_hd.jpg',
+    characterArt: '/assets/card_ruben_hd.jpg',
+    islandArt: '/assets/island_ash_floating.jpg',
+    quote: 'Silent embers beneath falling snow.',
+    palette: 'Obsidian Frost, Silver Ash, & Moonlit Indigo',
+    description: 'Universe ASH ❄️ milik Ruben sedang disiapkan secara khusus. Menunggu desain dan konsep dunia lengkap dari pemiliknya.',
+    accentColor: '#94a3b8'
   }
 };
 
@@ -428,6 +497,200 @@ export function initUniversesView({
   let currentActiveUnivKey = 'kidult';
   let activeUser = 'nyanya';
 
+  // Horizontal Planet Navigation (Mouse Drag, Touch Swipe, Arrow Buttons, Dots & Keyboard)
+  const islandsStage = document.querySelector('.universes-islands-stage');
+  const btnPlanetsPrev = document.getElementById('btn-planets-prev');
+  const btnPlanetsNext = document.getElementById('btn-planets-next');
+  const navDots = Array.from(document.querySelectorAll('.univ-nav-dot'));
+  const dragHintEl = document.getElementById('univ-drag-hint');
+  let suppressNextPlanetClickUntil = 0;
+
+  if (islandsStage) {
+    islandsStage.scrollLeft = 0;
+
+    const getPlanetCards = () => Array.from(islandsStage.querySelectorAll('.univ-island-card'));
+
+    const getScrollStep = () => {
+      const cards = getPlanetCards();
+      if (cards.length >= 2) {
+        const step = cards[1].offsetLeft - cards[0].offsetLeft;
+        if (step > 0) return step;
+      }
+      if (cards.length === 1) {
+        return cards[0].offsetWidth;
+      }
+      return Math.max(260, Math.round(islandsStage.clientWidth * 0.34));
+    };
+
+    const dismissDragHint = () => {
+      if (dragHintEl && !dragHintEl.classList.contains('is-dismissed')) {
+        dragHintEl.classList.add('is-dismissed');
+      }
+    };
+
+    const updatePlanetNavigationUI = () => {
+      const maxScroll = Math.max(0, islandsStage.scrollWidth - islandsStage.clientWidth);
+      const currentScroll = islandsStage.scrollLeft;
+
+      if (btnPlanetsPrev) {
+        const atStart = currentScroll <= 8;
+        btnPlanetsPrev.disabled = atStart;
+        btnPlanetsPrev.classList.toggle('is-disabled', atStart);
+      }
+
+      if (btnPlanetsNext) {
+        const atEnd = maxScroll <= 8 || currentScroll >= maxScroll - 8;
+        btnPlanetsNext.disabled = atEnd;
+        btnPlanetsNext.classList.toggle('is-disabled', atEnd);
+      }
+
+      // Highlight active dot based on leading/centered visible planet
+      const cards = getPlanetCards();
+      if (cards.length && navDots.length) {
+        let activeIdx = 0;
+        if (maxScroll > 8 && currentScroll >= maxScroll - 12) {
+          activeIdx = cards.length - 1;
+        } else {
+          const step = getScrollStep();
+          activeIdx = Math.min(cards.length - 1, Math.max(0, Math.round(currentScroll / Math.max(1, step))));
+        }
+        navDots.forEach((dot, idx) => {
+          const isActive = idx === activeIdx;
+          dot.classList.toggle('is-active', isActive);
+          dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+      }
+    };
+
+    if (btnPlanetsPrev) {
+      btnPlanetsPrev.addEventListener('click', () => {
+        dismissDragHint();
+        islandsStage.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+      });
+    }
+
+    if (btnPlanetsNext) {
+      btnPlanetsNext.addEventListener('click', () => {
+        dismissDragHint();
+        islandsStage.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+      });
+    }
+
+    navDots.forEach((dot, idx) => {
+      dot.addEventListener('click', () => {
+        dismissDragHint();
+        const cards = getPlanetCards();
+        const target = cards[idx];
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    });
+
+    islandsStage.addEventListener('scroll', () => {
+      if (islandsStage.scrollLeft > 8) {
+        dismissDragHint();
+      }
+      updatePlanetNavigationUI();
+    }, { passive: true });
+
+    window.addEventListener('resize', updatePlanetNavigationUI);
+    if (typeof ResizeObserver !== 'undefined') {
+      const stageResizeObserver = new ResizeObserver(() => {
+        updatePlanetNavigationUI();
+      });
+      stageResizeObserver.observe(islandsStage);
+    }
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(updatePlanetNavigationUI);
+    } else {
+      updatePlanetNavigationUI();
+    }
+
+    let isPointerDown = false;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartScrollLeft = 0;
+    const DRAG_THRESHOLD_PX = 6;
+
+    islandsStage.addEventListener('pointerdown', (e) => {
+      // Only handle primary mouse button for drag-to-scroll; touch uses native momentum swipe
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      isPointerDown = true;
+      isDragging = false;
+      dragStartX = e.clientX;
+      dragStartScrollLeft = islandsStage.scrollLeft;
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isPointerDown || e.pointerType !== 'mouse') return;
+      const dx = e.clientX - dragStartX;
+      if (!isDragging && Math.abs(dx) > DRAG_THRESHOLD_PX) {
+        isDragging = true;
+        dismissDragHint();
+        islandsStage.classList.add('is-dragging');
+      }
+      if (isDragging) {
+        e.preventDefault();
+        islandsStage.scrollLeft = dragStartScrollLeft - dx;
+      }
+    });
+
+    const endMouseDrag = (e) => {
+      if (!isPointerDown || (e && e.pointerType && e.pointerType !== 'mouse')) return;
+      if (isDragging) {
+        suppressNextPlanetClickUntil = Date.now() + 180;
+      }
+      isPointerDown = false;
+      isDragging = false;
+      islandsStage.classList.remove('is-dragging');
+      updatePlanetNavigationUI();
+    };
+
+    window.addEventListener('pointerup', endMouseDrag);
+    window.addEventListener('pointercancel', endMouseDrag);
+
+    // Touch swipe click guard (prevents accidental click during momentum swipe)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    islandsStage.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    islandsStage.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1) {
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+        if (dx > 8 && dx >= dy) {
+          suppressNextPlanetClickUntil = Date.now() + 250;
+        }
+      }
+    }, { passive: true });
+
+    // Keyboard navigation (ArrowLeft / ArrowRight) between planets
+    islandsStage.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const cards = Array.from(islandsStage.querySelectorAll('.univ-island-card'));
+      if (!cards.length) return;
+      const currentIndex = cards.indexOf(document.activeElement);
+      let nextIndex = 0;
+      if (currentIndex === -1) {
+        nextIndex = e.key === 'ArrowRight' ? 0 : cards.length - 1;
+      } else {
+        nextIndex = e.key === 'ArrowRight'
+          ? Math.min(cards.length - 1, currentIndex + 1)
+          : Math.max(0, currentIndex - 1);
+      }
+      e.preventDefault();
+      const targetCard = cards[nextIndex];
+      targetCard.focus();
+      targetCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    });
+  }
+
   // 1. Sync Island Cards DOM from UNIVERSE_DATA (Single Source of Truth) & Setup Click Handlers
   const islandCards = document.querySelectorAll('.univ-island-card');
   islandCards.forEach(card => {
@@ -472,6 +735,11 @@ export function initUniversesView({
     }
 
     card.addEventListener('click', (e) => {
+      if (Date.now() < suppressNextPlanetClickUntil) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       if (univKey === 'kidult') {
         openKidultWorld(e);
       } else if (univKey === 'to_you') {
@@ -481,6 +749,10 @@ export function initUniversesView({
       } else if (UNIVERSE_DATA[univKey]) {
         openUniverseDetail(univKey, e);
       }
+    });
+
+    card.addEventListener('focus', () => {
+      card.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
     });
   });
 
@@ -1625,6 +1897,9 @@ export function initUniversesView({
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const locKey = btn.getAttribute('data-shadow-loc');
+      if (shadowKingdomFx) {
+        shadowKingdomFx.triggerClickBurst(e.clientX, e.clientY);
+      }
       selectShadowLocation(locKey, e);
     });
   });
@@ -1638,69 +1913,48 @@ export function initUniversesView({
     btnShadowPanelDismiss.addEventListener('click', closeShadowLocationPanel);
   }
 
+  const runShadowLocationNav = (navigateFn) => {
+    closeShadowLocationPanel();
+    const doNavigate = () => {
+      if (viewShadowWorld) {
+        viewShadowWorld.classList.remove('active');
+        viewShadowWorld.setAttribute('aria-hidden', 'true');
+      }
+      navigateFn();
+    };
+    if (shadowKingdomFx && typeof shadowKingdomFx.triggerTransition === 'function') {
+      shadowKingdomFx.triggerTransition(doNavigate);
+    } else {
+      doNavigate();
+    }
+  };
+
   if (btnShadowLocAction) {
     btnShadowLocAction.addEventListener('click', (e) => {
       const loc = SHADOW_LOCATIONS[activeShadowLocationKey];
       if (!loc) return;
+      if (shadowKingdomFx) {
+        shadowKingdomFx.triggerClickBurst(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
+      }
       if (onTriggerSparkle) {
         onTriggerSparkle(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
       }
       if (loc.actionType === 'shadow_crystal_tower' && typeof onNavigateShadowCrystalTower === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateShadowCrystalTower();
+        runShadowLocationNav(() => onNavigateShadowCrystalTower());
       } else if (loc.actionType === 'orbit' && typeof onNavigateOrbit === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateOrbit('view-shadow-world');
+        runShadowLocationNav(() => onNavigateOrbit('view-shadow-world'));
       } else if (loc.actionType === 'star_messages' && typeof onNavigateStarMessages === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateStarMessages('shadow');
+        runShadowLocationNav(() => onNavigateStarMessages('shadow'));
       } else if (loc.actionType === 'kotak_pos' && typeof onNavigateKotakPos === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateKotakPos('shadow');
+        runShadowLocationNav(() => onNavigateKotakPos('shadow'));
       } else if (loc.actionType === 'shadow_gazebo' && typeof onNavigateShadowGazebo === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateShadowGazebo();
+        runShadowLocationNav(() => onNavigateShadowGazebo());
       } else if (loc.actionType === 'shadow_garden' && typeof onNavigateShadowGarden === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateShadowGarden();
+        runShadowLocationNav(() => onNavigateShadowGarden());
       } else if (loc.actionType === 'shadow_art_gallery' && typeof onNavigateShadowArtGallery === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateShadowArtGallery();
+        runShadowLocationNav(() => onNavigateShadowArtGallery());
       } else if (loc.actionType === 'moments' && typeof onNavigateMoments === 'function') {
-        closeShadowLocationPanel();
-        if (viewShadowWorld) {
-          viewShadowWorld.classList.remove('active');
-          viewShadowWorld.setAttribute('aria-hidden', 'true');
-        }
-        onNavigateMoments('view-shadow-world');
+        runShadowLocationNav(() => onNavigateMoments('view-shadow-world'));
       } else if (onShowToast) {
         onShowToast(loc.toastMsg);
       }
@@ -1712,6 +1966,9 @@ export function initUniversesView({
       e.stopPropagation();
       shadowChibiActor.classList.add('bubble-open');
       setTimeout(() => shadowChibiActor.classList.remove('bubble-open'), 3200);
+      if (shadowKingdomFx) {
+        shadowKingdomFx.triggerClickBurst(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
+      }
       if (onTriggerSparkle) {
         onTriggerSparkle(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
       }
@@ -1758,8 +2015,12 @@ export function initUniversesView({
     });
   }
 
-  // Subtle 2D Multi-Layer Parallax on Mouse Move inside SHADOW World (Respects prefers-reduced-motion)
+  // Subtle 2D Multi-Layer Parallax & Luxury Crystal FX inside SHADOW World (Respects prefers-reduced-motion)
   const shadowStage = document.getElementById('shadow-2d-stage');
+  const shadowMagicCanvas = document.getElementById('shadow-magic-canvas');
+  const shadowKingdomFx = (viewShadowWorld && shadowMagicCanvas)
+    ? initShadowKingdomFx(viewShadowWorld, shadowMagicCanvas)
+    : null;
   if (viewShadowWorld && shadowStage) {
     let shadowParallaxRaf = null;
     const reducedMotionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
@@ -1874,6 +2135,34 @@ export function initUniversesView({
         symbol: '☾',
         avatarUrl: '/assets/avatar_lele_hd.png',
         myUniverse: 'shadow'
+      },
+      abil: {
+        name: 'Abil',
+        role: 'PINWHEEL ☁️',
+        symbol: '☁️',
+        avatarUrl: '/assets/avatar_abil_hd.jpg',
+        myUniverse: 'pinwheel'
+      },
+      akhira: {
+        name: 'Akhira',
+        role: 'YAWN ⚡',
+        symbol: '⚡',
+        avatarUrl: '/assets/avatar_akhira_hd.jpg',
+        myUniverse: 'yawn'
+      },
+      ela: {
+        name: 'Ela',
+        role: 'US AGAIN 🌸',
+        symbol: '🌸',
+        avatarUrl: '/assets/avatar_ela_hd.jpg',
+        myUniverse: 'us_again'
+      },
+      ruben: {
+        name: 'Ruben',
+        role: 'ASH ❄️',
+        symbol: '❄️',
+        avatarUrl: '/assets/avatar_ruben_hd.jpg',
+        myUniverse: 'ash'
       }
     };
 
@@ -1881,9 +2170,14 @@ export function initUniversesView({
       (charKey === 'vanya' || charKey === 'nyanya' || charKey === 'ale' || charKey === 'alenda_nyanya') ? 'nyanya' :
       (charKey === 'bella' || charKey === 'lala') ? 'lala' :
       (charKey === 'lele' || charKey === 'alenda_lele') ? 'lele' :
+      (charKey === 'abil' || charKey === 'pinwheel') ? 'abil' :
+      (charKey === 'akhira' || charKey === 'yawn') ? 'akhira' :
+      (charKey === 'ela' || charKey === 'us_again' || charKey === 'us again') ? 'ela' :
+      (charKey === 'ruben' || charKey === 'ash') ? 'ruben' :
       (charKey === 'alenda' ? 'nyanya' : charKey)
     );
-    const char = CHAR_MAP[normalizedKey] || CHAR_MAP.nyanya;
+    const char = CHAR_MAP[normalizedKey];
+    if (!char) return;
     activeUser = char.name.toLowerCase();
 
     // 1. Update Profile Greeting & Avatar Pill

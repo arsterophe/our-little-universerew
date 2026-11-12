@@ -76,12 +76,52 @@ export const CHARACTERS_MOMENTS = {
     symbol: '🌙',
     accentColor: '#818cf8',
     avatar: '/assets/avatar_lele_hd.png'
+  },
+  abil: {
+    id: 'abil',
+    name: 'Abil',
+    fullName: 'Abil',
+    role: 'PINWHEEL ☁️',
+    universe: 'PINWHEEL',
+    symbol: '☁️',
+    accentColor: '#93c5fd',
+    avatar: '/assets/avatar_abil_hd.jpg'
+  },
+  akhira: {
+    id: 'akhira',
+    name: 'Akhira',
+    fullName: 'Akhira',
+    role: 'YAWN ⚡',
+    universe: 'YAWN',
+    symbol: '⚡',
+    accentColor: '#c084fc',
+    avatar: '/assets/avatar_akhira_hd.jpg'
+  },
+  ela: {
+    id: 'ela',
+    name: 'Ela',
+    fullName: 'Ela',
+    role: 'US AGAIN 🌸',
+    universe: 'US AGAIN',
+    symbol: '🌸',
+    accentColor: '#f472b6',
+    avatar: '/assets/avatar_ela_hd.jpg'
+  },
+  ruben: {
+    id: 'ruben',
+    name: 'Ruben',
+    fullName: 'Ruben',
+    role: 'ASH ❄️',
+    universe: 'ASH',
+    symbol: '❄️',
+    accentColor: '#94a3b8',
+    avatar: '/assets/avatar_ruben_hd.jpg'
   }
 };
 
 // --- Active State ---
 let activeUserCharacter = loadSavedActiveCharacter();
-let activeFilter = 'all'; // 'all' | 'nyanya' | 'lala' | 'lele' | 'archive'
+let activeFilter = 'all'; // 'all' | 'nyanya' | 'lala' | 'lele' | 'abil' | 'archive'
 let momentsStore = []; // Unified persistent list of Story + Gallery records
 let listeners = [];
 let idbReadyPromise = null;
@@ -159,19 +199,31 @@ function normalizeRecord(raw) {
     ? {
         nyanya: Boolean(raw.viewedBy.nyanya),
         lala: Boolean(raw.viewedBy.lala),
-        lele: Boolean(raw.viewedBy.lele)
+        lele: Boolean(raw.viewedBy.lele),
+        abil: Boolean(raw.viewedBy.abil),
+        akhira: Boolean(raw.viewedBy.akhira),
+        ela: Boolean(raw.viewedBy.ela),
+        ruben: Boolean(raw.viewedBy.ruben)
       }
     : {
         nyanya: authorKey === 'nyanya',
         lala: authorKey === 'lala',
-        lele: authorKey === 'lele'
+        lele: authorKey === 'lele',
+        abil: authorKey === 'abil',
+        akhira: authorKey === 'akhira',
+        ela: authorKey === 'ela',
+        ruben: authorKey === 'ruben'
       };
 
   const likedBy = raw.likedBy && typeof raw.likedBy === 'object'
     ? {
         nyanya: Boolean(raw.likedBy.nyanya),
         lala: Boolean(raw.likedBy.lala),
-        lele: Boolean(raw.likedBy.lele)
+        lele: Boolean(raw.likedBy.lele),
+        abil: Boolean(raw.likedBy.abil),
+        akhira: Boolean(raw.likedBy.akhira),
+        ela: Boolean(raw.likedBy.ela),
+        ruben: Boolean(raw.likedBy.ruben)
       }
     : {};
 
@@ -581,6 +633,18 @@ export function getActiveUserCharacter() {
 }
 
 export function setActiveUserCharacter(charKey) {
+  if (charKey === null || charKey === undefined || charKey === '') {
+    activeUserCharacter = null;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(ACTIVE_CHAR_STORAGE_KEY);
+      }
+    } catch (_) {
+      // Ignore storage error
+    }
+    notifyListeners();
+    return;
+  }
   if (CHARACTERS_MOMENTS[charKey]) {
     activeUserCharacter = charKey;
     try {

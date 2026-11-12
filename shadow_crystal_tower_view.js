@@ -377,7 +377,9 @@ export function initShadowCrystalTowerView({
   }
 
   function gatherAvailableBooks() {
-    const pubStories = typeof getPublishedStories === 'function' ? getPublishedStories() : [];
+    const pubStories = typeof getPublishedStories === 'function'
+      ? getPublishedStories({ actor: activeViewerChar })
+      : [];
     const ownStories = (activeViewerChar === 'lele' && typeof getAuthorStories === 'function')
       ? getAuthorStories('lele', 'all')
       : [];

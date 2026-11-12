@@ -166,17 +166,28 @@ global.window = {
 
 const { initStoriesView } = await import('./stories_view.js');
 const { initUniversesView } = await import('./universes_view.js');
-const { createStory, resetStoriesStore } = await import('./stories.js');
+const { createStory, resetStoriesStore, setActiveUserCharacter } = await import('./stories.js');
 
 resetStoriesStore();
 
-// Create sample story for test
+// Create sample story per account for isolated test
+setActiveUserCharacter('nyanya');
 createStory({
   title: 'Kisah Bintang Senja di KIDULT',
   content: '<p>Di bawah langit lavender yang tenang...</p>',
   status: 'published',
   actor: 'nyanya'
 });
+
+setActiveUserCharacter('lele');
+createStory({
+  title: 'Seandainya di Taman Hydrangea',
+  content: '<p>Di bawah cahaya bulan SHADOW yang tenang...</p>',
+  status: 'published',
+  actor: 'lele'
+});
+
+setActiveUserCharacter('nyanya');
 
 let toastMsg = '';
 const storiesCtrl = initStoriesView({
@@ -262,10 +273,13 @@ univCtrl.updateUserProfile('lele');
 elements['nav-btn-stories'].click();
 assert(elements['view-our-stories'].classList.contains('active') === true, 'Lele berhasil membuka Our Stories');
 
-// Buka Reading Mode
+// Buka Reading Mode (Lele hanya melihat cerita milik Lele sendiri, bukan Nyanya)
 const allStories = await import('./stories.js');
+allStories.setActiveUserCharacter('lele');
 const publishedList = allStories.getPublishedStories();
-assert(publishedList.length > 0, 'Tersedia karya published untuk dibaca');
+assert(publishedList.length === 1, 'Lele hanya melihat 1 karya published miliknya sendiri');
+assert(publishedList[0].authorId === 'lele' && publishedList[0].title === 'Seandainya di Taman Hydrangea', 'Karya yang tampil di Our Stories Lele adalah milik Lele');
+assert(publishedList.some((s) => s.title === 'Kisah Bintang Senja di KIDULT') === false, 'Karya Nyanya TIDAK muncul di Our Stories Lele');
 
 storiesCtrl.openReadingMode(publishedList[0].id);
 assert(elements['view-story-reading'].classList.contains('active') === true, '#view-story-reading berstatus aktif');

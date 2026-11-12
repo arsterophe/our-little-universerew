@@ -138,6 +138,50 @@ export const CANONICAL_CHARACTERS = {
     avatar: '/assets/avatar_lele_hd.png',
     email: 'lele@ourlittleuniverse.com',
     uid: '1ArxphLQpAOoOIvH9BKYw0ebD1e2'
+  },
+  abil: {
+    id: 'abil',
+    name: 'Abil',
+    role: 'PINWHEEL ☁️',
+    universe: 'PINWHEEL',
+    ownerName: 'Abil',
+    symbol: '☁️',
+    avatar: '/assets/avatar_abil_hd.jpg',
+    email: 'abil@ourlittleuniverse.com',
+    uid: 'Euc0JLt3kWMveUEIjBwXHfOfvQD3'
+  },
+  akhira: {
+    id: 'akhira',
+    name: 'Akhira',
+    role: 'YAWN ⚡',
+    universe: 'YAWN',
+    ownerName: 'Akhira',
+    symbol: '⚡',
+    avatar: '/assets/avatar_akhira_hd.jpg',
+    email: 'akhira@ourlittleuniverse.com',
+    uid: 'MT14ZHATNqe90frAeQ74QFk4iXs2'
+  },
+  ela: {
+    id: 'ela',
+    name: 'Ela',
+    role: 'US AGAIN 🌸',
+    universe: 'US AGAIN',
+    ownerName: 'Ela',
+    symbol: '🌸',
+    avatar: '/assets/avatar_ela_hd.jpg',
+    email: 'ela@ourlittleuniverse.com',
+    uid: 'plxSNowjCkOMfUQMAwnZzQPR9Xr1'
+  },
+  ruben: {
+    id: 'ruben',
+    name: 'Ruben',
+    role: 'ASH ❄️',
+    universe: 'ASH',
+    ownerName: 'Ruben',
+    symbol: '❄️',
+    avatar: '/assets/avatar_ruben_hd.jpg',
+    email: 'ruben@ourlittleuniverse.com',
+    uid: '9PMychPZ4rZ4PBCtZB9GiASttc52'
   }
 };
 
@@ -156,6 +200,26 @@ export const CHARACTER_AUTH_RULES = {
     ...CANONICAL_CHARACTERS.lele,
     expectedEmail: (getEnv('VITE_LELE_EMAIL') || CANONICAL_CHARACTERS.lele.email).toLowerCase(),
     expectedUid: getEnv('VITE_LELE_UID') || CANONICAL_CHARACTERS.lele.uid
+  },
+  abil: {
+    ...CANONICAL_CHARACTERS.abil,
+    expectedEmail: (getEnv('VITE_ABIL_EMAIL') || CANONICAL_CHARACTERS.abil.email).toLowerCase(),
+    expectedUid: getEnv('VITE_ABIL_UID') || CANONICAL_CHARACTERS.abil.uid
+  },
+  akhira: {
+    ...CANONICAL_CHARACTERS.akhira,
+    expectedEmail: (getEnv('VITE_AKHIRA_EMAIL') || CANONICAL_CHARACTERS.akhira.email).toLowerCase(),
+    expectedUid: getEnv('VITE_AKHIRA_UID') || CANONICAL_CHARACTERS.akhira.uid
+  },
+  ela: {
+    ...CANONICAL_CHARACTERS.ela,
+    expectedEmail: (getEnv('VITE_ELA_EMAIL') || CANONICAL_CHARACTERS.ela.email).toLowerCase(),
+    expectedUid: getEnv('VITE_ELA_UID') || CANONICAL_CHARACTERS.ela.uid
+  },
+  ruben: {
+    ...CANONICAL_CHARACTERS.ruben,
+    expectedEmail: (getEnv('VITE_RUBEN_EMAIL') || CANONICAL_CHARACTERS.ruben.email).toLowerCase(),
+    expectedUid: getEnv('VITE_RUBEN_UID') || CANONICAL_CHARACTERS.ruben.uid
   }
 };
 
@@ -476,7 +540,10 @@ export async function dbSaveOrbitEvent(eventData, authUser) {
 
   try {
     const eventId = eventData.id || ('evt-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5));
-    const verifiedChar = identifyUserCharacter(authUser) || 'nyanya';
+    const verifiedChar = identifyUserCharacter(authUser);
+    if (!verifiedChar || !CHARACTER_AUTH_RULES[verifiedChar]) {
+      throw new Error('Identitas akun tidak terverifikasi untuk menyimpan acara Orbit.');
+    }
     const verifiedCharConfig = CHARACTER_AUTH_RULES[verifiedChar];
 
     const initialResponses = {
@@ -634,7 +701,10 @@ export async function dbRespondToMeeting(eventId, authUser, responseType, note =
   });
 
   try {
-    const userChar = identifyUserCharacter(authUser) || 'nyanya';
+    const userChar = identifyUserCharacter(authUser);
+    if (!userChar) {
+      throw new Error('Identitas akun tidak terverifikasi untuk membalas undangan.');
+    }
     const docRef = doc(db, ORBIT_COLLECTION, eventId);
     const snap = await getDoc(docRef);
 
@@ -889,7 +959,10 @@ export async function dbMigrateOrbitEvents(authUser, localEvents = []) {
   updateDatabaseStatus('syncing', 'Menjalankan migrasi data kalender ke Cloud Firestore...');
 
   try {
-    const verifiedChar = identifyUserCharacter(authUser) || 'nyanya';
+    const verifiedChar = identifyUserCharacter(authUser);
+    if (!verifiedChar || !CHARACTER_AUTH_RULES[verifiedChar]) {
+      throw new Error('Identitas akun tidak terverifikasi untuk migrasi kalender.');
+    }
     const verifiedCharConfig = CHARACTER_AUTH_RULES[verifiedChar];
 
     let characterEventsCount = 0;
@@ -1071,6 +1144,66 @@ export async function dbUpdateUserProfile(authUser, updates = {}) {
 }
 
 /**
+ * Resolve canonical character key for a story record using strict UID first,
+ * then explicit verified character key. Returns null if unresolved (NEVER guesses).
+ */
+export function resolveStoryCanonicalCharacter(story) {
+  if (!story || typeof story !== 'object') return null;
+
+  if (story.authorUid) {
+    const byUid = identifyUserCharacter({ uid: story.authorUid });
+    if (byUid) return byUid;
+  }
+
+  const candidateChar = story.authorChar || story.authorId || story.author;
+  if (candidateChar && CHARACTER_AUTH_RULES[candidateChar]) {
+    return candidateChar;
+  }
+
+  return null;
+}
+
+/**
+ * Hydrate canonical author/universe fields on a story document without mutating
+ * story content, title, dates, cover, or reading metadata.
+ */
+export function normalizeStoryDocument(story) {
+  if (!story || typeof story !== 'object') return null;
+  const canonicalChar = resolveStoryCanonicalCharacter(story);
+  const charConfig = canonicalChar ? CHARACTER_AUTH_RULES[canonicalChar] : null;
+  const resolvedUid = story.authorUid || story.ownerId || charConfig?.expectedUid || null;
+  const universeId =
+    canonicalChar === 'nyanya'
+      ? 'kidult'
+      : canonicalChar === 'lala'
+        ? 'to_you'
+        : canonicalChar === 'lele'
+          ? 'shadow'
+          : canonicalChar === 'abil'
+            ? 'pinwheel'
+            : canonicalChar === 'akhira'
+              ? 'yawn'
+              : canonicalChar === 'ela'
+                ? 'us_again'
+                : canonicalChar === 'ruben'
+                  ? 'ash'
+                  : (story.universeId || null);
+
+  return {
+    ...story,
+    authorUid: resolvedUid,
+    ownerId: resolvedUid,
+    authorChar: canonicalChar,
+    authorId: canonicalChar,
+    authorName: charConfig ? charConfig.name : (story.authorName || 'Penulis Tidak Diketahui'),
+    authorRole: charConfig ? charConfig.role : (story.authorRole || 'Anggota Our Little Universe'),
+    authorAvatar: charConfig ? charConfig.avatar : (story.authorAvatar || ''),
+    universeId,
+    universeName: charConfig ? charConfig.universe : (story.universeName || '-')
+  };
+}
+
+/**
  * Save story (Personal Writing draft or Our Stories published work)
  * Enforces ownership binding to authUser.uid and verified character identity.
  */
@@ -1079,8 +1212,19 @@ export async function dbSaveStory(storyInput, authUser) {
   if (!authUser || !authUser.uid) throw new Error('Akses ditolak: Autentikasi diperlukan.');
 
   try {
-    const verifiedChar = identifyUserCharacter(authUser) || 'nyanya';
-    const verifiedCharConfig = CHARACTER_AUTH_RULES[verifiedChar] || CHARACTER_AUTH_RULES.nyanya;
+    const verifiedChar = identifyUserCharacter(authUser);
+    const verifiedCharConfig = verifiedChar ? CHARACTER_AUTH_RULES[verifiedChar] : null;
+    if (!verifiedChar || !verifiedCharConfig) {
+      throw new Error('Akses ditolak: Akun Firebase UID tidak terdaftar sebagai pemilik universe yang sah.');
+    }
+
+    if (storyInput.authorUid && storyInput.authorUid !== authUser.uid) {
+      throw new Error('Akses ditolak: authorUid karya tidak cocok dengan akun yang sedang login.');
+    }
+    const requestedChar = storyInput.authorChar || storyInput.authorId;
+    if (requestedChar && requestedChar !== verifiedChar) {
+      throw new Error('Akses ditolak: Identitas penulis karya tidak sesuai dengan akun yang sedang login.');
+    }
 
     const storyId = storyInput.id || `story-${verifiedChar}-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const docRef = doc(db, STORIES_COLLECTION, storyId);
@@ -1109,14 +1253,14 @@ export async function dbSaveStory(storyInput, authUser) {
       readingTimeMinutes: typeof storyInput.readingTimeMinutes === 'number' ? Math.max(1, storyInput.readingTimeMinutes) : 1,
       authorUid: authUser.uid,
       authorChar: verifiedChar,
-      authorName: storyInput.authorName || verifiedCharConfig?.name || verifiedChar,
+      authorName: verifiedCharConfig.name,
       createdAt: storyInput.createdAt || now,
       updatedAt: now,
       publishedAt: status === 'published' ? (storyInput.publishedAt || now) : null
     };
 
     await setDoc(docRef, payload, { merge: true });
-    return { success: true, story: payload };
+    return { success: true, story: normalizeStoryDocument(payload) };
   } catch (err) {
     console.error('Error saving story to Firestore:', err);
     throw err;
@@ -1154,36 +1298,28 @@ export async function dbDeleteStory(storyId, authUser) {
 }
 
 /**
- * Fetch all stories accessible to the user
- * - All published stories across the universe
- * - Private drafts belonging to authUser.uid
+ * Fetch all stories strictly belonging to the authenticated user's UID
+ * (Both published and draft stories of authUser.uid ONLY)
  */
 export async function dbFetchStories(authUser) {
   if (!db) throw new Error('Firestore belum terinisialisasi.');
+  if (!authUser || !authUser.uid) return [];
 
   try {
+    const verifiedChar = identifyUserCharacter(authUser);
+    if (!verifiedChar) return [];
+
     const colRef = collection(db, STORIES_COLLECTION);
     const storiesMap = new Map();
 
-    // 1. Fetch all published stories (Our Stories)
-    const pubQuery = query(colRef, where('status', '==', 'published'));
-    const pubSnap = await getDocs(pubQuery);
-    pubSnap.forEach((d) => {
-      storiesMap.set(d.id, d.data());
+    const ownQuery = query(colRef, where('authorUid', '==', authUser.uid));
+    const ownSnap = await getDocs(ownQuery);
+    ownSnap.forEach((d) => {
+      const normalized = normalizeStoryDocument(d.data());
+      if (normalized && normalized.authorUid === authUser.uid) {
+        storiesMap.set(d.id, normalized);
+      }
     });
-
-    // 2. Fetch authenticated user's own drafts (Personal Writing)
-    if (authUser && authUser.uid) {
-      const draftQuery = query(
-        colRef,
-        where('authorUid', '==', authUser.uid),
-        where('status', '==', 'draft')
-      );
-      const draftSnap = await getDocs(draftQuery);
-      draftSnap.forEach((d) => {
-        storiesMap.set(d.id, d.data());
-      });
-    }
 
     return Array.from(storiesMap.values());
   } catch (err) {
@@ -1193,7 +1329,8 @@ export async function dbFetchStories(authUser) {
 }
 
 /**
- * Real-time listener for stories (dual-query subscription aligned with Security Rules)
+ * Real-time listener for stories strictly isolated to authUser.uid
+ * Ensures Nyanya only receives Nyanya's stories, Lala only Lala's, Lele only Lele's.
  */
 export function dbSubscribeStories(authUser, onUpdate, onError) {
   if (!db) {
@@ -1201,60 +1338,39 @@ export function dbSubscribeStories(authUser, onUpdate, onError) {
     return () => {};
   }
 
-  const colRef = collection(db, STORIES_COLLECTION);
-  const publishedStoriesMap = new Map();
-  const draftStoriesMap = new Map();
-
-  function emitMerged() {
-    const merged = new Map([...publishedStoriesMap, ...draftStoriesMap]);
-    const list = Array.from(merged.values());
-    if (onUpdate) onUpdate(list);
+  if (!authUser || !authUser.uid) {
+    if (onUpdate) onUpdate([]);
+    return () => {};
   }
 
-  // 1. Subscribe to published stories
-  const pubQuery = query(colRef, where('status', '==', 'published'));
-  const unsubPublished = onSnapshot(
-    pubQuery,
+  const verifiedChar = identifyUserCharacter(authUser);
+  if (!verifiedChar) {
+    if (onUpdate) onUpdate([]);
+    return () => {};
+  }
+
+  const colRef = collection(db, STORIES_COLLECTION);
+  const ownQuery = query(colRef, where('authorUid', '==', authUser.uid));
+
+  const unsubscribe = onSnapshot(
+    ownQuery,
     (snapshot) => {
-      publishedStoriesMap.clear();
+      const list = [];
       snapshot.forEach((d) => {
-        publishedStoriesMap.set(d.id, d.data());
+        const normalized = normalizeStoryDocument(d.data());
+        if (normalized && normalized.authorUid === authUser.uid) {
+          list.push(normalized);
+        }
       });
-      emitMerged();
+      if (onUpdate) onUpdate(list);
     },
     (err) => {
-      console.error('Firestore onSnapshot error on published stories:', err);
+      console.error('Firestore onSnapshot error on stories:', err);
       if (onError) onError(err);
     }
   );
 
-  // 2. Subscribe to user's drafts if authenticated
-  let unsubDrafts = () => {};
-  if (authUser && authUser.uid) {
-    const draftQuery = query(
-      colRef,
-      where('authorUid', '==', authUser.uid),
-      where('status', '==', 'draft')
-    );
-    unsubDrafts = onSnapshot(
-      draftQuery,
-      (snapshot) => {
-        draftStoriesMap.clear();
-        snapshot.forEach((d) => {
-          draftStoriesMap.set(d.id, d.data());
-        });
-        emitMerged();
-      },
-      (err) => {
-        console.warn('Firestore onSnapshot drafts notice:', err);
-      }
-    );
-  }
-
-  return () => {
-    unsubPublished();
-    unsubDrafts();
-  };
+  return unsubscribe;
 }
 
 /**
@@ -1276,8 +1392,11 @@ export async function dbMigrateStories(authUser, localStories = []) {
   backupLocalStorageKey('olu_stories_reading_progress_v1');
 
   try {
-    const verifiedChar = identifyUserCharacter(authUser) || 'nyanya';
-    const verifiedCharConfig = CHARACTER_AUTH_RULES[verifiedChar];
+    const verifiedChar = identifyUserCharacter(authUser);
+    const verifiedCharConfig = verifiedChar ? CHARACTER_AUTH_RULES[verifiedChar] : null;
+    if (!verifiedChar || !verifiedCharConfig) {
+      throw new Error('Akses ditolak: UID pengguna tidak terdaftar sebagai karakter resmi.');
+    }
 
     let eligibleCount = 0;
     let migratedCount = 0;
@@ -1295,11 +1414,25 @@ export async function dbMigrateStories(authUser, localStories = []) {
         continue;
       }
 
+      // If story already carries an authorUid, it MUST match authUser.uid
+      if (story.authorUid && story.authorUid !== authUser.uid) {
+        skippedOtherCharacterCount++;
+        continue;
+      }
+
       // Check author match
-      const storyAuthor = story.authorId || story.authorChar || story.author;
+      const storyAuthor = story.authorChar || story.authorId || story.author;
       if (!storyAuthor || !['nyanya', 'lala', 'lele'].includes(storyAuthor)) {
         ambiguousCount++;
         ambiguousItems.push(story);
+        continue;
+      }
+
+      // Detect contradictory story ID prefix vs author label (e.g. story-lele-... claiming nyanya)
+      const idPrefixMatch = /^story-(nyanya|lala|lele)-/.exec(String(story.id));
+      if (idPrefixMatch && idPrefixMatch[1] !== storyAuthor) {
+        ambiguousCount++;
+        ambiguousItems.push({ ...story, ambiguityReason: 'id_prefix_author_mismatch' });
         continue;
       }
 
@@ -1337,7 +1470,7 @@ export async function dbMigrateStories(authUser, localStories = []) {
           readingTimeMinutes: typeof story.readingTimeMinutes === 'number' ? story.readingTimeMinutes : 1,
           authorUid: authUser.uid,
           authorChar: verifiedChar,
-          authorName: story.authorName || verifiedCharConfig?.name || verifiedChar,
+          authorName: verifiedCharConfig.name,
           createdAt: story.createdAt || now,
           updatedAt: story.updatedAt || now,
           publishedAt: status === 'published' ? (story.publishedAt || now) : null
@@ -2826,7 +2959,11 @@ export const UNIVERSE_STATES_COLLECTION = 'universe_states';
 export const UNIVERSE_MAPPINGS = {
   nyanya: 'KIDULT',
   lala: 'TO YOU',
-  lele: 'SHADOW'
+  lele: 'SHADOW',
+  abil: 'PINWHEEL',
+  akhira: 'YAWN',
+  ela: 'US AGAIN',
+  ruben: 'ASH'
 };
 
 // Helper to serialize Firestore REST fields for Node emulator test runner
@@ -3167,7 +3304,19 @@ export async function dbSendStarMessage({
   const starX = typeof x === 'number' && x >= 0 && x <= 100 ? Math.round(x * 10) / 10 : Math.round((10 + Math.random() * 78) * 10) / 10;
   const starY = typeof y === 'number' && y >= 0 && y <= 100 ? Math.round(y * 10) / 10 : Math.round((12 + Math.random() * 66) * 10) / 10;
 
-  const origin = universeOrigin || (verifiedSenderChar === 'nyanya' ? 'kidult' : verifiedSenderChar === 'lala' ? 'to_you' : 'shadow');
+  const UNIVERSE_BY_CHAR = {
+    nyanya: 'kidult',
+    lala: 'to_you',
+    lele: 'shadow',
+    abil: 'pinwheel',
+    akhira: 'yawn',
+    ela: 'us_again',
+    ruben: 'ash'
+  };
+  const origin = universeOrigin || UNIVERSE_BY_CHAR[verifiedSenderChar];
+  if (!origin) {
+    throw new Error('Universe asal pengirim tidak terverifikasi.');
+  }
 
   if (!db) {
     throw new Error('Firestore belum terinisialisasi.');

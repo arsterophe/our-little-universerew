@@ -26,7 +26,11 @@ export const STORAGE_KEY_UNIVERSE_OFFLINE_QUEUE = 'olu_universe_offline_queue_v1
 export const CANONICAL_UIDS = {
   nyanya: 'uid-nyanya-moonlit-star-2026',
   lala: 'uid-lala-to-you-sunshine-2026',
-  lele: 'uid-lele-crystal-shadow-2026'
+  lele: 'uid-lele-crystal-shadow-2026',
+  abil: 'uid-abil-pinwheel-cloud-2026',
+  akhira: 'uid-akhira-yawn-spark-2026',
+  ela: 'uid-ela-us-again-blossom-2026',
+  ruben: 'uid-ruben-ash-snow-2026'
 };
 
 // Themed decoration catalogs for each universe
@@ -54,7 +58,11 @@ export const UNIVERSE_DECORATION_CATALOG = {
     { itemId: 'candelabra', name: 'Kandelabra Lilin Indigo', icon: '🕯️', desc: 'Lilin misterius beraroma malam tenang' },
     { itemId: 'galaxy_orb', name: 'Bola Kristal Galaksi', icon: '🔮', desc: 'Pantulan nebula dan cincin planet' },
     { itemId: 'velvet_chair', name: 'Kursi Beludru Malam', icon: '🪑', desc: 'Kursi anggun di sudut observatorium' }
-  ]
+  ],
+  pinwheel: [],
+  yawn: [],
+  us_again: [],
+  ash: []
 };
 
 // Default interactive elements state for each universe
@@ -81,6 +89,10 @@ export const DEFAULT_UNIVERSE_ELEMENTS = {
     telescope: { discoveredNebula: 'Nebula Crescent Veil 🔭' },
     mailbox: { letterCount: 1, lastChecked: null }
   },
+  abil: {},
+  akhira: {},
+  ela: {},
+  ruben: {},
   kidult: {
     greenhouse: { watered: false, count: 2, plant: 'Lavender Bintang & Mawar Senja', status: 'Mekar Indah 🌸', lastWatered: null },
     river: { lanterns: 3, lastWish: 'Semoga harimu penuh kebahagiaan ✦', lastFloated: null },
@@ -102,7 +114,11 @@ export const DEFAULT_UNIVERSE_ELEMENTS = {
     gazebo: { teaReady: true, teaType: 'Teh Melati & Embun Malam 🌙' },
     telescope: { discoveredNebula: 'Nebula Crescent Veil 🔭' },
     mailbox: { letterCount: 1, lastChecked: null }
-  }
+  },
+  pinwheel: {},
+  yawn: {},
+  us_again: {},
+  ash: {}
 };
 
 // In-memory module state
@@ -127,6 +143,10 @@ export function normalizeCharacterKey(rawKey) {
   if (k.includes('nyanya')) return 'nyanya';
   if (k.includes('lala')) return 'lala';
   if (k.includes('lele')) return 'lele';
+  if (k.includes('abil') || k.includes('pinwheel')) return 'abil';
+  if (k.includes('akhira') || k.includes('yawn')) return 'akhira';
+  if (k.includes('ela') || k.includes('us_again') || k.includes('us again')) return 'ela';
+  if (k.includes('ruben') || k.includes('ash')) return 'ruben';
   return 'nyanya';
 }
 

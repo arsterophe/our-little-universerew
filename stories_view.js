@@ -26,6 +26,7 @@ import {
   saveReadingPreferences,
   subscribeStories,
   getActiveUserCharacter,
+  getActiveUserUid,
   setActiveUserCharacter,
   calculateStoryStats
 } from './stories.js';
@@ -121,11 +122,53 @@ export function initStoriesView(callbacks = {}) {
   let selectedCoverTheme = 'starlight';
 
   /**
-   * Helper: Get active author config
+   * Helper: Get active verified author config (NEVER defaults silently to 'nyanya')
    */
   function getCurrentAuthor() {
     const activeChar = getActiveUserCharacter();
-    return CHARACTERS_STORIES[activeChar] || CHARACTERS_STORIES.nyanya;
+    return activeChar ? (CHARACTERS_STORIES[activeChar] || null) : null;
+  }
+
+  /**
+   * Helper: Resolve story author metadata from UID/character fields cleanly
+   */
+  function resolveStoryAuthorDisplay(story) {
+    if (!story || typeof story !== 'object') {
+      return {
+        id: null,
+        name: 'Penulis Tidak Diketahui',
+        role: 'Anggota Our Little Universe',
+        avatar: '',
+        universeId: '',
+        universeName: '-',
+        symbol: '✦'
+      };
+    }
+
+    let charCfg = null;
+    if (story.authorUid) {
+      charCfg = Object.values(CHARACTERS_STORIES).find((c) => c.uid === story.authorUid) || null;
+    }
+    if (!charCfg) {
+      const charKey = story.authorChar || story.authorId || story.author;
+      if (charKey && CHARACTERS_STORIES[charKey]) {
+        charCfg = CHARACTERS_STORIES[charKey];
+      }
+    }
+
+    if (charCfg) {
+      return charCfg;
+    }
+
+    return {
+      id: null,
+      name: story.authorName || 'Penulis Tidak Diketahui',
+      role: story.authorRole || 'Anggota Our Little Universe',
+      avatar: story.authorAvatar || '',
+      universeId: story.universeId || '',
+      universeName: story.universeName || '-',
+      symbol: '✦'
+    };
   }
 
   /**
@@ -570,7 +613,24 @@ export function initStoriesView(callbacks = {}) {
   function renderLibrary() {
     if (!storiesGrid) return;
 
+    const currentAuthor = getCurrentAuthor();
+    if (!currentAuthor) {
+      if (featuredStoryContainer) featuredStoryContainer.innerHTML = '';
+      storiesGrid.innerHTML = '';
+      if (storiesResultsCount) storiesResultsCount.textContent = '0 karya ditemukan';
+      if (storiesEmptyState) {
+        storiesEmptyState.classList.remove('hidden');
+        const emptyTitle = storiesEmptyState.querySelector('.empty-title');
+        const emptyDesc = storiesEmptyState.querySelector('.empty-desc');
+        if (emptyTitle) emptyTitle.textContent = 'Sesi Akun Belum Aktif ✦';
+        if (emptyDesc) emptyDesc.textContent = 'Silakan login menggunakan akun karaktermu untuk melihat koleksi Our Stories pribadimu.';
+      }
+      return;
+    }
+
     const published = getPublishedStories({
+      actor: currentAuthor.id,
+      uid: getActiveUserUid(),
       category: activeFilterCategory,
       genre: activeFilterGenre,
       universe: activeFilterUniverse,
@@ -614,17 +674,18 @@ export function initStoriesView(callbacks = {}) {
     if (featuredStoryContainer) {
       if (!searchQuery && activeFilterCategory === 'all' && activeFilterGenre === 'Semua Genre' && !bookmarksOnlyFilter && published.length > 0) {
         const feat = published[0];
+        const featAuthor = resolveStoryAuthorDisplay(feat);
         const theme = COVER_THEMES.find((t) => t.id === feat.coverTheme) || COVER_THEMES[0];
         const isBkm = isStoryBookmarked(feat.id, getActiveUserCharacter());
 
         featuredStoryContainer.innerHTML = `
           <div class="featured-story-banner" style="--cover-gradient: ${theme.gradient};">
             <div class="featured-cover-visual" style="background: ${theme.gradient};">
-              <span class="featured-universe-badge">${feat.universeName} ${theme.badge}</span>
+              <span class="featured-universe-badge">${featAuthor.universeName} ${theme.badge}</span>
               <div class="featured-book-spine"></div>
               <div class="featured-book-title-overlay">
                 <h3>${escapeHtml(feat.title)}</h3>
-                <p class="feat-author-line">${escapeHtml(feat.authorName)}</p>
+                <p class="feat-author-line">${escapeHtml(featAuthor.name)}</p>
               </div>
             </div>
             <div class="featured-details">
@@ -638,10 +699,10 @@ export function initStoriesView(callbacks = {}) {
               <p class="featured-synopsis">${escapeHtml(feat.synopsis || 'Sebuah karya sastra istimewa yang dipersembahkan untuk sahabat Our Little Universe.')}</p>
               
               <div class="featured-author-meta">
-                <img src="${feat.authorAvatar}" alt="${feat.authorName}" class="author-avatar-sm" />
+                <img src="${featAuthor.avatar}" alt="${escapeHtml(featAuthor.name)}" class="author-avatar-sm" />
                 <div class="author-info-col">
-                  <span class="author-name">${escapeHtml(feat.authorName)}</span>
-                  <span class="author-universe-tag">${feat.universeName} · ${escapeHtml(feat.authorRole)}</span>
+                  <span class="author-name">${escapeHtml(featAuthor.name)}</span>
+                  <span class="author-universe-tag">${featAuthor.universeName} · ${escapeHtml(featAuthor.role)}</span>
                 </div>
               </div>
 
@@ -674,6 +735,7 @@ export function initStoriesView(callbacks = {}) {
 
     // Render Story Cards Grid
     storiesGrid.innerHTML = published.map((story) => {
+      const cardAuthor = resolveStoryAuthorDisplay(story);
       const theme = COVER_THEMES.find((t) => t.id === story.coverTheme) || COVER_THEMES[0];
       const isBkm = isStoryBookmarked(story.id, getActiveUserCharacter());
       const progress = getReadingProgress(story.id, getActiveUserCharacter());
@@ -682,7 +744,7 @@ export function initStoriesView(callbacks = {}) {
         <article class="story-card" data-story-id="${story.id}">
           <div class="story-card-cover" style="background: ${theme.gradient};">
             <div class="cover-badge-top">
-              <span class="univ-tag ${story.universeId}">${story.universeName} ${theme.badge}</span>
+              <span class="univ-tag ${cardAuthor.universeId}">${cardAuthor.universeName} ${theme.badge}</span>
               <button type="button" class="btn-card-bookmark ${isBkm ? 'active' : ''}" data-story-id="${story.id}" title="Bookmark karya">
                 ${isBkm ? '★' : '☆'}
               </button>
@@ -705,12 +767,12 @@ export function initStoriesView(callbacks = {}) {
               <span class="card-read-time">⏱️ ${story.readingTimeMinutes} mnt baca</span>
             </div>
             <h4 class="card-title-text">${escapeHtml(story.title)}</h4>
-            <p class="card-synopsis-text">${escapeHtml(story.synopsis || 'Karya sastra dari universe ' + story.universeName)}</p>
+            <p class="card-synopsis-text">${escapeHtml(story.synopsis || 'Karya sastra dari universe ' + cardAuthor.universeName)}</p>
 
             <div class="card-footer-author">
               <div class="author-inline">
-                <img src="${story.authorAvatar}" alt="${story.authorName}" class="author-avatar-xs" />
-                <span class="author-name-text">${escapeHtml(story.authorName)}</span>
+                <img src="${cardAuthor.avatar}" alt="${escapeHtml(cardAuthor.name)}" class="author-avatar-xs" />
+                <span class="author-name-text">${escapeHtml(cardAuthor.name)}</span>
               </div>
               <button type="button" class="btn-card-read" data-story-id="${story.id}">
                 <span>Baca</span> ✦
@@ -755,6 +817,12 @@ export function initStoriesView(callbacks = {}) {
    * Open Personal Writing Space / Workspace
    */
   function openWorkspace(mode = 'editor', storyId = null, fromViewId = null) {
+    const author = getCurrentAuthor();
+    if (!author) {
+      onShowToast('⚠️ Identitas akun belum terverifikasi. Silakan login terlebih dahulu.');
+      return;
+    }
+
     if (fromViewId) previousViewId = fromViewId;
     activeTab = 'workspace';
     workspaceMode = mode;
@@ -774,7 +842,6 @@ export function initStoriesView(callbacks = {}) {
       viewStoryWorkspace.scrollTop = 0;
     }
 
-    const author = getCurrentAuthor();
     if (workspaceAuthorBadge) {
       workspaceAuthorBadge.innerHTML = `
         <img src="${author.avatar}" alt="${author.name}" class="author-avatar-sm" />
@@ -875,6 +942,12 @@ export function initStoriesView(callbacks = {}) {
    * Save Story (Draft or Publish)
    */
   function saveStoryAction(targetStatus = 'draft') {
+    const activeAuthor = getCurrentAuthor();
+    if (!activeAuthor) {
+      onShowToast('⚠️ Identitas akun belum terverifikasi. Silakan login terlebih dahulu.');
+      return;
+    }
+
     const title = inputStoryTitle ? inputStoryTitle.value.trim() : '';
     const content = editorContent ? editorContent.innerHTML.trim() : '';
 
@@ -899,12 +972,17 @@ export function initStoriesView(callbacks = {}) {
       coverTheme: selectedCoverTheme,
       content: content,
       status: targetStatus,
-      actor: getActiveUserCharacter()
+      actor: activeAuthor.id
     };
 
     if (editingStoryId) {
-      const res = updateStory(editingStoryId, payload, getActiveUserCharacter());
+      const res = updateStory(editingStoryId, payload, activeAuthor.id);
       if (res.success) {
+        if (res.cloudPromise && typeof res.cloudPromise.catch === 'function') {
+          res.cloudPromise.catch((err) => {
+            onShowToast(`⚠️ Gagal menyinkronkan ke Cloud: ${err?.message || 'Error'}`);
+          });
+        }
         setEditorSavedStatus(targetStatus);
         onShowToast(
           targetStatus === 'published'
@@ -917,6 +995,11 @@ export function initStoriesView(callbacks = {}) {
     } else {
       const res = createStory(payload);
       if (res.success) {
+        if (res.cloudPromise && typeof res.cloudPromise.catch === 'function') {
+          res.cloudPromise.catch((err) => {
+            onShowToast(`⚠️ Gagal menyinkronkan ke Cloud: ${err?.message || 'Error'}`);
+          });
+        }
         editingStoryId = res.story.id;
         setEditorSavedStatus(targetStatus);
         onShowToast(
@@ -1090,8 +1173,11 @@ export function initStoriesView(callbacks = {}) {
     }
 
     // Top Header info
+    const headerAuthor = resolveStoryAuthorDisplay(story);
     if (readingStoryTitleHeader) readingStoryTitleHeader.textContent = story.title;
-    if (readingHeaderAuthor) readingHeaderAuthor.textContent = `${story.authorName} (${story.universeName})`;
+    if (readingHeaderAuthor) readingHeaderAuthor.textContent = `${headerAuthor.name} (${headerAuthor.universeName})`;
+    if (readingProgressBar) readingProgressBar.style.width = '0%';
+    if (readingProgressText) readingProgressText.textContent = '0%';
     updateReadingBookmarkButton(story.id);
 
     // Render Article Body
@@ -1099,6 +1185,10 @@ export function initStoriesView(callbacks = {}) {
 
     // Restore Reading Progress if previously saved
     const savedProgress = getReadingProgress(story.id, getActiveUserCharacter());
+    if (savedProgress && savedProgress.percent > 0) {
+      if (readingProgressBar) readingProgressBar.style.width = `${savedProgress.percent}%`;
+      if (readingProgressText) readingProgressText.textContent = `${savedProgress.percent}%`;
+    }
     if (savedProgress && savedProgress.percent > 5 && savedProgress.scrollRatio > 0) {
       setTimeout(() => {
         if (viewStoryReading && viewStoryReading.scrollHeight > 0) {
@@ -1124,13 +1214,13 @@ export function initStoriesView(callbacks = {}) {
     if (!readingArticleContainer) return;
 
     const theme = COVER_THEMES.find((t) => t.id === story.coverTheme) || COVER_THEMES[0];
-    const author = CHARACTERS_STORIES[story.authorId] || CHARACTERS_STORIES.nyanya;
+    const author = resolveStoryAuthorDisplay(story);
 
     readingArticleContainer.innerHTML = `
       <header class="reader-header-editorial">
         <div class="reader-badge-universe">
           <span class="univ-symbol">${author.symbol}</span>
-          <span>UNIVERSE ${story.universeName}</span>
+          <span>UNIVERSE ${author.universeName}</span>
           <span class="dot-sep">·</span>
           <span>${getCategoryLabel(story.category)}</span>
           <span class="dot-sep">·</span>
@@ -1368,8 +1458,20 @@ export function initStoriesView(callbacks = {}) {
     openWorkspace,
     openReadingMode,
     closeReadingMode,
-    syncActiveUser: (charKey) => {
-      setActiveUserCharacter(charKey);
+    syncActiveUser: (charKey, authUser = null) => {
+      const prevChar = getActiveUserCharacter();
+      setActiveUserCharacter(charKey, authUser);
+      const nextChar = getActiveUserCharacter();
+      if (prevChar !== nextChar) {
+        editingStoryId = null;
+        readingStoryId = null;
+        isDirty = false;
+      }
+      if (activeTab === 'library') {
+        renderLibrary();
+      } else if (activeTab === 'workspace' && workspaceMode === 'my-works') {
+        renderMyWorks();
+      }
     }
   };
 }
