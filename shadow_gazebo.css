@@ -1,0 +1,1133 @@
+/* ==========================================================================
+   SHADOW — MOONLIT SERENITY GAZEBO (LELE'S UNIVERSE)
+   Visual Theme: Fantasy Donghua Night, Midnight Blue, Violet, Lavender, Amber
+   ========================================================================== */
+
+.view-shadow-gazebo {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  display: none;
+  overflow: hidden;
+  user-select: none;
+  z-index: 60;
+  color: #f8fafc;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #090a1a url('/assets/shadow_gazebo_bg.jpg') center center / cover no-repeat;
+  transition: opacity 0.5s ease;
+}
+
+.view-shadow-gazebo.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ==========================================================================
+   1. ATMOSPHERIC OVERLAYS & PARTICLES
+   ========================================================================== */
+
+.gazebo-ambient-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(circle at 50% 40%, rgba(20, 15, 45, 0.12) 0%, rgba(12, 10, 32, 0.45) 75%, rgba(6, 5, 18, 0.82) 100%);
+}
+
+.gazebo-fireflies-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.gazebo-firefly {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: #fef08a;
+  box-shadow: 0 0 10px #fef08a, 0 0 20px #a855f7;
+  animation: floatFirefly 9s infinite ease-in-out alternate;
+}
+
+@keyframes floatFirefly {
+  0% {
+    transform: translate(0, 0) scale(0.7);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(35px, -45px) scale(1.15);
+  }
+  100% {
+    transform: translate(-25px, -90px) scale(0.6);
+    opacity: 0.15;
+  }
+}
+
+/* ==========================================================================
+   2. TOP BAR & BRANDING
+   ========================================================================== */
+
+.gazebo-top-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 2.25rem;
+  pointer-events: auto;
+}
+
+.gazebo-brand-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-gazebo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1.15rem;
+  background: rgba(30, 20, 60, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  border-radius: 9999px;
+  color: #f1f5f9;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.btn-gazebo-back:hover {
+  background: rgba(45, 30, 90, 0.75);
+  border-color: #c4b5fd;
+  color: #ffffff;
+  transform: translateX(-2px);
+  box-shadow: 0 0 18px rgba(196, 181, 253, 0.4);
+}
+
+.gazebo-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.gazebo-crescent-icon {
+  font-size: 2.2rem;
+  color: #fef08a;
+  filter: drop-shadow(0 0 12px rgba(254, 240, 138, 0.65));
+  line-height: 1;
+}
+
+.gazebo-title-texts h1 {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(196, 181, 253, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.gazebo-title-texts p {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #c4b5fd;
+  text-transform: uppercase;
+}
+
+.gazebo-hero-quote {
+  margin: 0.35rem 0 0 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: #e2e8f0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  max-width: 440px;
+  line-height: 1.4;
+}
+
+/* Music Player Pill (Top Right) */
+.gazebo-music-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.55rem 1.25rem;
+  background: rgba(25, 18, 52, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.music-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+}
+
+.music-note-icon {
+  font-size: 1rem;
+  color: #c4b5fd;
+  animation: pulseMusic 2.4s infinite ease-in-out;
+}
+
+@keyframes pulseMusic {
+  0% { transform: scale(1); filter: drop-shadow(0 0 2px #c4b5fd); }
+  50% { transform: scale(1.2); filter: drop-shadow(0 0 8px #fbcfe8); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 2px #c4b5fd); }
+}
+
+.btn-music-play {
+  background: rgba(196, 181, 253, 0.18);
+  border: 1px solid rgba(196, 181, 253, 0.4);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-music-play:hover {
+  background: #a855f7;
+  color: #ffffff;
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+}
+
+.music-vol-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.btn-music-mute {
+  background: transparent;
+  border: none;
+  color: #c4b5fd;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.btn-music-mute:hover {
+  color: #ffffff;
+}
+
+.gazebo-vol-slider {
+  width: 75px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.gazebo-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #c4b5fd;
+  box-shadow: 0 0 6px #a855f7;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   3. FOUR CENTRAL ACTIVITY CARDS
+   ========================================================================== */
+
+.gazebo-center-stage {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
+  margin-top: auto;
+  margin-bottom: 2.25rem;
+}
+
+.gazebo-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(210px, 245px));
+  gap: 1.4rem;
+  justify-content: center;
+}
+
+.gazebo-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(32, 22, 64, 0.62) 0%, rgba(18, 12, 40, 0.75) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(196, 181, 253, 0.38);
+  border-radius: 22px;
+  padding: 1.65rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.38), 0 0 14px rgba(120, 80, 200, 0.15);
+  overflow: hidden;
+}
+
+/* Decorative Card Stars */
+.gazebo-card::before {
+  content: '✦';
+  position: absolute;
+  top: 7px;
+  font-size: 0.65rem;
+  color: rgba(216, 180, 254, 0.65);
+}
+
+.gazebo-card::after {
+  content: '✦';
+  position: absolute;
+  bottom: 7px;
+  font-size: 0.65rem;
+  color: rgba(216, 180, 254, 0.65);
+}
+
+.gazebo-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: #c4b5fd;
+  background: linear-gradient(135deg, rgba(48, 32, 92, 0.75) 0%, rgba(28, 18, 58, 0.85) 100%);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 28px rgba(196, 181, 253, 0.45);
+}
+
+.card-icon-halo {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.05) 70%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.1rem;
+  margin-bottom: 0.15rem;
+  filter: drop-shadow(0 0 12px rgba(196, 181, 253, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.gazebo-card:hover .card-icon-halo {
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 18px rgba(254, 240, 138, 0.65));
+}
+
+.gazebo-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(196, 181, 253, 0.4);
+}
+
+.gazebo-card p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   4. BOTTOM FOOTER & SERENITY BADGE
+   ========================================================================== */
+
+.gazebo-bottom-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1rem 2.25rem 1.5rem 2.25rem;
+  pointer-events: none;
+}
+
+.gazebo-serenity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 1.15rem;
+  background: rgba(22, 16, 46, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(196, 181, 253, 0.28);
+  border-radius: 9999px;
+  pointer-events: auto;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+}
+
+.badge-star-icon {
+  font-size: 1rem;
+  color: #fef08a;
+  filter: drop-shadow(0 0 8px #fef08a);
+}
+
+.badge-quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.92rem;
+  font-style: italic;
+  color: #e2e8f0;
+}
+
+.gazebo-table-tea-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  background: rgba(254, 240, 138, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(254, 240, 138, 0.35);
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fef08a;
+  pointer-events: auto;
+  box-shadow: 0 0 14px rgba(254, 240, 138, 0.25);
+  animation: glowTea 3s infinite alternate ease-in-out;
+}
+
+@keyframes glowTea {
+  0% { box-shadow: 0 0 8px rgba(254, 240, 138, 0.2); }
+  100% { box-shadow: 0 0 18px rgba(254, 240, 138, 0.45); }
+}
+
+/* ==========================================================================
+   5. GAZEBO MODALS (TEA TIME, LIBRARY, JOURNAL, QUIET MOMENT)
+   ========================================================================== */
+
+.gazebo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(6, 5, 18, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeInGazebo 0.25s ease-out;
+}
+
+.gazebo-modal-backdrop.open {
+  display: flex;
+}
+
+@keyframes fadeInGazebo {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gazebo-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  background: linear-gradient(135deg, rgba(28, 20, 56, 0.94) 0%, rgba(15, 11, 35, 0.96) 100%);
+  border: 1.5px solid rgba(196, 181, 253, 0.45);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(168, 85, 247, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUpGazebo 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpGazebo {
+  from { opacity: 0; transform: translateY(25px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.gazebo-modal-header {
+  padding: 1.35rem 1.75rem;
+  border-bottom: 1px solid rgba(196, 181, 253, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.modal-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.modal-header-icon {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px rgba(196, 181, 253, 0.5));
+}
+
+.modal-header-meta h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.modal-header-meta p {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.78rem;
+  color: #c4b5fd;
+}
+
+.btn-gazebo-modal-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  color: #cbd5e1;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-gazebo-modal-close:hover {
+  background: #f43f5e;
+  border-color: #f43f5e;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.gazebo-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Scrollbar for Gazebo modals */
+.gazebo-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.gazebo-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(196, 181, 253, 0.35);
+  border-radius: 9999px;
+}
+
+/* ==========================================================================
+   5A. TEA TIME CONTENT
+   ========================================================================== */
+
+.tea-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.tea-option-card {
+  background: rgba(35, 25, 68, 0.6);
+  border: 1.5px solid rgba(196, 181, 253, 0.28);
+  border-radius: 18px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.tea-option-card:hover {
+  background: rgba(50, 35, 95, 0.75);
+  border-color: #c4b5fd;
+  transform: translateY(-3px);
+  box-shadow: 0 0 16px rgba(196, 181, 253, 0.35);
+}
+
+.tea-option-card.selected {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.65), rgba(59, 7, 100, 0.8));
+  border-color: #fef08a;
+  box-shadow: 0 0 20px rgba(254, 240, 138, 0.38);
+}
+
+.tea-option-icon {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 8px rgba(254, 240, 138, 0.5));
+}
+
+.tea-option-card h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.tea-option-card p {
+  margin: 0;
+  font-size: 0.74rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.tea-serving-display {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.tea-cup-visual {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fef08a 0%, #a855f7 60%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 0 20px rgba(254, 240, 138, 0.4);
+}
+
+.btn-brew-tea {
+  padding: 0.75rem 1.65rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  border: none;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+  transition: all 0.2s ease;
+  width: fit-content;
+  align-self: center;
+}
+
+.btn-brew-tea:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.6);
+}
+
+/* ==========================================================================
+   5B. PERPUSTAKAAN KECIL (SMALL LIBRARY)
+   ========================================================================== */
+
+.library-books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.15rem;
+}
+
+.library-book-card {
+  background: rgba(35, 25, 68, 0.6);
+  border: 1.5px solid rgba(196, 181, 253, 0.3);
+  border-radius: 18px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.library-book-card:hover {
+  background: rgba(50, 35, 95, 0.75);
+  border-color: #c4b5fd;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+}
+
+.book-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.book-category-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  background: rgba(196, 181, 253, 0.18);
+  border-radius: 9999px;
+  color: #c4b5fd;
+}
+
+.library-book-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.library-book-card p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-progress-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: auto;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #fef08a);
+  border-radius: 9999px;
+}
+
+.progress-label-text {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Empty Library State */
+.library-empty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  border: 1px dashed rgba(196, 181, 253, 0.35);
+  border-radius: 20px;
+  gap: 0.75rem;
+}
+
+.library-empty-box h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.library-empty-box p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #94a3b8;
+  max-width: 440px;
+  line-height: 1.5;
+}
+
+.btn-open-story-studio {
+  margin-top: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  border: none;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+  transition: all 0.2s ease;
+}
+
+/* ==========================================================================
+   5C. READER VIEW (INSIDE LIBRARY)
+   ========================================================================== */
+
+.gazebo-reader-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1rem;
+}
+
+.reader-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(196, 181, 253, 0.2);
+  padding-bottom: 0.75rem;
+}
+
+.btn-reader-back {
+  background: transparent;
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  border-radius: 9999px;
+  color: #c4b5fd;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+}
+
+.reader-book-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.reader-content-sheet {
+  background: rgba(18, 14, 38, 0.75);
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  border-radius: 16px;
+  padding: 1.75rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.15rem;
+  line-height: 1.85;
+  color: #f1f5f9;
+  min-height: 280px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.reader-pager-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(196, 181, 253, 0.2);
+}
+
+.btn-reader-page {
+  padding: 0.55rem 1.15rem;
+  border-radius: 9999px;
+  background: rgba(196, 181, 253, 0.15);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reader-page:hover:not(:disabled) {
+  background: #a855f7;
+}
+
+.btn-reader-page:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   5D. JURNAL MALAM (NIGHT JOURNAL)
+   ========================================================================== */
+
+.journal-tabs-row {
+  display: flex;
+  gap: 0.65rem;
+  border-bottom: 1px solid rgba(196, 181, 253, 0.2);
+  padding-bottom: 0.75rem;
+}
+
+.journal-tab-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #cbd5e1;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.journal-tab-btn.active {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: #c4b5fd;
+  color: #ffffff;
+}
+
+.journal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.journal-input-title {
+  width: 100%;
+  padding: 0.8rem 1.1rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.journal-textarea-body {
+  width: 100%;
+  min-height: 180px;
+  padding: 1rem 1.15rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  border-radius: 14px;
+  color: #f1f5f9;
+  font-size: 0.92rem;
+  font-family: inherit;
+  line-height: 1.6;
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.journal-mood-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.journal-mood-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  border-radius: 9999px;
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.journal-mood-pill.selected {
+  background: #a855f7;
+  color: #ffffff;
+  border-color: #fef08a;
+}
+
+.journal-entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.journal-entry-card {
+  background: rgba(35, 25, 68, 0.55);
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.journal-entry-card:hover {
+  background: rgba(48, 35, 95, 0.7);
+  border-color: #c4b5fd;
+}
+
+.journal-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.journal-card-top h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.journal-card-date {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.journal-card-snippet {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   5E. QUIET MOMENT CONTENT
+   ========================================================================== */
+
+.ambient-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.15rem;
+}
+
+.ambient-sound-card {
+  background: rgba(35, 25, 68, 0.6);
+  border: 1.5px solid rgba(196, 181, 253, 0.3);
+  border-radius: 18px;
+  padding: 1.35rem 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.ambient-sound-card:hover {
+  background: rgba(50, 35, 95, 0.75);
+  border-color: #c4b5fd;
+  transform: translateY(-2px);
+}
+
+.ambient-sound-card.active {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.6), rgba(49, 46, 129, 0.75));
+  border-color: #c4b5fd;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+}
+
+.sound-card-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 8px rgba(196, 181, 253, 0.5));
+}
+
+.sound-card-meta h4 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sound-card-meta p {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.74rem;
+  color: #cbd5e1;
+}
+
+.ambient-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  border-radius: 16px;
+  padding: 1rem 1.35rem;
+  margin-top: 0.5rem;
+}
+
+.ambient-active-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fef08a;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* ==========================================================================
+   6. RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .gazebo-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 520px;
+  }
+  .tea-selection-grid {
+    grid-template-columns: 1fr;
+  }
+  .ambient-options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .gazebo-top-bar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+  }
+  .gazebo-hero-quote {
+    display: none;
+  }
+  .gazebo-cards-grid {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+    gap: 0.85rem;
+  }
+  .gazebo-card {
+    padding: 1.15rem 1rem;
+    flex-direction: row;
+    text-align: left;
+    gap: 1rem;
+  }
+  .card-icon-halo {
+    width: 52px;
+    height: 52px;
+    font-size: 1.6rem;
+  }
+  .gazebo-bottom-bar {
+    padding: 0.75rem 1.25rem 1rem 1.25rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  .gazebo-serenity-badge {
+    justify-content: center;
+  }
+  .gazebo-table-tea-indicator {
+    justify-content: center;
+  }
+}
+

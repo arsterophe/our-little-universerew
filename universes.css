@@ -976,26 +976,49 @@
 /* ==========================================================================
    VIEW 3B: KIDULT — 2D DREAMY FANTASY STORYBOOK WORLD
    ========================================================================== */
+body:has(.view-kidult-world.active) {
+  overflow: hidden !important;
+  height: 100vh;
+  height: 100dvh;
+}
+
 .view-kidult-world {
   position: relative;
   width: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
+  min-height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
   display: none;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 50% 45%, #3b2667 0%, #1e153a 65%, #0f0a1e 100%);
+  background: #0f0a1e;
   overflow: hidden;
   z-index: 15;
 }
 
+.view-kidult-world::-webkit-scrollbar {
+  display: none;
+}
+
 .view-kidult-world.active {
   display: flex;
+  align-items: stretch;
+  justify-content: center;
 }
 
 .kidult-2d-stage {
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 100vw;
+  max-height: 100vh;
+  max-height: 100dvh;
+  margin: 0 auto;
   overflow: hidden;
   user-select: none;
 }
@@ -1055,6 +1078,152 @@
     opacity: 0.9;
     transform: scale(1.04);
   }
+}
+
+/* Celestial Twinkling Stars */
+.kidult-celestial-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.k-star {
+  position: absolute;
+  color: #fef08a;
+  text-shadow: 0 0 10px rgba(254, 240, 138, 0.9), 0 0 20px rgba(244, 114, 182, 0.6);
+  animation: starTwinkle 3.5s ease-in-out infinite alternate;
+}
+
+.k-star.s1 { left: 11%; top: 12%; font-size: 1.1rem; animation-delay: 0s; }
+.k-star.s2 { left: 26%; top: 7%; font-size: 0.9rem; animation-delay: 0.8s; }
+.k-star.s3 { left: 41%; top: 5.5%; font-size: 1.25rem; color: #fff; animation-delay: 1.5s; }
+.k-star.s4 { left: 49%; top: 12%; font-size: 0.8rem; animation-delay: 2.1s; }
+.k-star.s5 { left: 59%; top: 7.5%; font-size: 1rem; animation-delay: 0.4s; }
+.k-star.s6 { left: 74%; top: 5%; font-size: 0.85rem; animation-delay: 1.9s; }
+.k-star.s7 { left: 85%; top: 13%; font-size: 1.15rem; color: #fff; animation-delay: 1.1s; }
+.k-star.s8 { left: 93%; top: 18%; font-size: 0.75rem; animation-delay: 2.7s; }
+
+@keyframes starTwinkle {
+  0% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.25) rotate(15deg); }
+  100% { opacity: 0.4; transform: scale(0.85) rotate(-5deg); }
+}
+
+/* Floating Sky Lanterns */
+.kidult-floating-lanterns {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.k-sky-lantern {
+  position: absolute;
+  font-size: 1.15rem;
+  filter: drop-shadow(0 0 12px rgba(254, 215, 170, 0.85));
+  animation: skyLanternFloat 7s ease-in-out infinite alternate;
+}
+
+.k-sky-lantern.sl1 { left: 29.5%; top: 11%; animation-delay: 0s; }
+.k-sky-lantern.sl2 { left: 56.5%; top: 15.5%; animation-delay: 1.8s; }
+.k-sky-lantern.sl3 { left: 73.5%; top: 18%; animation-delay: 3.2s; }
+.k-sky-lantern.sl4 { left: 83.5%; top: 25%; font-size: 0.95rem; animation-delay: 0.9s; }
+.k-sky-lantern.sl5 { left: 92%; top: 33%; font-size: 0.85rem; animation-delay: 2.5s; }
+
+.lantern-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 215, 170, 0.65) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+@keyframes skyLanternFloat {
+  0% { transform: translateY(0px) rotate(-2deg); opacity: 0.85; }
+  100% { transform: translateY(-12px) rotate(3deg); opacity: 1; }
+}
+
+/* Warm Breathing Castle Window & Feature Glows */
+.kidult-castle-window-glows {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.castle-win-glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.6) 0%, rgba(251, 146, 60, 0.25) 55%, transparent 75%);
+  filter: blur(4px);
+  animation: castleWindowPulse 4.5s ease-in-out infinite alternate;
+}
+
+.castle-win-glow.win-clock { left: 37.8%; top: 22.2%; width: 28px; height: 28px; animation-delay: 0s; }
+.castle-win-glow.win-upper-left { left: 32.8%; top: 32.0%; width: 22px; height: 22px; animation-delay: 1.1s; }
+.castle-win-glow.win-upper-right { left: 42.0%; top: 33.2%; width: 24px; height: 24px; animation-delay: 2.2s; }
+.castle-win-glow.win-door-main { left: 40.8%; top: 48.5%; width: 32px; height: 38px; border-radius: 12px; animation-delay: 0.5s; }
+.castle-win-glow.win-greenhouse-core { left: 65.5%; top: 42.0%; width: 55px; height: 45px; animation-delay: 1.7s; }
+.castle-win-glow.win-gazebo-core { left: 86.0%; top: 65.5%; width: 45px; height: 40px; animation-delay: 2.8s; }
+
+@keyframes castleWindowPulse {
+  0% { opacity: 0.55; transform: scale(0.95); }
+  100% { opacity: 0.95; transform: scale(1.08); }
+}
+
+/* River Flow, Mist & Floating Lilies */
+.kidult-river-flow-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.river-shimmer-mist {
+  position: absolute;
+  left: 52%;
+  top: 72%;
+  width: 38%;
+  height: 22%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(254, 215, 170, 0.18) 0%, rgba(244, 114, 182, 0.12) 45%, rgba(192, 132, 252, 0.08) 70%, transparent 85%);
+  filter: blur(14px);
+  animation: riverGlow 5s ease-in-out infinite alternate;
+}
+
+.river-ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(254, 240, 138, 0.35);
+  box-shadow: 0 0 10px rgba(254, 215, 170, 0.4);
+  animation: riverRippleAnim 4s ease-out infinite;
+}
+
+.river-ripple.r1 { left: 63%; top: 82%; width: 50px; height: 18px; animation-delay: 0s; }
+.river-ripple.r2 { left: 74%; top: 85%; width: 42px; height: 16px; animation-delay: 2s; }
+
+@keyframes riverRippleAnim {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.river-water-lantern {
+  position: absolute;
+  font-size: 1.1rem;
+  filter: drop-shadow(0 0 10px rgba(254, 240, 138, 0.85));
+  animation: waterLilyBob 4s ease-in-out infinite alternate;
+}
+
+.river-water-lantern.rwl1 { left: 59.5%; top: 80.5%; animation-delay: 0s; }
+.river-water-lantern.rwl2 { left: 72.8%; top: 84.5%; animation-delay: 1.6s; }
+
+@keyframes waterLilyBob {
+  0% { transform: translateY(0px) rotate(-1deg); }
+  100% { transform: translateY(4px) rotate(2deg); }
 }
 
 /* Floating Fireflies / Starlight Motes */
@@ -1121,65 +1290,102 @@
   }
 }
 
+/* Drifting Twilight Lavender Clouds */
+.kidult-lavender-clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.k-cloud-wisp {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(28px);
+  opacity: 0.28;
+}
+
+.k-cloud-wisp.cw1 {
+  left: 8%;
+  top: 18%;
+  width: 320px;
+  height: 90px;
+  background: radial-gradient(ellipse, #c084fc 0%, #f472b6 60%, transparent 80%);
+  animation: cloudWispDrift 28s ease-in-out infinite alternate;
+}
+
+.k-cloud-wisp.cw2 {
+  right: 12%;
+  top: 25%;
+  width: 360px;
+  height: 100px;
+  background: radial-gradient(ellipse, #f472b6 0%, #c084fc 60%, transparent 80%);
+  animation: cloudWispDrift 34s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes cloudWispDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(35px); }
+}
+
 /* --- TOP-LEFT HUD: TITLE & NYANYA CHARACTER CARD --- */
 .kidult-hud-topleft {
   position: absolute;
-  top: 2.2%;
-  left: 1.2%;
-  width: 22.4%;
-  min-width: 260px;
+  top: 20px;
+  left: 20px;
+  width: 230px;
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.65rem;
 }
 
 .kidult-title-bar {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: linear-gradient(90deg, rgba(44, 31, 78, 0.96) 0%, rgba(56, 39, 96, 0.92) 80%, rgba(56, 39, 96, 0.4) 100%);
-  padding: 0.5rem 1.2rem 0.5rem 0.5rem;
-  border-radius: 999px;
-  min-height: 54px;
+  gap: 0.65rem;
+  background: transparent;
+  padding: 0;
+  min-height: auto;
 }
 
 .kidult-back-orb {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1.5px solid rgba(254, 240, 138, 0.7);
-  background: radial-gradient(circle, rgba(91, 62, 150, 0.98) 0%, rgba(44, 28, 82, 0.98) 100%);
+  background: radial-gradient(circle, rgba(91, 62, 150, 0.95) 0%, rgba(44, 28, 82, 0.95) 100%);
   color: #fef08a;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 0 18px rgba(254, 240, 138, 0.45), inset 0 0 10px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 16px rgba(254, 240, 138, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.2);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   flex-shrink: 0;
 }
 
 .kidult-back-orb:hover {
   transform: scale(1.08);
-  box-shadow: 0 0 26px rgba(254, 240, 138, 0.85);
+  box-shadow: 0 0 24px rgba(254, 240, 138, 0.85);
 }
 
 .back-star-icon {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .back-arrow-badge {
   position: absolute;
-  bottom: -3px;
-  right: -3px;
-  width: 18px;
-  height: 18px;
+  bottom: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #f472b6;
   color: #fff;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -1187,51 +1393,55 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
+.kidult-title-text {
+  display: flex;
+  flex-direction: column;
+}
+
 .kidult-main-heading {
   font-family: 'Cinzel', serif;
-  font-size: 1.45rem;
+  font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #ffffff;
   margin: 0;
   line-height: 1.1;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 12px rgba(192, 132, 252, 0.5);
 }
 
 .kidult-sub-heading {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.14em;
-  color: #f3e8ff;
-  margin: 0.15rem 0 0;
+  color: #e9d5ff;
+  margin: 0.1rem 0 0;
   opacity: 0.95;
 }
 
-/* Character Identity Glass Card (Matching Reference Bounds) */
+/* Character Identity Glass Card (Luxury Fairytale Design) */
 .kidult-char-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.05rem 1.25rem 1.05rem 0.9rem;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(58, 41, 98, 0.97) 0%, rgba(82, 56, 128, 0.95) 100%);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1.5px solid rgba(233, 213, 255, 0.5);
-  box-shadow: 0 12px 32px rgba(15, 10, 35, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(50, 32, 88, 0.82) 0%, rgba(72, 45, 122, 0.78) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.2px solid rgba(233, 213, 255, 0.4);
+  box-shadow: 0 10px 28px rgba(15, 10, 35, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.25);
   width: 100%;
-  min-height: 162px;
   box-sizing: border-box;
 }
 
 .kidult-char-avatar-wrap {
-  width: 88px;
-  height: 88px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
-  padding: 3px;
+  padding: 2.5px;
   background: linear-gradient(135deg, #fef08a 0%, #e9d5ff 50%, #c084fc 100%);
-  box-shadow: 0 0 18px rgba(254, 240, 138, 0.55);
+  box-shadow: 0 0 16px rgba(254, 240, 138, 0.6);
   flex-shrink: 0;
 }
 
@@ -1243,103 +1453,402 @@
   display: block;
 }
 
+.kidult-char-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .kidult-char-name {
   font-family: 'Cormorant Garamond', 'Cinzel', serif;
-  font-size: 1.65rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
   line-height: 1.1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .kidult-char-role {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   color: #e9d5ff;
-  margin: 0.22rem 0 0.45rem;
-  opacity: 0.96;
+  margin: 0.15rem 0 0.3rem;
+  opacity: 0.95;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kidult-char-quote {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-style: italic;
-  font-size: 0.98rem;
+  font-size: 0.82rem;
   color: #fef3c7;
   margin: 0;
-  opacity: 0.98;
+  opacity: 0.96;
+  line-height: 1.25;
 }
 
-/* --- TOP-RIGHT HUD: RETURN BUTTON & GREETING PILL --- */
-.kidult-hud-topright {
+/* Quick Star Messages Pill */
+.kidult-star-messages-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(58, 38, 102, 0.88) 0%, rgba(85, 54, 142, 0.82) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.2px solid rgba(233, 213, 255, 0.45);
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  transition: all 0.22s ease;
+  width: fit-content;
+}
+
+.kidult-star-messages-pill:hover {
+  transform: translateY(-2px) scale(1.03);
+  border-color: #fef08a;
+  box-shadow: 0 6px 20px rgba(254, 240, 138, 0.5);
+  background: linear-gradient(135deg, rgba(82, 54, 142, 0.95) 0%, rgba(110, 72, 180, 0.9) 100%);
+}
+
+.quick-pill-icon {
+  font-size: 0.95rem;
+}
+
+/* --- BOTTOM-LEFT: MOOD & REKOMENDASI MUSIK CARD (WITH MINIMALIST HORIZONTAL PICKER) --- */
+.kidult-mood-container {
   position: absolute;
-  top: 2.2%;
-  right: 1.8%;
-  z-index: 20;
+  left: 20px;
+  bottom: 20px;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 120px);
+}
+
+.kidult-mood-music-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  padding: 0.5rem 0.85rem 0.5rem 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(46, 28, 84, 0.9) 0%, rgba(72, 44, 124, 0.85) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.2px solid rgba(233, 213, 255, 0.5);
+  box-shadow: 0 8px 24px rgba(10, 6, 25, 0.55), 0 0 14px rgba(192, 132, 252, 0.25);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.kidult-return-pill {
+.kidult-mood-music-card:hover {
+  border-color: rgba(254, 240, 138, 0.65);
+  box-shadow: 0 10px 28px rgba(10, 6, 25, 0.65), 0 0 18px rgba(192, 132, 252, 0.4);
+}
+
+.mood-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.3) 0%, rgba(192, 132, 252, 0.2) 70%);
+  border: 1px solid rgba(254, 240, 138, 0.6);
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.6rem 1.1rem;
-  border-radius: 999px;
-  background: rgba(44, 29, 82, 0.92);
-  backdrop-filter: blur(14px);
-  border: 1.5px solid rgba(233, 213, 255, 0.5);
-  color: #f3e8ff;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-  transition: all 0.25s ease;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(254, 240, 138, 0.4);
+  flex-shrink: 0;
 }
 
-.kidult-return-pill:hover {
-  background: rgba(88, 56, 150, 0.96);
+.mood-moon-icon {
+  font-size: 0.95rem;
+}
+
+.mood-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.mood-header-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: #e9d5ff;
+}
+
+.mood-state-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mood-state-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.btn-toggle-mood-picker {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(233, 213, 255, 0.4);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fef08a;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.62rem;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.btn-toggle-mood-picker:hover {
+  background: rgba(192, 132, 252, 0.4);
+  border-color: #fef08a;
+  transform: scale(1.15);
+}
+
+.picker-caret-icon {
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+
+.btn-toggle-mood-picker.is-active .picker-caret-icon {
+  transform: rotate(180deg);
+}
+
+.mood-song-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.62rem;
+  color: #fbcfe8;
+  letter-spacing: 0.02em;
+}
+
+.mood-play-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c084fc 0%, #ec4899 100%);
+  border: 1px solid rgba(254, 240, 138, 0.6);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.5);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.mood-play-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 18px rgba(254, 240, 138, 0.8);
+}
+
+/* --- HORIZONTAL MOOD OPTIONS BAR (POP-OUT) --- */
+.kidult-mood-options-bar {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: linear-gradient(135deg, rgba(38, 22, 70, 0.94) 0%, rgba(65, 38, 115, 0.92) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.2px solid rgba(233, 213, 255, 0.55);
+  box-shadow: 0 8px 24px rgba(8, 4, 22, 0.65), 0 0 20px rgba(192, 132, 252, 0.3);
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateX(-12px) scale(0.96);
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  overflow-x: auto;
+  max-width: calc(100vw - 320px);
+  white-space: nowrap;
+}
+
+.kidult-mood-options-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.kidult-mood-options-bar.is-open {
+  display: flex;
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+.mood-option-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.mood-option-pill:hover {
+  background: rgba(192, 132, 252, 0.35);
+  border-color: rgba(254, 240, 138, 0.7);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(192, 132, 252, 0.3);
+}
+
+.mood-option-pill.active {
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.55) 0%, rgba(244, 114, 182, 0.5) 100%);
+  border-color: #fef08a;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(254, 240, 138, 0.5);
+}
+
+.mood-opt-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.mood-opt-label {
+  line-height: 1;
+}
+
+/* --- BOTTOM-RIGHT: FLOATING GALLERY BUTTON --- */
+.kidult-gallery-btn {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(68, 44, 120, 0.92) 0%, rgba(98, 62, 160, 0.86) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(254, 240, 138, 0.6);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(10, 6, 25, 0.55), 0 0 16px rgba(244, 114, 182, 0.45);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+
+.kidult-gallery-btn:hover {
+  transform: scale(1.1) translateY(-2px);
+  border-color: #fef08a;
+  box-shadow: 0 12px 30px rgba(10, 6, 25, 0.7), 0 0 24px rgba(254, 240, 138, 0.85);
+}
+
+.gallery-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.gallery-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fef3c7;
+  margin-top: 2px;
+}
+
+/* --- TOP-RIGHT HUD: RETURN BUTTON, STORY PILL & GREETING PILL --- */
+.kidult-hud-topright {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.kidult-return-pill,
+.kidult-story-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.48rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(46, 28, 86, 0.88);
+  backdrop-filter: blur(14px);
+  border: 1.2px solid rgba(233, 213, 255, 0.45);
+  color: #f3e8ff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  transition: all 0.22s ease;
+}
+
+.kidult-return-pill:hover,
+.kidult-story-pill:hover {
+  background: rgba(82, 52, 142, 0.95);
   border-color: #fef08a;
   color: #ffffff;
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(254, 240, 138, 0.4);
 }
 
 .kidult-user-pill {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.45rem 1.25rem 0.45rem 0.5rem;
-  min-width: 245px;
-  min-height: 78px;
-  box-sizing: border-box;
+  gap: 0.55rem;
+  padding: 0.32rem 0.85rem 0.32rem 0.35rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(68, 46, 114, 0.97) 0%, rgba(92, 62, 142, 0.95) 100%);
-  backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(233, 213, 255, 0.55);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  background: linear-gradient(135deg, rgba(62, 40, 108, 0.92) 0%, rgba(85, 55, 138, 0.88) 100%);
+  backdrop-filter: blur(14px);
+  border: 1.2px solid rgba(233, 213, 255, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .kidult-user-avatar {
-  width: 58px;
-  height: 58px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fef08a;
+  border: 1.5px solid #fef08a;
   flex-shrink: 0;
 }
 
 .kidult-user-greeting {
   font-family: 'Cormorant Garamond', 'Plus Jakarta Sans', serif;
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #ffffff;
 }
 
 .kidult-user-sparkle {
   color: #fef08a;
-  font-size: 1.05rem;
+  font-size: 0.85rem;
 }
 
 /* --- INTERACTIVE 2D WORLD HOTSPOTS --- */
@@ -1370,49 +1879,50 @@
   box-shadow: 0 0 35px rgba(254, 240, 138, 0.35);
 }
 
-/* Floating Storybook Label Pill */
+/* Floating Storybook Label Pill (Luxury Fairytale Design) */
 .kidult-loc-pill {
   position: relative;
   z-index: 5;
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  padding: 0.45rem 1.05rem 0.45rem 0.55rem;
+  gap: 0.45rem;
+  padding: 0.38rem 0.88rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(72, 53, 118, 0.97) 0%, rgba(94, 69, 142, 0.96) 100%);
+  background: linear-gradient(135deg, rgba(62, 42, 108, 0.92) 0%, rgba(88, 58, 142, 0.88) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1.5px solid rgba(233, 213, 255, 0.58);
+  border: 1.2px solid rgba(233, 213, 255, 0.55);
   color: #ffffff;
-  font-family: 'Cormorant Garamond', 'Plus Jakarta Sans', serif;
-  font-size: 1.08rem;
-  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
   letter-spacing: 0.02em;
-  box-shadow: 0 8px 22px rgba(15, 10, 35, 0.6), 0 0 14px rgba(192, 132, 252, 0.35);
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+  box-shadow: 0 6px 18px rgba(15, 10, 35, 0.5), 0 0 12px rgba(192, 132, 252, 0.3);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
   white-space: nowrap;
 }
 
 .kidult-loc-pill.loc-pill-multiline {
-  padding: 0.4rem 1.1rem 0.4rem 0.55rem;
+  padding: 0.35rem 0.85rem;
 }
 
 .loc-pill-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
-  color: #ffffff;
-  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
+}
+
+.loc-pill-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .loc-pill-stack {
@@ -1423,120 +1933,108 @@
 }
 
 .loc-pill-stack strong {
-  font-size: 1.02rem;
+  font-size: 0.88rem;
 }
 
 .loc-pill-stack small {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 500;
   color: #e9d5ff;
 }
 
 .kidult-hotspot:hover .kidult-loc-pill,
 .kidult-hotspot.active-loc .kidult-loc-pill {
-  transform: translateY(-3px) scale(1.05);
+  transform: translateY(-2px) scale(1.06);
   border-color: #fef08a;
-  box-shadow: 0 10px 25px rgba(15, 10, 35, 0.75), 0 0 24px rgba(254, 240, 138, 0.8);
-  background: linear-gradient(135deg, rgba(98, 68, 158, 0.98) 0%, rgba(126, 86, 185, 0.96) 100%);
+  box-shadow: 0 8px 24px rgba(15, 10, 35, 0.7), 0 0 20px rgba(254, 240, 138, 0.75);
+  background: linear-gradient(135deg, rgba(88, 58, 142, 0.96) 0%, rgba(116, 76, 172, 0.94) 100%);
 }
 
-/* Exact Bounding Boxes Matching the 2D Scene Reference */
-/* 1. Rumah Vanya */
+/* Exact Bounding Boxes Matching Luxury Fairytale Artwork */
+/* 1. Rumah Vanya (Victorian Fairytale Castle) */
 .hotspot-rumah {
-  left: 26.5%;
-  top: 33.2%;
-  width: 9.2%;
-  height: 7.4%;
+  left: 36.5%;
+  top: 25.5%;
 }
 
 .hotspot-rumah .hotspot-building-zone {
   width: 220px;
-  height: 195px;
-  top: -20px;
-  left: -20px;
+  height: 180px;
+  top: -30px;
+  left: -40px;
 }
 
-/* 2. Rumah Kaca */
+/* 2. Rumah Kaca (Grand Botanical Greenhouse Dome) */
 .hotspot-rumah-kaca {
-  left: 60.3%;
-  top: 31.8%;
-  width: 11.6%;
-  height: 7.2%;
+  left: 64.0%;
+  top: 30.5%;
 }
 
 .hotspot-rumah-kaca .hotspot-building-zone {
-  width: 200px;
-  height: 175px;
-  top: 20px;
-  left: -85px;
+  width: 210px;
+  height: 170px;
+  top: -20px;
+  left: -40px;
 }
 
 /* 3. Star Messages (Teleskop Bintang) */
 .hotspot-teleskop {
-  left: 4.3%;
-  top: 39.0%;
-  width: 13.8%;
-  height: 10.2%;
+  left: 17.5%;
+  top: 54.0%;
 }
 
 .hotspot-teleskop .hotspot-building-zone {
-  width: 190px;
-  height: 180px;
-  top: 25px;
-  left: 25px;
+  width: 180px;
+  height: 170px;
+  top: -40px;
+  left: -20px;
 }
 
 /* 4. Kotak Pos */
 .hotspot-kotak-pos {
-  left: 32.0%;
-  top: 78.4%;
-  width: 9.2%;
-  height: 7.2%;
+  left: 39.0%;
+  top: 74.0%;
 }
 
 .hotspot-kotak-pos .hotspot-building-zone {
-  width: 175px;
-  height: 120px;
-  top: -30px;
-  left: -50px;
+  width: 140px;
+  height: 130px;
+  top: -25px;
+  left: -25px;
 }
 
 /* 5. Sungai Senja */
 .hotspot-sungai-senja {
-  left: 53.5%;
-  top: 78.4%;
-  width: 11.2%;
-  height: 7.2%;
+  left: 65.0%;
+  top: 80.0%;
 }
 
 .hotspot-sungai-senja .hotspot-building-zone {
-  width: 250px;
-  height: 125px;
+  width: 200px;
+  height: 110px;
   top: -20px;
-  left: -50px;
+  left: -35px;
 }
 
 /* 6. Gazebo Tepi Sungai */
 .hotspot-gazebo {
-  left: 85.2%;
-  top: 63.5%;
-  width: 9.3%;
-  height: 7.2%;
+  left: 90.0%;
+  top: 58.0%;
 }
 
 .hotspot-gazebo .hotspot-building-zone {
-  width: 210px;
-  height: 185px;
-  top: -40px;
-  left: -110px;
+  width: 200px;
+  height: 190px;
+  top: -35px;
+  left: -50px;
 }
 
 /* Interactive Chibi Nyanya on the Cobblestone Path */
 .kidult-chibi-actor {
   position: absolute;
-  left: 40.2%;
-  top: 59.5%;
+  left: 45.0%;
+  top: 55.5%;
   width: 66px;
   height: 92px;
   background: transparent;
@@ -1600,6 +2098,10 @@
   bottom: 3.5%;
   width: 370px;
   max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 4.5rem);
+  max-height: calc(100dvh - 4.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: 30;
   padding: 1.25rem 1.35rem;
   border-radius: 22px;
@@ -1611,13 +2113,28 @@
   color: #ffffff;
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
   transform: translateY(18px) scale(0.96);
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+}
+
+.kidult-location-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.kidult-location-panel::-webkit-scrollbar-track {
+  background: rgba(22, 15, 45, 0.4);
+}
+
+.kidult-location-panel::-webkit-scrollbar-thumb {
+  background: rgba(192, 132, 252, 0.45);
+  border-radius: 3px;
 }
 
 .kidult-location-panel.open {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
   transform: translateY(0) scale(1);
 }
 
@@ -3489,6 +4006,7 @@
     transform: none !important;
   }
 }
+
 /* ==========================================================================
    SHADOW — LELE'S UNIVERSE (CRYSTAL MOON SANCTUARY · LIVING 2D NIGHT WORLD)
    ========================================================================== */
@@ -3594,8 +4112,15 @@
 }
 
 @keyframes shadowMoonPulse {
-  0% { opacity: 0.55; transform: scale(0.95); }
-  100% { opacity: 0.98; transform: scale(1.08); }
+  0% {
+    opacity: 0.55;
+    transform: scale(0.95);
+  }
+
+  100% {
+    opacity: 0.98;
+    transform: scale(1.08);
+  }
 }
 
 .shadow-star-twinkle {
@@ -3606,19 +4131,71 @@
   animation: shadowStarTwinkle 3.8s ease-in-out infinite alternate;
 }
 
-.shadow-star-twinkle.s1 { left: 17.5%; top: 5.5%; animation-delay: 0s; }
-.shadow-star-twinkle.s2 { left: 31.2%; top: 4.2%; font-size: clamp(0.72rem, 0.95vw, 1rem); animation-delay: 0.9s; }
-.shadow-star-twinkle.s3 { left: 46.8%; top: 6.8%; animation-delay: 1.7s; }
-.shadow-star-twinkle.s4 { left: 61.5%; top: 4.5%; font-size: clamp(0.7rem, 0.92vw, 0.98rem); animation-delay: 0.4s; }
-.shadow-star-twinkle.s5 { left: 79.4%; top: 6.2%; animation-delay: 2.1s; }
-.shadow-star-twinkle.s6 { left: 26.5%; top: 13.8%; animation-delay: 1.3s; }
-.shadow-star-twinkle.s7 { left: 69.2%; top: 12.5%; animation-delay: 2.6s; }
-.shadow-star-twinkle.s8 { left: 88.5%; top: 15.2%; animation-delay: 0.7s; }
+.shadow-star-twinkle.s1 {
+  left: 17.5%;
+  top: 5.5%;
+  animation-delay: 0s;
+}
+
+.shadow-star-twinkle.s2 {
+  left: 31.2%;
+  top: 4.2%;
+  font-size: clamp(0.72rem, 0.95vw, 1rem);
+  animation-delay: 0.9s;
+}
+
+.shadow-star-twinkle.s3 {
+  left: 46.8%;
+  top: 6.8%;
+  animation-delay: 1.7s;
+}
+
+.shadow-star-twinkle.s4 {
+  left: 61.5%;
+  top: 4.5%;
+  font-size: clamp(0.7rem, 0.92vw, 0.98rem);
+  animation-delay: 0.4s;
+}
+
+.shadow-star-twinkle.s5 {
+  left: 79.4%;
+  top: 6.2%;
+  animation-delay: 2.1s;
+}
+
+.shadow-star-twinkle.s6 {
+  left: 26.5%;
+  top: 13.8%;
+  animation-delay: 1.3s;
+}
+
+.shadow-star-twinkle.s7 {
+  left: 69.2%;
+  top: 12.5%;
+  animation-delay: 2.6s;
+}
+
+.shadow-star-twinkle.s8 {
+  left: 88.5%;
+  top: 15.2%;
+  animation-delay: 0.7s;
+}
 
 @keyframes shadowStarTwinkle {
-  0% { opacity: 0.2; transform: scale(0.72) rotate(0deg); }
-  50% { opacity: 0.98; transform: scale(1.18) rotate(12deg); }
-  100% { opacity: 0.35; transform: scale(0.85) rotate(-8deg); }
+  0% {
+    opacity: 0.2;
+    transform: scale(0.72) rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.98;
+    transform: scale(1.18) rotate(12deg);
+  }
+
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85) rotate(-8deg);
+  }
 }
 
 /* 2. Drifting Thin Night Mist Wisps */
@@ -3663,8 +4240,15 @@
 }
 
 @keyframes shadowMistDrift {
-  0% { transform: translateX(-18px) scaleX(0.96); opacity: 0.45; }
-  100% { transform: translateX(22px) scaleX(1.06); opacity: 0.82; }
+  0% {
+    transform: translateX(-18px) scaleX(0.96);
+    opacity: 0.45;
+  }
+
+  100% {
+    transform: translateX(22px) scaleX(1.06);
+    opacity: 0.82;
+  }
 }
 
 /* 3. Pulsing Crystal Architecture Glows */
@@ -3721,8 +4305,15 @@
 }
 
 @keyframes shadowCrystalGlow {
-  0% { opacity: 0.42; transform: scale(0.95); }
-  100% { opacity: 0.94; transform: scale(1.06); }
+  0% {
+    opacity: 0.42;
+    transform: scale(0.95);
+  }
+
+  100% {
+    opacity: 0.94;
+    transform: scale(1.06);
+  }
 }
 
 /* 4. Kolam Berendam & Sungai Kristal Water Ripples */
@@ -3770,9 +4361,19 @@
 }
 
 @keyframes shadowPoolRipple {
-  0% { transform: scale(0.35); opacity: 0.85; }
-  75% { opacity: 0.35; }
-  100% { transform: scale(1.85); opacity: 0; }
+  0% {
+    transform: scale(0.35);
+    opacity: 0.85;
+  }
+
+  75% {
+    opacity: 0.35;
+  }
+
+  100% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
 }
 
 .shadow-river-ripple {
@@ -3784,14 +4385,42 @@
   animation: shadowStreamFlow 3.6s ease-in-out infinite;
 }
 
-.shadow-river-ripple.r1 { left: 49.5%; top: 82.8%; width: 5.2%; animation-delay: 0s; }
-.shadow-river-ripple.r2 { left: 53.2%; top: 88.5%; width: 6.4%; animation-delay: 1.1s; }
-.shadow-river-ripple.r3 { left: 48.0%; top: 93.2%; width: 7.0%; animation-delay: 2.2s; }
+.shadow-river-ripple.r1 {
+  left: 49.5%;
+  top: 82.8%;
+  width: 5.2%;
+  animation-delay: 0s;
+}
+
+.shadow-river-ripple.r2 {
+  left: 53.2%;
+  top: 88.5%;
+  width: 6.4%;
+  animation-delay: 1.1s;
+}
+
+.shadow-river-ripple.r3 {
+  left: 48.0%;
+  top: 93.2%;
+  width: 7.0%;
+  animation-delay: 2.2s;
+}
 
 @keyframes shadowStreamFlow {
-  0% { transform: translateX(-8px) scaleX(0.75); opacity: 0.25; }
-  50% { transform: translateX(4px) scaleX(1.1); opacity: 0.92; }
-  100% { transform: translateX(14px) scaleX(0.8); opacity: 0.2; }
+  0% {
+    transform: translateX(-8px) scaleX(0.75);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: translateX(4px) scaleX(1.1);
+    opacity: 0.92;
+  }
+
+  100% {
+    transform: translateX(14px) scaleX(0.8);
+    opacity: 0.2;
+  }
 }
 
 .shadow-waterfall-shimmer {
@@ -3802,18 +4431,46 @@
   animation: shadowWaterfallCascade 2.8s linear infinite;
 }
 
-.shadow-waterfall-shimmer.wf1 { left: 11.2%; top: 62.5%; height: 18%; }
-.shadow-waterfall-shimmer.wf2 { left: 6.8%; top: 30.5%; height: 15%; animation-delay: 1.3s; }
+.shadow-waterfall-shimmer.wf1 {
+  left: 11.2%;
+  top: 62.5%;
+  height: 18%;
+}
+
+.shadow-waterfall-shimmer.wf2 {
+  left: 6.8%;
+  top: 30.5%;
+  height: 15%;
+  animation-delay: 1.3s;
+}
 
 @keyframes shadowWaterfallCascade {
-  0% { opacity: 0.45; transform: translateY(-4px) scaleY(0.95); }
-  50% { opacity: 0.9; transform: translateY(3px) scaleY(1.04); }
-  100% { opacity: 0.45; transform: translateY(-4px) scaleY(0.95); }
+  0% {
+    opacity: 0.45;
+    transform: translateY(-4px) scaleY(0.95);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translateY(3px) scaleY(1.04);
+  }
+
+  100% {
+    opacity: 0.45;
+    transform: translateY(-4px) scaleY(0.95);
+  }
 }
 
 @keyframes shadowWaterPulse {
-  0% { opacity: 0.45; transform: scale(0.97); }
-  100% { opacity: 0.88; transform: scale(1.04); }
+  0% {
+    opacity: 0.45;
+    transform: scale(0.97);
+  }
+
+  100% {
+    opacity: 0.88;
+    transform: scale(1.04);
+  }
 }
 
 /* 5. Hydrangea & Snowdrop Flower Sway + Drifting Petals */
@@ -3825,14 +4482,48 @@
   animation: shadowFloraSway 5.5s ease-in-out infinite alternate;
 }
 
-.shadow-flower-sway.sway-h1 { left: 53%; top: 53%; width: 15%; height: 14%; animation-delay: 0s; }
-.shadow-flower-sway.sway-h2 { left: 68%; top: 52%; width: 17%; height: 15%; animation-delay: 1.4s; }
-.shadow-flower-sway.sway-s1 { left: 16%; top: 63%; width: 9%; height: 12%; animation-delay: 0.8s; }
-.shadow-flower-sway.sway-s2 { left: 35%; top: 84%; width: 12%; height: 12%; animation-delay: 2.1s; }
+.shadow-flower-sway.sway-h1 {
+  left: 53%;
+  top: 53%;
+  width: 15%;
+  height: 14%;
+  animation-delay: 0s;
+}
+
+.shadow-flower-sway.sway-h2 {
+  left: 68%;
+  top: 52%;
+  width: 17%;
+  height: 15%;
+  animation-delay: 1.4s;
+}
+
+.shadow-flower-sway.sway-s1 {
+  left: 16%;
+  top: 63%;
+  width: 9%;
+  height: 12%;
+  animation-delay: 0.8s;
+}
+
+.shadow-flower-sway.sway-s2 {
+  left: 35%;
+  top: 84%;
+  width: 12%;
+  height: 12%;
+  animation-delay: 2.1s;
+}
 
 @keyframes shadowFloraSway {
-  0% { transform: rotate(-2.5deg) translateX(-3px); opacity: 0.5; }
-  100% { transform: rotate(2.5deg) translateX(4px); opacity: 0.9; }
+  0% {
+    transform: rotate(-2.5deg) translateX(-3px);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: rotate(2.5deg) translateX(4px);
+    opacity: 0.9;
+  }
 }
 
 .shadow-petal-drift {
@@ -3846,17 +4537,56 @@
   animation: shadowPetalFloat 11s ease-in-out infinite;
 }
 
-.shadow-petal-drift.p1 { left: 58%; top: 56%; animation-delay: 0s; }
-.shadow-petal-drift.p2 { left: 66%; top: 60%; animation-delay: 2.4s; }
-.shadow-petal-drift.p3 { left: 75%; top: 57%; animation-delay: 4.8s; }
-.shadow-petal-drift.p4 { left: 39%; top: 82%; background: linear-gradient(135deg, #ffffff, #bae6fd); animation-delay: 1.7s; }
-.shadow-petal-drift.p5 { left: 21%; top: 68%; background: linear-gradient(135deg, #ffffff, #e0e7ff); animation-delay: 3.6s; }
+.shadow-petal-drift.p1 {
+  left: 58%;
+  top: 56%;
+  animation-delay: 0s;
+}
+
+.shadow-petal-drift.p2 {
+  left: 66%;
+  top: 60%;
+  animation-delay: 2.4s;
+}
+
+.shadow-petal-drift.p3 {
+  left: 75%;
+  top: 57%;
+  animation-delay: 4.8s;
+}
+
+.shadow-petal-drift.p4 {
+  left: 39%;
+  top: 82%;
+  background: linear-gradient(135deg, #ffffff, #bae6fd);
+  animation-delay: 1.7s;
+}
+
+.shadow-petal-drift.p5 {
+  left: 21%;
+  top: 68%;
+  background: linear-gradient(135deg, #ffffff, #e0e7ff);
+  animation-delay: 3.6s;
+}
 
 @keyframes shadowPetalFloat {
-  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
-  20% { opacity: 0.88; }
-  80% { opacity: 0.75; }
-  100% { transform: translate3d(-28px, 22px, 0) rotate(220deg); opacity: 0; }
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.88;
+  }
+
+  80% {
+    opacity: 0.75;
+  }
+
+  100% {
+    transform: translate3d(-28px, 22px, 0) rotate(220deg);
+    opacity: 0;
+  }
 }
 
 /* 6. Floating Crystal Shards / Light Particles */
@@ -3874,19 +4604,69 @@
   animation: shadowCrystalFloat 5.2s ease-in-out infinite alternate;
 }
 
-.shadow-crystal-particle.cp1 { left: 38.5%; top: 15.5%; animation-delay: 0s; }
-.shadow-crystal-particle.cp2 { left: 44.2%; top: 24.8%; animation-delay: 1.1s; }
-.shadow-crystal-particle.cp3 { left: 61.8%; top: 26.2%; animation-delay: 2.3s; }
-.shadow-crystal-particle.cp4 { left: 18.2%; top: 41.5%; animation-delay: 0.6s; }
-.shadow-crystal-particle.cp5 { left: 82.5%; top: 61.5%; animation-delay: 1.8s; }
-.shadow-crystal-particle.cp6 { left: 26.8%; top: 72.5%; animation-delay: 2.9s; }
-.shadow-crystal-particle.cp7 { left: 93.2%; top: 64.0%; animation-delay: 0.4s; }
-.shadow-crystal-particle.cp8 { left: 74.5%; top: 19.5%; animation-delay: 3.4s; }
+.shadow-crystal-particle.cp1 {
+  left: 38.5%;
+  top: 15.5%;
+  animation-delay: 0s;
+}
+
+.shadow-crystal-particle.cp2 {
+  left: 44.2%;
+  top: 24.8%;
+  animation-delay: 1.1s;
+}
+
+.shadow-crystal-particle.cp3 {
+  left: 61.8%;
+  top: 26.2%;
+  animation-delay: 2.3s;
+}
+
+.shadow-crystal-particle.cp4 {
+  left: 18.2%;
+  top: 41.5%;
+  animation-delay: 0.6s;
+}
+
+.shadow-crystal-particle.cp5 {
+  left: 82.5%;
+  top: 61.5%;
+  animation-delay: 1.8s;
+}
+
+.shadow-crystal-particle.cp6 {
+  left: 26.8%;
+  top: 72.5%;
+  animation-delay: 2.9s;
+}
+
+.shadow-crystal-particle.cp7 {
+  left: 93.2%;
+  top: 64.0%;
+  animation-delay: 0.4s;
+}
+
+.shadow-crystal-particle.cp8 {
+  left: 74.5%;
+  top: 19.5%;
+  animation-delay: 3.4s;
+}
 
 @keyframes shadowCrystalFloat {
-  0% { opacity: 0.18; transform: translateY(5px) scale(0.75) rotate(-10deg); }
-  50% { opacity: 0.96; transform: translateY(-6px) scale(1.15) rotate(8deg); }
-  100% { opacity: 0.28; transform: translateY(-12px) scale(0.85) rotate(20deg); }
+  0% {
+    opacity: 0.18;
+    transform: translateY(5px) scale(0.75) rotate(-10deg);
+  }
+
+  50% {
+    opacity: 0.96;
+    transform: translateY(-6px) scale(1.15) rotate(8deg);
+  }
+
+  100% {
+    opacity: 0.28;
+    transform: translateY(-12px) scale(0.85) rotate(20deg);
+  }
 }
 
 /* 7. Slow Magical Fireflies Around Flowers, Pool & Stream */
@@ -3905,35 +4685,125 @@
   box-shadow: 0 0 10px 3px rgba(254, 240, 138, 0.85), 0 0 20px 6px rgba(192, 132, 252, 0.55);
 }
 
-.shadow-firefly.ff-1 { left: 57.5%; top: 55.5%; animation: shadowFireflyMove1 11s ease-in-out infinite alternate; }
-.shadow-firefly.ff-2 { left: 65.2%; top: 58.2%; animation: shadowFireflyMove2 13s ease-in-out infinite alternate; }
-.shadow-firefly.ff-3 { left: 73.8%; top: 54.0%; animation: shadowFireflyMove3 10.5s ease-in-out infinite alternate; }
-.shadow-firefly.ff-4 { left: 32.5%; top: 65.5%; animation: shadowFireflyMove1 12.5s ease-in-out 1.4s infinite alternate; }
-.shadow-firefly.ff-5 { left: 39.2%; top: 68.0%; animation: shadowFireflyMove2 14s ease-in-out 0.8s infinite alternate; }
-.shadow-firefly.ff-6 { left: 51.5%; top: 82.5%; animation: shadowFireflyMove3 11.8s ease-in-out 2.1s infinite alternate; }
-.shadow-firefly.ff-7 { left: 43.5%; top: 52.0%; animation: shadowFireflyMove1 13.5s ease-in-out 2.7s infinite alternate; }
-.shadow-firefly.ff-8 { left: 21.0%; top: 64.5%; animation: shadowFireflyMove2 12s ease-in-out 1.9s infinite alternate; }
-.shadow-firefly.ff-9 { left: 78.5%; top: 72.5%; animation: shadowFireflyMove3 15s ease-in-out 0.5s infinite alternate; }
-.shadow-firefly.ff-10 { left: 48.2%; top: 44.5%; animation: shadowFireflyMove1 14.5s ease-in-out 3.2s infinite alternate; }
+.shadow-firefly.ff-1 {
+  left: 57.5%;
+  top: 55.5%;
+  animation: shadowFireflyMove1 11s ease-in-out infinite alternate;
+}
+
+.shadow-firefly.ff-2 {
+  left: 65.2%;
+  top: 58.2%;
+  animation: shadowFireflyMove2 13s ease-in-out infinite alternate;
+}
+
+.shadow-firefly.ff-3 {
+  left: 73.8%;
+  top: 54.0%;
+  animation: shadowFireflyMove3 10.5s ease-in-out infinite alternate;
+}
+
+.shadow-firefly.ff-4 {
+  left: 32.5%;
+  top: 65.5%;
+  animation: shadowFireflyMove1 12.5s ease-in-out 1.4s infinite alternate;
+}
+
+.shadow-firefly.ff-5 {
+  left: 39.2%;
+  top: 68.0%;
+  animation: shadowFireflyMove2 14s ease-in-out 0.8s infinite alternate;
+}
+
+.shadow-firefly.ff-6 {
+  left: 51.5%;
+  top: 82.5%;
+  animation: shadowFireflyMove3 11.8s ease-in-out 2.1s infinite alternate;
+}
+
+.shadow-firefly.ff-7 {
+  left: 43.5%;
+  top: 52.0%;
+  animation: shadowFireflyMove1 13.5s ease-in-out 2.7s infinite alternate;
+}
+
+.shadow-firefly.ff-8 {
+  left: 21.0%;
+  top: 64.5%;
+  animation: shadowFireflyMove2 12s ease-in-out 1.9s infinite alternate;
+}
+
+.shadow-firefly.ff-9 {
+  left: 78.5%;
+  top: 72.5%;
+  animation: shadowFireflyMove3 15s ease-in-out 0.5s infinite alternate;
+}
+
+.shadow-firefly.ff-10 {
+  left: 48.2%;
+  top: 44.5%;
+  animation: shadowFireflyMove1 14.5s ease-in-out 3.2s infinite alternate;
+}
 
 @keyframes shadowFireflyMove1 {
-  0% { transform: translate3d(0, 0, 0) scale(0.75); opacity: 0.35; }
-  35% { transform: translate3d(18px, -14px, 0) scale(1.15); opacity: 0.98; }
-  70% { transform: translate3d(-12px, -22px, 0) scale(0.85); opacity: 0.55; }
-  100% { transform: translate3d(14px, -8px, 0) scale(1.1); opacity: 0.92; }
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.75);
+    opacity: 0.35;
+  }
+
+  35% {
+    transform: translate3d(18px, -14px, 0) scale(1.15);
+    opacity: 0.98;
+  }
+
+  70% {
+    transform: translate3d(-12px, -22px, 0) scale(0.85);
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: translate3d(14px, -8px, 0) scale(1.1);
+    opacity: 0.92;
+  }
 }
 
 @keyframes shadowFireflyMove2 {
-  0% { transform: translate3d(0, 0, 0) scale(0.85); opacity: 0.4; }
-  40% { transform: translate3d(-20px, -12px, 0) scale(1.2); opacity: 0.95; }
-  75% { transform: translate3d(10px, -20px, 0) scale(0.7); opacity: 0.45; }
-  100% { transform: translate3d(-14px, 8px, 0) scale(1.08); opacity: 0.9; }
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.85);
+    opacity: 0.4;
+  }
+
+  40% {
+    transform: translate3d(-20px, -12px, 0) scale(1.2);
+    opacity: 0.95;
+  }
+
+  75% {
+    transform: translate3d(10px, -20px, 0) scale(0.7);
+    opacity: 0.45;
+  }
+
+  100% {
+    transform: translate3d(-14px, 8px, 0) scale(1.08);
+    opacity: 0.9;
+  }
 }
 
 @keyframes shadowFireflyMove3 {
-  0% { transform: translate3d(0, 0, 0) scale(0.8); opacity: 0.3; }
-  50% { transform: translate3d(16px, 12px, 0) scale(1.18); opacity: 0.96; }
-  100% { transform: translate3d(-18px, -14px, 0) scale(0.9); opacity: 0.7; }
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.8);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: translate3d(16px, 12px, 0) scale(1.18);
+    opacity: 0.96;
+  }
+
+  100% {
+    transform: translate3d(-18px, -14px, 0) scale(0.9);
+    opacity: 0.7;
+  }
 }
 
 /* --- TOP-LEFT HUD: ECLIPSE ORB, TITLE & LELE CHARACTER CARD --- */
@@ -4096,31 +4966,34 @@
   opacity: 0.94;
 }
 
-/* --- TOP-RIGHT HUD: USER GREETING PILL & QUICK LOCATION DIRECTORY --- */
+/* --- TOP-RIGHT HUD: USER GREETING PILL & RETURN BUTTONS --- */
 .shadow-hud-topright {
   position: absolute;
-  top: 1.2%;
-  right: 1.1%;
-  width: 16.5%;
+  top: 20px;
+  right: 20px;
+  width: auto;
   z-index: 20;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1.6vh;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .shadow-user-pill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  width: 100%;
-  min-height: 6.8vh;
+  width: auto;
+  min-height: auto;
   padding: 0.28rem 0.85rem 0.28rem 0.32rem;
   box-sizing: border-box;
   border-radius: 999px;
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(49, 46, 129, 0.85) 100%);
   border: 1.5px solid rgba(196, 181, 253, 0.72);
   box-shadow: 0 8px 22px rgba(10, 12, 32, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .shadow-user-avatar {
@@ -4146,79 +5019,7 @@
   margin-left: auto;
 }
 
-/* Right Quick Navigation Directory ("Mau ke mana dulu, Lele?") */
-.shadow-quick-menu {
-  width: 84%;
-  min-height: 43.2vh;
-  padding: 0.75rem 0.65rem;
-  box-sizing: border-box;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #1b1942 0%, #272258 55%, #1e1b46 100%);
-  border: 1.5px solid rgba(196, 181, 253, 0.68);
-  box-shadow: 0 12px 30px rgba(8, 10, 28, 0.65);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
 
-.shadow-quick-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(0.64rem, 0.78vw, 0.76rem);
-  font-weight: 600;
-  color: #f3e8ff;
-  text-align: center;
-  margin: 0 0 0.45rem;
-  line-height: 1.3;
-}
-
-.shadow-quick-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.34rem;
-}
-
-.shadow-quick-item {
-  display: flex;
-  align-items: center;
-  gap: 0.48rem;
-  width: 100%;
-  padding: 0.34rem 0.5rem;
-  border-radius: 10px;
-  border: 1px solid rgba(196, 181, 253, 0.2);
-  background: rgba(255, 255, 255, 0.06);
-  color: #f8fafc;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(0.62rem, 0.75vw, 0.73rem);
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.shadow-quick-item:hover,
-.shadow-quick-item.active-nav {
-  background: rgba(167, 139, 250, 0.28);
-  border-color: rgba(233, 213, 255, 0.85);
-  transform: translateX(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.32);
-}
-
-.sq-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(192, 132, 252, 0.24);
-  border: 1px solid rgba(216, 180, 254, 0.65);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.68rem;
-  flex-shrink: 0;
-}
-
-.sq-label {
-  line-height: 1.18;
-}
 
 /* --- INTERACTIVE 2D LOCATION HOTSPOTS (PILLS & HOVER AURAS) --- */
 .shadow-hotspot {
@@ -4395,8 +5196,13 @@
 }
 
 @keyframes shadowLeleBreathe {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(-4px) scale(1.03); }
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    transform: translateY(-4px) scale(1.03);
+  }
 }
 
 .shadow-chibi-ring,
@@ -4414,8 +5220,15 @@
 }
 
 @keyframes shadowAuraPulse {
-  0% { transform: scale(0.9); opacity: 0.5; }
-  100% { transform: scale(1.12); opacity: 0.92; }
+  0% {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1.12);
+    opacity: 0.92;
+  }
 }
 
 .shadow-lele-wings {
@@ -4450,13 +5263,23 @@
 }
 
 @keyframes shadowLeleWingL {
-  0% { transform: rotate(-8deg) scaleX(0.88); }
-  100% { transform: rotate(12deg) scaleX(1.06); }
+  0% {
+    transform: rotate(-8deg) scaleX(0.88);
+  }
+
+  100% {
+    transform: rotate(12deg) scaleX(1.06);
+  }
 }
 
 @keyframes shadowLeleWingR {
-  0% { transform: rotate(8deg) scaleX(0.88); }
-  100% { transform: rotate(-12deg) scaleX(1.06); }
+  0% {
+    transform: rotate(8deg) scaleX(0.88);
+  }
+
+  100% {
+    transform: rotate(-12deg) scaleX(1.06);
+  }
 }
 
 .shadow-speech-bubble,
@@ -4699,9 +5522,7 @@
     border-radius: 0;
   }
 
-  .shadow-quick-menu {
-    display: none;
-  }
+
 
   .shadow-location-panel {
     position: fixed;
@@ -4719,6 +5540,7 @@
 
 /* Accessibility: Respect Reduced Motion Preferences for SHADOW World */
 @media (prefers-reduced-motion: reduce) {
+
   .shadow-moon-halo,
   .shadow-star-twinkle,
   .shadow-mist-wisp,
@@ -4741,4 +5563,250 @@
   .shadow-parallax-layer {
     transform: none !important;
   }
+}
+
+/* ==========================================================================
+   ISLAND ACCESS BADGES: MY UNIVERSE vs VISIT UNIVERSE
+   ========================================================================== */
+.island-universe-badge-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.univ-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.85rem;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.univ-badge .badge-star {
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.univ-badge.my-universe {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.32), rgba(217, 119, 6, 0.42));
+  border: 1px solid rgba(253, 224, 71, 0.75);
+  color: #fef08a;
+  box-shadow: 0 0 16px rgba(234, 179, 8, 0.48), inset 0 1px 2px rgba(255, 255, 255, 0.45);
+}
+
+.univ-badge.visit-universe {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.univ-island-card.is-my-universe {
+  filter: drop-shadow(0 14px 38px rgba(234, 179, 8, 0.25));
+}
+
+.univ-island-card.is-my-universe .island-glass-card {
+  border-color: rgba(253, 224, 71, 0.55);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 24px rgba(234, 179, 8, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+/* ==========================================================================
+   ORBIT CALENDAR: SELECTED DAY EVENTS STRIP & EMPTY STATE
+   ========================================================================== */
+.selected-day-events-container {
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.1rem;
+}
+
+.orbit-empty-day-state {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.15rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+.orbit-empty-day-state .empty-sparkle {
+  color: #fef08a;
+  font-size: 1rem;
+  animation: pulseSparkle 2s infinite ease-in-out;
+}
+
+.selected-day-pills-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.selected-day-event-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.95rem;
+  background: rgba(30, 20, 58, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  color: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.24s ease;
+  width: 100%;
+}
+
+.selected-day-event-card:hover {
+  background: rgba(45, 28, 85, 0.75);
+  border-color: rgba(216, 180, 254, 0.45);
+  transform: translateX(3px);
+}
+
+.selected-day-event-card .event-icon {
+  font-size: 1.1rem;
+}
+
+.selected-day-event-card .event-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.15rem;
+}
+
+.selected-day-event-card .event-title {
+  font-size: 0.88rem;
+  color: #f8fafc;
+}
+
+.selected-day-event-card .event-time {
+  font-size: 0.74rem;
+  color: #cbd5e1;
+}
+
+.selected-day-event-card .arrow-peek {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.selected-day-event-card:hover .arrow-peek {
+  transform: translateX(3px);
+  color: #fef08a;
+}
+
+/* ==========================================================================
+   UNIFIED "🌌 PERGI KE UNIVERSE" NAVIGATION BUTTONS
+   ========================================================================== */
+.univ-goto-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(0.74rem, 0.92vw, 0.88rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 25;
+  text-decoration: none;
+}
+
+.univ-goto-btn .goto-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.univ-goto-btn .goto-text {
+  letter-spacing: 0.02em;
+}
+
+.univ-goto-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* 1. KIDULT Theme Navigation Buttons */
+.kidult-return-pill,
+.kidult-back-btn {
+  background: linear-gradient(135deg, rgba(44, 29, 82, 0.95) 0%, rgba(76, 44, 130, 0.95) 100%);
+  border: 1.5px solid rgba(233, 213, 255, 0.65);
+  color: #ffffff;
+  box-shadow: 0 8px 22px rgba(15, 10, 30, 0.55);
+}
+
+.kidult-return-pill:hover,
+.kidult-back-btn:hover {
+  background: linear-gradient(135deg, rgba(62, 38, 115, 0.98) 0%, rgba(100, 58, 168, 0.98) 100%);
+  border-color: #fef08a;
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 10, 30, 0.7), 0 0 18px rgba(234, 179, 8, 0.5);
+}
+
+.kidult-back-btn {
+  position: absolute;
+  right: 1.2%;
+  bottom: 1.8%;
+  z-index: 22;
+  padding: 0.5rem 1.15rem;
+}
+
+/* 2. TO YOU Theme Navigation Buttons */
+.toyou-return-pill,
+.toyou-back-btn {
+  background: linear-gradient(135deg, rgba(56, 92, 80, 0.95) 0%, rgba(76, 116, 104, 0.95) 100%);
+  border: 1.5px solid rgba(254, 240, 138, 0.75);
+  color: #ffffff;
+  box-shadow: 0 8px 22px rgba(18, 42, 36, 0.55);
+}
+
+.toyou-return-pill:hover,
+.toyou-back-btn:hover {
+  background: linear-gradient(135deg, rgba(72, 112, 98, 0.98) 0%, rgba(94, 140, 126, 0.98) 100%);
+  border-color: #fde047;
+  color: #ffffff;
+  box-shadow: 0 10px 26px rgba(18, 42, 36, 0.65), 0 0 18px rgba(254, 240, 138, 0.65);
+}
+
+/* 3. SHADOW Theme Navigation Buttons */
+.shadow-return-pill,
+.shadow-back-btn {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(49, 46, 129, 0.95) 100%);
+  border: 1.5px solid rgba(216, 180, 254, 0.78);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(8, 10, 28, 0.7);
+}
+
+.shadow-return-pill:hover,
+.shadow-back-btn:hover {
+  background: linear-gradient(135deg, rgba(46, 38, 107, 0.98) 0%, rgba(67, 56, 170, 0.98) 100%);
+  border-color: #f3e8ff;
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(8, 10, 28, 0.85), 0 0 18px rgba(192, 132, 252, 0.65);
+}
+
+/* Align Top-Right HUDs gracefully with the new navigation button */
+.kidult-hud-topright,
+.toyou-hud-topright,
+.shadow-hud-topright {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }

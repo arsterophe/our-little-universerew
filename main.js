@@ -10,15 +10,17 @@ import {
   logoutFirebase,
   verifyCharacterAuthorization,
   CHARACTER_AUTH_RULES,
-  identifyUserCharacter
+  identifyUserCharacter,
+  dbSyncUserProfile,
+  dbMigrateUniverseState
 } from './firebase.js';
 
 import { onAuthStateChanged } from 'firebase/auth';
-import { initOrbitView } from './orbit_view.js';
 import { setActiveUserCharacter } from './orbit.js';
-import { initMomentsView } from './moments_view.js';
 import { setActiveUserCharacter as setActiveUserMoments } from './moments.js';
-import { initUniversesView } from './universes_view.js';
+import { setActiveUserCharacter as setActiveUserStories } from './stories.js';
+import { setActiveUserCharacter as setActiveUserMessages } from './messages.js';
+import { setActiveUserCharacter as setActiveUserGames } from './games.js';
 
 
 
@@ -36,7 +38,7 @@ const CHARACTERS = {
     greeting: 'Selamat datang, Nyanya ✦',
     accentColor: '#c084fc',
     universe: 'KIDULT',
-    ownerName: 'Alenda'
+    ownerName: 'Vanya'
   },
   lala: {
     id: 'lala',
@@ -64,7 +66,7 @@ const CHARACTERS = {
     greeting: 'Selamat datang, Lele ✦',
     accentColor: '#818cf8',
     universe: 'SHADOW',
-    ownerName: 'Vanya'
+    ownerName: 'Alenda'
   }
 };
 
@@ -117,62 +119,436 @@ const auditEmail = document.getElementById('audit-email');
 const auditUid = document.getElementById('audit-uid');
 const auditUniverse = document.getElementById('audit-universe');
 
+// Initial UI Loader Controls
+function hideInitialLoader() {
+  const loader = document.getElementById('cosmic-app-loader');
+  if (loader) {
+    loader.classList.add('loaded');
+  }
+}
+
+function setLoaderStatus(text = '') {
+  const txtEl = document.getElementById('loader-status-text');
+  if (txtEl && text) txtEl.textContent = text;
+}
+
+// Controller loader singletons
+const controllerPromises = {};
+
+export async function ensureUniversesController() {
+  if (window.universesController) return window.universesController;
+  if (!controllerPromises.universes) {
+    controllerPromises.universes = import('./universes_view.js').then(({ initUniversesView }) => {
+      window.universesController = initUniversesView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onNavigateOrbit: async (fromView) => {
+          const ctrl = await ensureOrbitController();
+          if (ctrl && typeof ctrl.openOrbit === 'function') ctrl.openOrbit(fromView);
+        },
+        onNavigateMoments: async (fromView) => {
+          const ctrl = await ensureMomentsController();
+          if (ctrl && typeof ctrl.openMoments === 'function') ctrl.openMoments(fromView);
+        },
+        onNavigatePhotobooth: async (fromView) => {
+          const ctrl = await ensurePhotoboothController();
+          if (ctrl && typeof ctrl.openPhotobooth === 'function') ctrl.openPhotobooth(fromView, activeCharacterKey);
+        },
+        onNavigateMessages: async (fromView) => {
+          const ctrl = await ensureMessagesController();
+          if (ctrl && typeof ctrl.openMessages === 'function') ctrl.openMessages(fromView, activeCharacterKey);
+        },
+        onNavigateGames: async (fromView) => {
+          const ctrl = await ensureGamesController();
+          if (ctrl && typeof ctrl.openGames === 'function') ctrl.openGames(fromView, activeCharacterKey);
+        },
+        onNavigateStarMessages: async (originUniverse) => {
+          const ctrl = await ensureStarMessagesController();
+          if (ctrl && typeof ctrl.openStarMessages === 'function') {
+            ctrl.openStarMessages(originUniverse, activeCharacterKey);
+          }
+        },
+        onNavigateKotakPos: async (originUniverse) => {
+          const ctrl = await ensureKotakPosController();
+          if (ctrl && typeof ctrl.openKotakPos === 'function') {
+            ctrl.openKotakPos(originUniverse, activeCharacterKey);
+          }
+        },
+        onNavigateShadowGazebo: async () => {
+          const ctrl = await ensureShadowGazeboController();
+          if (ctrl && typeof ctrl.openShadowGazebo === 'function') {
+            ctrl.openShadowGazebo();
+          }
+        },
+        onNavigateShadowGarden: async () => {
+          const ctrl = await ensureShadowGardenController();
+          if (ctrl && typeof ctrl.showShadowGardenView === 'function') {
+            ctrl.showShadowGardenView();
+          }
+        },
+        onNavigateShadowArtGallery: async () => {
+          const ctrl = await ensureShadowArtGalleryController();
+          if (ctrl && typeof ctrl.showShadowArtGalleryView === 'function') {
+            ctrl.showShadowArtGalleryView();
+          }
+        },
+        onNavigateShadowCrystalTower: async () => {
+          const ctrl = await ensureShadowCrystalTowerController();
+          if (ctrl && typeof ctrl.showShadowCrystalTowerView === 'function') {
+            ctrl.showShadowCrystalTowerView();
+          }
+        },
+        onNavigateStories: async (fromView) => {
+          const ctrl = await ensureStoriesController();
+          if (ctrl && typeof ctrl.openOurStories === 'function') ctrl.openOurStories();
+        },
+        onNavigateStoryWorkspace: async (fromView, mode = 'editor', storyId = null) => {
+          const ctrl = await ensureStoriesController();
+          if (ctrl && typeof ctrl.openWorkspace === 'function') ctrl.openWorkspace(mode, storyId);
+        },
+        onSwitchCharacter: (charKey) => {
+          if (charKey && CHARACTERS[charKey]) {
+            selectCharacter(charKey);
+          } else {
+            returnToSelection();
+          }
+        },
+        onLogout: handleLogout
+      });
+      return window.universesController;
+    });
+  }
+  return controllerPromises.universes;
+}
+
+export async function ensureOrbitController() {
+  if (window.orbitController) return window.orbitController;
+  if (!controllerPromises.orbit) {
+    controllerPromises.orbit = import('./orbit_view.js').then(({ initOrbitView }) => {
+      window.orbitController = initOrbitView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        }
+      });
+      return window.orbitController;
+    });
+  }
+  return controllerPromises.orbit;
+}
+
+export async function ensureMomentsController() {
+  if (window.momentsController) return window.momentsController;
+  if (!controllerPromises.moments) {
+    controllerPromises.moments = import('./moments_view.js').then(({ initMomentsView }) => {
+      window.momentsController = initMomentsView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        }
+      });
+      return window.momentsController;
+    });
+  }
+  return controllerPromises.moments;
+}
+
+export async function ensurePhotoboothController() {
+  if (window.photoboothController) return window.photoboothController;
+  if (!controllerPromises.photobooth) {
+    controllerPromises.photobooth = import('./photobooth_view.js').then(({ initPhotoboothView }) => {
+      window.photoboothController = initPhotoboothView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        }
+      });
+      return window.photoboothController;
+    });
+  }
+  return controllerPromises.photobooth;
+}
+
+export async function ensureStoriesController() {
+  if (window.storiesController) return window.storiesController;
+  if (!controllerPromises.stories) {
+    controllerPromises.stories = import('./stories_view.js').then(({ initStoriesView }) => {
+      window.storiesController = initStoriesView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onNavigateBack: async () => {
+          const ctrl = await ensureUniversesController();
+          if (ctrl && typeof ctrl.showUniversesStage === 'function') {
+            ctrl.showUniversesStage();
+          }
+        }
+      });
+      return window.storiesController;
+    });
+  }
+  return controllerPromises.stories;
+}
+
+export async function ensureMessagesController() {
+  if (window.messagesController) return window.messagesController;
+  if (!controllerPromises.messages) {
+    controllerPromises.messages = import('./messages_view.js').then(({ initMessagesView }) => {
+      window.messagesController = initMessagesView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        }
+      });
+      return window.messagesController;
+    });
+  }
+  return controllerPromises.messages;
+}
+
+export async function ensureGamesController() {
+  if (window.gamesController) return window.gamesController;
+  if (!controllerPromises.games) {
+    controllerPromises.games = import('./games_view.js').then(({ initGamesView }) => {
+      window.gamesController = initGamesView({
+        onShowToast: showToast,
+        onNavigateFeature: async (target) => {
+          if (target === 'messages') {
+            const ctrl = await ensureMessagesController();
+            if (ctrl && typeof ctrl.openMessages === 'function') ctrl.openMessages('view-games', activeCharacterKey);
+          } else if (target === 'photobooth') {
+            const ctrl = await ensurePhotoboothController();
+            if (ctrl && typeof ctrl.openPhotobooth === 'function') ctrl.openPhotobooth('view-games', activeCharacterKey);
+          } else if (target === 'stories') {
+            const ctrl = await ensureStoriesController();
+            if (ctrl && typeof ctrl.openOurStories === 'function') ctrl.openOurStories();
+          } else if (target === 'orbit') {
+            const ctrl = await ensureOrbitController();
+            if (ctrl && typeof ctrl.openOrbit === 'function') ctrl.openOrbit('view-games');
+          }
+        }
+      });
+      return window.gamesController;
+    });
+  }
+  return controllerPromises.games;
+}
+
+export async function ensureStarMessagesController() {
+  if (window.starMessagesController) return window.starMessagesController;
+  if (!controllerPromises.starMessages) {
+    controllerPromises.starMessages = import('./star_messages_view.js').then(({ initStarMessagesView }) => {
+      window.starMessagesController = initStarMessagesView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onNavigateBack: async (originUniverse) => {
+          const univCtrl = await ensureUniversesController();
+          if (univCtrl) {
+            if (originUniverse === 'to_you' || originUniverse === 'toyou') {
+              univCtrl.openToYouWorld();
+            } else if (originUniverse === 'shadow') {
+              univCtrl.openShadowWorld();
+            } else {
+              univCtrl.openKidultWorld();
+            }
+          }
+        }
+      });
+      return window.starMessagesController;
+    });
+  }
+  return controllerPromises.starMessages;
+}
+
+export async function ensureKotakPosController() {
+  if (window.kotakPosController) return window.kotakPosController;
+  if (!controllerPromises.kotakPos) {
+    controllerPromises.kotakPos = import('./mailbox_view.js').then(({ initKotakPosView }) => {
+      window.kotakPosController = initKotakPosView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onNavigateBack: async (originUniverse) => {
+          const univCtrl = await ensureUniversesController();
+          if (univCtrl) {
+            if (originUniverse === 'to_you' || originUniverse === 'toyou') {
+              univCtrl.openToYouWorld();
+            } else if (originUniverse === 'shadow') {
+              univCtrl.openShadowWorld();
+            } else {
+              univCtrl.openKidultWorld();
+            }
+          }
+        }
+      });
+      return window.kotakPosController;
+    });
+  }
+  return controllerPromises.kotakPos;
+}
+
+export async function ensureShadowGazeboController() {
+  if (window.shadowGazeboController) return window.shadowGazeboController;
+  if (!controllerPromises.shadowGazebo) {
+    controllerPromises.shadowGazebo = import('./shadow_gazebo_view.js').then(({ initShadowGazeboView }) => {
+      window.shadowGazeboController = initShadowGazeboView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onNavigateBack: async () => {
+          const univCtrl = await ensureUniversesController();
+          if (univCtrl) {
+            univCtrl.openShadowWorld();
+          }
+        },
+        onNavigateStoryWorkspace: async (fromView, mode = 'editor', storyId = null) => {
+          const ctrl = await ensureStoriesController();
+          if (ctrl && typeof ctrl.openWorkspace === 'function') {
+            ctrl.openWorkspace(mode, storyId);
+          }
+        }
+      });
+      return window.shadowGazeboController;
+    });
+  }
+  return controllerPromises.shadowGazebo;
+}
+
+export async function ensureShadowGardenController() {
+  if (window.shadowGardenController) return window.shadowGardenController;
+  if (!controllerPromises.shadowGarden) {
+    controllerPromises.shadowGarden = import('./shadow_garden_view.js').then(({ initShadowGardenView, showShadowGardenView }) => {
+      initShadowGardenView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onReturnToUniverse: async () => {
+          const univCtrl = await ensureUniversesController();
+          if (univCtrl) {
+            univCtrl.openShadowWorld();
+          }
+        }
+      });
+      window.shadowGardenController = { showShadowGardenView };
+      return window.shadowGardenController;
+    });
+  }
+  return controllerPromises.shadowGarden;
+}
+
+export async function ensureShadowArtGalleryController() {
+  if (window.shadowArtGalleryController) return window.shadowArtGalleryController;
+  if (!controllerPromises.shadowArtGallery) {
+    controllerPromises.shadowArtGallery = import('./shadow_art_gallery_view.js').then(({ initShadowArtGalleryView }) => {
+      window.shadowArtGalleryController = initShadowArtGalleryView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onNavigateBack: async () => {
+          const univCtrl = await ensureUniversesController();
+          if (univCtrl) {
+            univCtrl.openShadowWorld();
+          }
+        }
+      });
+      return window.shadowArtGalleryController;
+    });
+  }
+  return controllerPromises.shadowArtGallery;
+}
+
+export async function ensureShadowCrystalTowerController() {
+  if (window.shadowCrystalTowerController) return window.shadowCrystalTowerController;
+  if (!controllerPromises.shadowCrystalTower) {
+    controllerPromises.shadowCrystalTower = import('./shadow_crystal_tower_view.js').then(({ initShadowCrystalTowerView }) => {
+      window.shadowCrystalTowerController = initShadowCrystalTowerView({
+        onShowToast: showToast,
+        onTriggerSparkle: (x, y) => {
+          if (typeof window.triggerSparkleBurst === 'function') {
+            window.triggerSparkleBurst(x, y);
+          }
+        },
+        onNavigateBack: async () => {
+          const univCtrl = await ensureUniversesController();
+          if (univCtrl) {
+            univCtrl.openShadowWorld();
+          }
+        },
+        onNavigateOrbit: async (fromView) => {
+          const orbitCtrl = await ensureOrbitController();
+          if (orbitCtrl && typeof orbitCtrl.openOrbit === 'function') {
+            orbitCtrl.openOrbit(fromView || 'view-shadow-world');
+          }
+        }
+      });
+      return window.shadowCrystalTowerController;
+    });
+  }
+  return controllerPromises.shadowCrystalTower;
+}
+
 // Initialize Application
 function initApp() {
   initStarsCanvas();
   setupEventListeners();
   initAuthObserver();
   
-  window.orbitController = initOrbitView({
-    onShowToast: showToast,
-    onTriggerSparkle: (x, y) => {
-      if (typeof window.triggerSparkleBurst === 'function') {
-        window.triggerSparkleBurst(x, y);
-      }
-    }
-  });
+  // Instantly release initial selection UI to user
+  hideInitialLoader();
 
-  window.momentsController = initMomentsView({
-    onShowToast: showToast,
-    onTriggerSparkle: (x, y) => {
-      if (typeof window.triggerSparkleBurst === 'function') {
-        window.triggerSparkleBurst(x, y);
-      }
-    }
-  });
-
-  window.universesController = initUniversesView({
-    onShowToast: showToast,
-    onTriggerSparkle: (x, y) => {
-      if (typeof window.triggerSparkleBurst === 'function') {
-        window.triggerSparkleBurst(x, y);
-      }
-    },
-    onNavigateOrbit: (fromView) => {
-      if (window.orbitController && typeof window.orbitController.openOrbit === 'function') {
-        window.orbitController.openOrbit(fromView);
-      }
-    },
-    onNavigateMoments: (fromView) => {
-      if (window.momentsController && typeof window.momentsController.openMoments === 'function') {
-        window.momentsController.openMoments(fromView);
-      }
-    },
-    onSwitchCharacter: (charKey) => {
-      if (charKey && CHARACTERS[charKey]) {
-        selectCharacter(charKey);
-      } else {
-        returnToSelection();
-      }
-    },
-    onLogout: handleLogout
-  });
-
-  // Setup preview button on Selection page
+  // Setup entrance button on Selection page (strictly protected by authentication guard)
   const btnGotoUniverses = document.getElementById('btn-goto-universes-preview');
   if (btnGotoUniverses) {
-    btnGotoUniverses.addEventListener('click', () => {
+    btnGotoUniverses.addEventListener('click', async () => {
+      if (!currentAuthenticatedUser) {
+        showToast('🔒 Silakan pilih karakter dan login terlebih dahulu untuk mengakses Our Little Universe ✧');
+        const selStage = document.getElementById('character-selection-stage');
+        if (selStage) selStage.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      await ensureUniversesController();
       showUniversesView();
+    });
+  }
+
+  const btnGotoPhotobooth = document.getElementById('btn-goto-photobooth-preview');
+  if (btnGotoPhotobooth) {
+    btnGotoPhotobooth.addEventListener('click', async () => {
+      const ctrl = await ensurePhotoboothController();
+      if (ctrl && typeof ctrl.openPhotobooth === 'function') {
+        ctrl.openPhotobooth('view-selection', activeCharacterKey);
+      }
     });
   }
 
@@ -182,6 +558,29 @@ function initApp() {
       e.preventDefault();
       showToast('✧ Our Little Universe: Tiga dunia, satu langit persahabatan ✧');
     });
+  }
+
+  // Pre-warm secondary modules during idle frames without freezing the UI
+  const prewarmIdle = () => {
+    ensureUniversesController().catch(() => {});
+    setTimeout(() => {
+      ensureMomentsController().catch(() => {});
+      ensureOrbitController().catch(() => {});
+      ensureStoriesController().catch(() => {});
+      ensureMessagesController().catch(() => {});
+      ensureGamesController().catch(() => {});
+      ensurePhotoboothController().catch(() => {});
+      ensureStarMessagesController().catch(() => {});
+      ensureKotakPosController().catch(() => {});
+      ensureShadowGazeboController().catch(() => {});
+      ensureShadowGardenController().catch(() => {});
+    }, 1200);
+  };
+
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(prewarmIdle, { timeout: 2000 });
+  } else {
+    setTimeout(prewarmIdle, 600);
   }
 }
 
@@ -203,22 +602,73 @@ function initAuthObserver() {
     currentAuthenticatedUser = user;
 
     if (user) {
-      console.log('Firebase Auth session aktif:', user.email, user.uid);
-      // If user is logged in, determine their character
-      const userCharKey = activeCharacterKey || identifyUserCharacter(user);
+      try {
+        if (!user.emailVerified && typeof user.reload === 'function') {
+          await user.reload();
+        }
+        if (typeof user.getIdToken === 'function') {
+          await user.getIdToken(true);
+        }
+      } catch (refreshErr) {
+        console.warn('Notice refreshing session ID token:', refreshErr);
+      }
 
-      if (userCharKey) {
-        const check = verifyCharacterAuthorization(user, userCharKey);
-        if (check.authorized) {
-          activeCharacterKey = userCharKey;
-          renderPrivateUniverse(user, check.characterConfig);
+      console.log('Firebase Auth session aktif:', user.email, user.uid, 'emailVerified:', user.emailVerified);
+
+      // Verify the character strictly from the user's UID (Single Source of Truth)
+      const verifiedChar = identifyUserCharacter(user);
+      if (!verifiedChar) {
+        console.warn('User UID tidak terdaftar sebagai karakter resmi:', user.uid);
+        await logoutFirebase();
+        lockdownPrivateUniverse();
+        hideInitialLoader();
+        return;
+      }
+
+      // If user is currently on the login view and chose a DIFFERENT character:
+      if (viewLogin.classList.contains('active') && activeCharacterKey && activeCharacterKey !== verifiedChar) {
+        console.warn(`Sesi aktif (${verifiedChar}) tidak cocok dengan karakter yang dipilih (${activeCharacterKey}). Mengakhiri sesi yang tidak sesuai.`);
+        await logoutFirebase();
+        currentAuthenticatedUser = null;
+        hideInitialLoader();
+        return;
+      }
+
+      // Check authorization
+      const check = verifyCharacterAuthorization(user, verifiedChar);
+      if (check.authorized) {
+        const storedActiveSession = sessionStorage.getItem('activeUniverseSession');
+        const isWorldActive = (
+          document.getElementById('view-kidult-world')?.classList.contains('active') ||
+          document.getElementById('view-toyou-world')?.classList.contains('active') ||
+          document.getElementById('view-shadow-world')?.classList.contains('active') ||
+          viewPrivateUniverse?.classList.contains('active')
+        );
+
+        // Only auto-restore universe if user had an active session inside a universe before reload
+        if (storedActiveSession === verifiedChar || isWorldActive) {
+          activeCharacterKey = verifiedChar;
+          sessionStorage.setItem('activeUniverseSession', verifiedChar);
+          dbSyncUserProfile(user, verifiedChar).catch((e) => console.warn('User profile sync notice:', e));
+          dbMigrateUniverseState(user).catch((e) => console.warn('Universe state migration notice:', e));
+          if (window.universesController?.syncUniverseStateActiveCharacter) {
+            window.universesController.syncUniverseStateActiveCharacter(verifiedChar, user);
+          }
+          await renderPrivateUniverse(user, check.characterConfig);
+          hideInitialLoader();
           return;
         }
+
+        // On landing / selection screen, do NOT bypass character selection
+        console.log('Sesi Firebase terdeteksi, menunggu aksi pengguna di layar pemilihan/login.');
+        hideInitialLoader();
+        return;
       }
     } else if (!isPreviewingUniverses) {
       // If signed out, ensure private universe view is locked down
       lockdownPrivateUniverse();
     }
+    hideInitialLoader();
   });
 }
 
@@ -226,10 +676,10 @@ function initAuthObserver() {
 function setupEventListeners() {
   // Character Card Selection
   cardButtons.forEach((card) => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', async () => {
       const charKey = card.getAttribute('data-character');
       if (CHARACTERS[charKey]) {
-        selectCharacter(charKey);
+        await selectCharacter(charKey);
       }
     });
   });
@@ -282,11 +732,53 @@ function clearFeedback() {
 }
 
 // Select Character & Transition to Login View
-function selectCharacter(charKey) {
+async function selectCharacter(charKey) {
   const char = CHARACTERS[charKey];
   if (!char) return;
 
   activeCharacterKey = charKey;
+
+  // 1. Strict Session Verification: Check if there is an active Firebase Auth user
+  const existingUser = auth?.currentUser || currentAuthenticatedUser;
+  if (existingUser) {
+    const existingChar = identifyUserCharacter(existingUser);
+    if (existingChar && existingChar !== charKey) {
+      console.warn(`Sesi aktif (${existingChar || existingUser.uid}) bukan ${charKey}. Mengakhiri sesi lama sebelum login ${charKey}...`);
+      sessionStorage.removeItem('activeUniverseSession');
+      try {
+        await logoutFirebase();
+      } catch (err) {
+        console.warn('Notice logging out mismatched session:', err);
+      }
+      currentAuthenticatedUser = null;
+    }
+  }
+
+  // 2. Prepare Login View for the chosen character
+  setActiveUserCharacter(charKey);
+  setActiveUserMoments(charKey);
+  setActiveUserStories(charKey);
+  setActiveUserMessages(charKey);
+  setActiveUserGames(charKey);
+  
+  // Pre-warm universes controller quietly in background
+  ensureUniversesController().catch(() => {});
+
+  if (window.storiesController?.syncActiveUser) {
+    window.storiesController.syncActiveUser(charKey);
+  }
+  if (window.photoboothController?.syncPhotoboothActiveCharacter) {
+    window.photoboothController.syncPhotoboothActiveCharacter(charKey, 'session');
+  }
+  if (window.messagesController?.syncMessagesActiveCharacter) {
+    window.messagesController.syncMessagesActiveCharacter(charKey);
+  }
+  if (window.gamesController?.syncGamesActiveCharacter) {
+    window.gamesController.syncGamesActiveCharacter(charKey);
+  }
+  if (window.kotakPosController?.syncKotakPosActiveCharacter) {
+    window.kotakPosController.syncKotakPosActiveCharacter(charKey);
+  }
 
   // Update theme class on body
   document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele');
@@ -300,15 +792,10 @@ function selectCharacter(charKey) {
   loginCharRole.textContent = char.role;
   loginGreetingName.textContent = char.name;
 
-  // Prefill Email if configured in environment / auth rules
+  // Prefill Email with expected canonical email
   const authRules = CHARACTER_AUTH_RULES[charKey];
   if (emailInput) {
-    if (authRules && authRules.expectedEmail) {
-      emailInput.value = authRules.expectedEmail;
-    } else {
-      emailInput.value = '';
-      emailInput.placeholder = `contoh: ${charKey}@ourlittleuniverse.com`;
-    }
+    emailInput.value = authRules?.expectedEmail || `${charKey}@ourlittleuniverse.com`;
   }
 
   // Reset Password & Feedback
@@ -351,6 +838,7 @@ function returnToSelection() {
   if (isSubmitting) return;
 
   activeCharacterKey = null;
+  sessionStorage.removeItem('activeUniverseSession');
 
   viewLogin.classList.remove('active');
   viewLogin.setAttribute('aria-hidden', 'true');
@@ -374,6 +862,19 @@ function returnToSelection() {
     viewShadow.classList.remove('active');
     viewShadow.setAttribute('aria-hidden', 'true');
   }
+  const viewPhotobooth = document.getElementById('view-photobooth');
+  if (viewPhotobooth) {
+    viewPhotobooth.classList.remove('active');
+    viewPhotobooth.setAttribute('aria-hidden', 'true');
+  }
+  ['view-our-stories', 'view-story-workspace', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos', 'view-shadow-gazebo', 'view-shadow-garden', 'view-moonlight-pond', 'view-shadow-art-gallery'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('active');
+      el.setAttribute('aria-hidden', 'true');
+    }
+  });
+  stopLocalCamera(false);
 
   setTimeout(() => {
     // Reset body theme to neutral cosmic
@@ -467,6 +968,19 @@ async function handleLoginSubmit(e) {
 
     currentAuthenticatedUser = result.user;
 
+    // Strict UID verification: character must strictly match the verified Firebase UID
+    const verifiedChar = identifyUserCharacter(result.user);
+    const expectedUid = CHARACTER_AUTH_RULES[activeCharacterKey]?.expectedUid;
+    if (!verifiedChar || verifiedChar !== activeCharacterKey || (expectedUid && result.user.uid !== expectedUid)) {
+      await logoutFirebase();
+      currentAuthenticatedUser = null;
+      sessionStorage.removeItem('activeUniverseSession');
+      throw new Error(`Kredensial yang dimasukkan bukan milik ${charName}.`);
+    }
+
+    activeCharacterKey = verifiedChar;
+    sessionStorage.setItem('activeUniverseSession', verifiedChar);
+
     // Success feedback
     inputFeedback.textContent = '✦ Kredensial terverifikasi! Membuka gerbang universe... ✦';
     inputFeedback.className = 'input-feedback-msg success';
@@ -528,13 +1042,56 @@ function showErrorFeedback(message) {
   }
 }
 
-// Render and Guard Private Universe View
-function renderPrivateUniverse(user, characterConfig) {
-  if (!user || !characterConfig) return;
+// Render, Guard and Auto-Redirect to User's Own Universe View
+async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = true) {
+  if (!user || !user.uid) {
+    lockdownPrivateUniverse();
+    return;
+  }
 
-  const char = CHARACTERS[characterConfig.id] || characterConfig;
-  setActiveUserCharacter(characterConfig.id);
-  setActiveUserMoments(characterConfig.id);
+  // CRITICAL: ALWAYS verify the canonical character strictly from verified Firebase UID (Single Source of Truth)
+  const verifiedCharKey = identifyUserCharacter(user);
+  const charId = verifiedCharKey || characterConfig?.id;
+
+  const validUniverses = {
+    nyanya: 'KIDULT',
+    lala: 'TO YOU',
+    lele: 'SHADOW'
+  };
+
+  if (!charId || !validUniverses[charId]) {
+    console.error('Karakter tidak terdaftar sebagai pemilik universe yang sah:', { uid: user.uid, charId });
+    showToast('⚠️ Akun ini tidak terdaftar sebagai pemilik universe yang sah.');
+    showErrorFeedback('Akses ditolak: Akun tidak memiliki universe yang sah.');
+    lockdownPrivateUniverse();
+    return;
+  }
+
+  activeCharacterKey = charId;
+  const char = CHARACTERS[charId] || CHARACTER_AUTH_RULES[charId] || characterConfig;
+  setActiveUserCharacter(charId);
+  setActiveUserMoments(charId);
+  setActiveUserStories(charId);
+  setActiveUserMessages(charId);
+  setActiveUserGames(charId);
+  if (window.storiesController?.syncActiveUser) {
+    window.storiesController.syncActiveUser(charId);
+  }
+  if (window.photoboothController?.syncPhotoboothActiveCharacter) {
+    window.photoboothController.syncPhotoboothActiveCharacter(charId, 'firebase');
+  }
+  if (window.messagesController?.syncMessagesActiveCharacter) {
+    window.messagesController.syncMessagesActiveCharacter(charId);
+  }
+  if (window.gamesController?.syncGamesActiveCharacter) {
+    window.gamesController.syncGamesActiveCharacter(charId);
+  }
+  if (window.starMessagesController?.syncStarMessagesActiveCharacter) {
+    window.starMessagesController.syncStarMessagesActiveCharacter(charId, user);
+  }
+  if (window.kotakPosController?.syncKotakPosActiveCharacter) {
+    window.kotakPosController.syncKotakPosActiveCharacter(charId, user);
+  }
 
   // Set theme on body
   document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele');
@@ -553,23 +1110,58 @@ function renderPrivateUniverse(user, characterConfig) {
   if (auditUid) auditUid.textContent = user.uid || '-';
   if (auditUniverse) auditUniverse.textContent = char.universe;
 
-  // Switch Views
+  // Switch Views: Hide selection, login, and secondary feature views
   viewSelection.classList.remove('active');
   viewSelection.setAttribute('aria-hidden', 'true');
   viewLogin.classList.remove('active');
   viewLogin.setAttribute('aria-hidden', 'true');
 
+  ['view-orbit', 'view-moments', 'view-photobooth', 'view-our-stories', 'view-story-workspace', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos', 'view-shadow-gazebo', 'view-shadow-garden', 'view-moonlight-pond', 'view-shadow-art-gallery'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('active');
+      el.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  const univCtrl = await ensureUniversesController();
+
+  // Always update 3 Island Cards and user profile (badges MY UNIVERSE vs VISIT UNIVERSE)
+  if (univCtrl && typeof univCtrl.syncUniverseStateActiveCharacter === 'function') {
+    univCtrl.syncUniverseStateActiveCharacter(charId, user);
+  } else if (univCtrl && typeof univCtrl.updateUserProfile === 'function') {
+    univCtrl.updateUserProfile(charId, user);
+  }
+
+  // Automatic Post-Login Redirect: Directly open user's own universe
+  if (autoOpenOwnWorld && univCtrl) {
+    if (charId === 'nyanya' && typeof univCtrl.openKidultWorld === 'function') {
+      univCtrl.openKidultWorld();
+      return;
+    } else if (charId === 'lala' && typeof univCtrl.openToYouWorld === 'function') {
+      univCtrl.openToYouWorld();
+      return;
+    } else if (charId === 'lele' && typeof univCtrl.openShadowWorld === 'function') {
+      univCtrl.openShadowWorld();
+      return;
+    }
+  }
+
+  // Fallback to three universes selection page if autoOpenOwnWorld is false
+  ['view-kidult-world', 'view-toyou-world', 'view-shadow-world'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('active');
+      el.setAttribute('aria-hidden', 'true');
+    }
+  });
   viewPrivateUniverse.classList.add('active');
   viewPrivateUniverse.setAttribute('aria-hidden', 'false');
-
-  // Update Universes Profile display
-  if (window.universesController && typeof window.universesController.updateUserProfile === 'function') {
-    window.universesController.updateUserProfile(characterConfig.id);
-  }
 }
 
 // Helper to open Universes view anytime
-function showUniversesView() {
+async function showUniversesView() {
+  await ensureUniversesController();
   isPreviewingUniverses = true;
   if (viewSelection) {
     viewSelection.classList.remove('active');
@@ -604,6 +1196,19 @@ function showUniversesView() {
     viewShadow.classList.remove('active');
     viewShadow.setAttribute('aria-hidden', 'true');
   }
+  const viewPhotobooth = document.getElementById('view-photobooth');
+  if (viewPhotobooth) {
+    viewPhotobooth.classList.remove('active');
+    viewPhotobooth.setAttribute('aria-hidden', 'true');
+  }
+  ['view-our-stories', 'view-story-workspace', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos', 'view-shadow-gazebo', 'view-shadow-garden', 'view-moonlight-pond', 'view-shadow-art-gallery'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('active');
+      el.setAttribute('aria-hidden', 'true');
+    }
+  });
+  stopLocalCamera(false);
 
   if (viewPrivateUniverse) {
     viewPrivateUniverse.classList.add('active');
@@ -613,20 +1218,49 @@ function showUniversesView() {
   if (window.universesController && typeof window.universesController.updateUserProfile === 'function') {
     window.universesController.updateUserProfile(activeCharacterKey || 'nyanya');
   }
+  if (activeCharacterKey) {
+    setActiveUserCharacter(activeCharacterKey);
+    setActiveUserMoments(activeCharacterKey);
+  }
 }
 
 // Lockdown Private Universe (If user logs out or session is terminated)
 function lockdownPrivateUniverse() {
-  if (viewPrivateUniverse) {
-    viewPrivateUniverse.classList.remove('active');
-    viewPrivateUniverse.setAttribute('aria-hidden', 'true');
-  }
+  const allProtectedViews = [
+    'view-private-universe',
+    'view-kidult-world',
+    'view-toyou-world',
+    'view-shadow-world',
+    'view-messages',
+    'view-games',
+    'view-orbit',
+    'view-moments',
+    'view-photobooth',
+    'view-our-stories',
+    'view-story-workspace',
+    'view-story-reading',
+    'view-star-messages',
+    'view-kotak-pos',
+    'view-shadow-gazebo',
+    'view-shadow-garden',
+    'view-moonlight-pond', 'view-shadow-art-gallery'
+  ];
+
+  allProtectedViews.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('active');
+      el.setAttribute('aria-hidden', 'true');
+    }
+  });
 
   // Clear private data from DOM
   if (auditEmail) auditEmail.textContent = '-';
   if (auditUid) auditUid.textContent = '-';
+  if (auditCharacterName) auditCharacterName.textContent = '-';
+  if (auditUniverse) auditUniverse.textContent = '-';
 
-  if (!viewLogin.classList.contains('active')) {
+  if (!viewLogin.classList.contains('active') && !activeCharacterKey) {
     viewSelection.classList.add('active');
     viewSelection.setAttribute('aria-hidden', 'false');
     document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele');
@@ -636,7 +1270,12 @@ function lockdownPrivateUniverse() {
 // Handle Logout
 async function handleLogout() {
   try {
+    sessionStorage.removeItem('activeUniverseSession');
     isPreviewingUniverses = false;
+    if (window.universesController?.cleanupUniverseStateOnLogout) {
+      window.universesController.cleanupUniverseStateOnLogout();
+    }
+    stopLocalCamera();
     await logoutFirebase();
     currentAuthenticatedUser = null;
     activeCharacterKey = null;

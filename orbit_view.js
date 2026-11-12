@@ -23,11 +23,14 @@ import {
   getUpcomingAgendas,
   getMeetingInvitations,
   addOrbitEvent,
+  deleteOrbitEvent,
+  updateOrbitEvent,
   respondToMeeting,
   getCharacterDisplayName,
   getCategoryBadge,
   subscribeOrbit
 } from './orbit.js';
+import { subscribeDatabaseStatus, getDatabaseStatus, auth, identifyUserCharacter } from './firebase.js';
 
 // Month names in Indonesian
 const MONTH_NAMES = [
@@ -218,6 +221,11 @@ export function initOrbitView(options = {}) {
       viewShadowWorld.classList.remove('active');
       viewShadowWorld.setAttribute('aria-hidden', 'true');
     }
+    const viewPhotobooth = document.getElementById('view-photobooth');
+    if (viewPhotobooth) {
+      viewPhotobooth.classList.remove('active');
+      viewPhotobooth.setAttribute('aria-hidden', 'true');
+    }
 
     if (viewOrbit) {
       viewOrbit.classList.add('active');
@@ -251,6 +259,11 @@ export function initOrbitView(options = {}) {
     } else if (previousViewId === 'view-private-universe' && viewPrivateUniverse) {
       viewPrivateUniverse.classList.add('active');
       viewPrivateUniverse.setAttribute('aria-hidden', 'false');
+      // Reset active nav button in navbar
+      const navButtons = document.querySelectorAll('.univ-nav-btn');
+      navButtons.forEach(b => b.classList.remove('active'));
+      const btnUniv = document.getElementById('nav-btn-universes');
+      if (btnUniv) btnUniv.classList.add('active');
     } else if (viewSelection) {
       viewSelection.classList.add('active');
       viewSelection.setAttribute('aria-hidden', 'false');
@@ -304,7 +317,70 @@ export function initOrbitView(options = {}) {
       const nextIdx = (order.indexOf(current) + 1) % order.length;
       const nextChar = order[nextIdx];
       setActiveUserCharacter(nextChar);
-      if (onShowToast) onShowToast(`Melihat Our Little Orbit sebagai ${getCharacterDisplayName(nextChar).split(' ')[0]} ✦`);
+      
+      const authUser = auth?.currentUser;
+      const verifiedAuthChar = authUser ? identifyUserCharacter(authUser) : null;
+      if (verifiedAuthChar) {
+        if (nextChar === verifiedAuthChar) {
+          if (onShowToast) onShowToast(`Melihat Our Little Orbit sebagai ${getCharacterDisplayName(nextChar).split(' ')[0]} (Akun Aktif ✦)`);
+        } else {
+          if (onShowToast) onShowToast(`Sudut pandang: ${getCharacterDisplayName(nextChar).split(' ')[0]} ✦ (Sesi autentikasi: ${getCharacterDisplayName(verifiedAuthChar).split(' ')[0]})`);
+        }
+      } else {
+        if (onShowToast) onShowToast(`Melihat Our Little Orbit sebagai ${getCharacterDisplayName(nextChar).split(' ')[0]} ✦ (Mode Offline)`);
+      }
+    });
+  }
+
+  // --- Cloud Database Sync Status Indicator ---
+  const cloudBadge = document.getElementById('orbit-cloud-status');
+  const cloudDot = document.getElementById('orbit-cloud-dot');
+  const cloudText = document.getElementById('orbit-cloud-text');
+
+  if (cloudBadge && cloudDot && cloudText) {
+    cloudBadge.style.cursor = 'pointer';
+    subscribeDatabaseStatus((status) => {
+      if (status.state === 'synced') {
+        cloudDot.style.background = '#22c55e';
+        cloudDot.style.boxShadow = '0 0 8px #22c55e';
+        cloudText.textContent = 'Cloud Firestore Terhubung ☁️';
+        cloudBadge.title = status.message || 'Data tersimpan di Cloud Firestore';
+        cloudBadge.removeAttribute('data-error-detail');
+      } else if (status.state === 'syncing') {
+        cloudDot.style.background = '#eab308';
+        cloudDot.style.boxShadow = '0 0 8px #eab308';
+        cloudText.textContent = 'Menyimpan ke Cloud...';
+        cloudBadge.title = status.message;
+        cloudBadge.removeAttribute('data-error-detail');
+      } else if (status.state === 'error') {
+        cloudDot.style.background = '#ef4444';
+        cloudDot.style.boxShadow = '0 0 8px #ef4444';
+        const codeSuffix = status.errorCode ? ` (${status.errorCode})` : '';
+        cloudText.textContent = `⚠️ Gagal Sinkron Cloud${codeSuffix}`;
+        const categoryTag = status.category ? `[${status.category}] ` : '';
+        const fullDetail = `${categoryTag}Operasi: ${status.operation || '-'} | Path: ${status.targetPath || '-'} | Code: ${status.errorCode || '-'} | Pesan: ${status.errorMessage || status.lastError || status.message}`;
+        cloudBadge.title = fullDetail;
+        cloudBadge.setAttribute('data-error-detail', fullDetail);
+      } else {
+        cloudDot.style.background = '#94a3b8';
+        cloudDot.style.boxShadow = 'none';
+        cloudText.textContent = 'Mode Offline (Cache)';
+        cloudBadge.title = status.message;
+        cloudBadge.removeAttribute('data-error-detail');
+      }
+    });
+
+    cloudBadge.addEventListener('click', () => {
+      const current = getDatabaseStatus();
+      if (current.state === 'error') {
+        const fullDetail = cloudBadge.getAttribute('data-error-detail') || current.lastError || 'Kendala sinkronisasi Cloud Firestore';
+        if (onShowToast) onShowToast(`⚠️ ${fullDetail}`);
+        console.error('Firebase Cloud Error Details:', current);
+      } else if (current.state === 'synced') {
+        if (onShowToast) onShowToast(`☁️ Cloud Firestore Aktif: ${current.message}`);
+      } else if (current.state === 'idle') {
+        if (onShowToast) onShowToast(`ℹ️ ${current.message}`);
+      }
     });
   }
 
@@ -375,38 +451,54 @@ export function initOrbitView(options = {}) {
 
   // 1. Create Event Form
   if (formCreateEvent) {
-    formCreateEvent.addEventListener('submit', (e) => {
+    formCreateEvent.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const title = document.getElementById('event-title-input').value;
-      const category = document.getElementById('event-cat-input').value;
+      const title = (document.getElementById('event-title-input').value || '').trim();
+      const category = document.getElementById('event-cat-input').value || 'together';
       const date = document.getElementById('event-date-input').value;
       const time = document.getElementById('event-time-input').value;
-      const location = document.getElementById('event-loc-input').value;
-      const description = document.getElementById('event-desc-input').value;
+      const location = (document.getElementById('event-loc-input').value || '').trim();
+      const description = (document.getElementById('event-desc-input').value || '').trim();
 
-      if (!title || !date) return;
+      if (!title) {
+        if (onShowToast) onShowToast('⚠️ Masukkan judul kegiatan terlebih dahulu');
+        return;
+      }
+      if (!date) {
+        if (onShowToast) onShowToast('⚠️ Silakan pilih tanggal pelaksanaan kegiatan');
+        return;
+      }
 
-      addOrbitEvent({
-        title,
-        category,
-        date,
-        time,
-        location,
-        description,
-        proposer: getActiveUserCharacter()
-      });
+      try {
+        const authUser = auth?.currentUser;
+        const verifiedChar = authUser ? identifyUserCharacter(authUser) : null;
+        const activeChar = verifiedChar || getActiveUserCharacter();
 
-      formCreateEvent.reset();
-      closeModal(modalCreateEvent);
+        await addOrbitEvent({
+          title,
+          category,
+          date,
+          time,
+          location,
+          description,
+          proposer: activeChar
+        });
 
-      if (onShowToast) onShowToast(`Kegiatan "${title}" berhasil ditambahkan ke Orbit ✦`);
-      if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+        formCreateEvent.reset();
+        closeModal(modalCreateEvent);
+
+        if (onShowToast) onShowToast(`✦ Kegiatan "${title}" berhasil ditambahkan ke Our Calendar ✨`);
+        if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+      } catch (err) {
+        console.error('Error adding orbit event:', err);
+        if (onShowToast) onShowToast('⚠️ Gagal menambahkan kegiatan: ' + (err.message || 'Error'));
+      }
     });
   }
 
   // 2. Propose Meeting Form
   if (formProposeMeeting) {
-    formProposeMeeting.addEventListener('submit', (e) => {
+    formProposeMeeting.addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('meeting-title-input').value;
       const date = document.getElementById('meeting-date-input').value;
@@ -416,27 +508,36 @@ export function initOrbitView(options = {}) {
 
       if (!title || !date || !time) return;
 
-      addOrbitEvent({
-        title,
-        category: 'meeting',
-        date,
-        time,
-        location,
-        description,
-        proposer: getActiveUserCharacter()
-      });
+      try {
+        const authUser = auth?.currentUser;
+        const verifiedChar = authUser ? identifyUserCharacter(authUser) : null;
+        const activeChar = verifiedChar || getActiveUserCharacter();
 
-      formProposeMeeting.reset();
-      closeModal(modalProposeMeeting);
+        await addOrbitEvent({
+          title,
+          category: 'meeting',
+          date,
+          time,
+          location,
+          description,
+          proposer: activeChar
+        });
 
-      if (onShowToast) onShowToast(`Undangan meeting "${title}" terkirim ke ketiga sahabat 🪐`);
-      if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+        formProposeMeeting.reset();
+        closeModal(modalProposeMeeting);
+
+        if (onShowToast) onShowToast(`Undangan meeting "${title}" terkirim ke ketiga sahabat 🪐`);
+        if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+      } catch (err) {
+        console.error('Error proposing meeting:', err);
+        if (onShowToast) onShowToast('⚠️ Gagal mengajukan meeting: ' + (err.message || 'Error'));
+      }
     });
   }
 
   // 3. Reject Reason Form
   if (formRejectReason) {
-    formRejectReason.addEventListener('submit', (e) => {
+    formRejectReason.addEventListener('submit', async (e) => {
       e.preventDefault();
       const evtId = rejectEventId.value;
       const note = rejectNoteInput.value;
@@ -444,17 +545,22 @@ export function initOrbitView(options = {}) {
 
       if (!evtId || !note) return;
 
-      respondToMeeting(evtId, userChar, 'rejected', note);
-      formRejectReason.reset();
-      closeModal(modalRejectReason);
+      try {
+        await respondToMeeting(evtId, userChar, 'rejected', note);
+        formRejectReason.reset();
+        closeModal(modalRejectReason);
 
-      if (onShowToast) onShowToast(`Respons penolakan meeting dengan alasan telah dikirimkan ✕`);
+        if (onShowToast) onShowToast(`Respons penolakan meeting dengan alasan telah dikirimkan ✕`);
+      } catch (err) {
+        console.error('Error rejecting meeting:', err);
+        if (onShowToast) onShowToast('⚠️ Gagal mengirim respons: ' + (err.message || 'Error'));
+      }
     });
   }
 
   // 4. Propose Alternate Time Form
   if (formProposeAlt) {
-    formProposeAlt.addEventListener('submit', (e) => {
+    formProposeAlt.addEventListener('submit', async (e) => {
       e.preventDefault();
       const evtId = altEventId.value;
       const altDate = altDateInput.value;
@@ -464,21 +570,31 @@ export function initOrbitView(options = {}) {
 
       if (!evtId || !altDate || !altTime || !note) return;
 
-      respondToMeeting(evtId, userChar, 'proposed_alt', note, altDate, altTime);
-      formProposeAlt.reset();
-      closeModal(modalProposeAlt);
+      try {
+        await respondToMeeting(evtId, userChar, 'proposed_alt', note, altDate, altTime);
+        formProposeAlt.reset();
+        closeModal(modalProposeAlt);
 
-      if (onShowToast) onShowToast(`Usulan waktu alternatif (${formatIndonesianDate(altDate)} ${altTime}) terkirim ⇄`);
-      if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+        if (onShowToast) onShowToast(`Usulan waktu alternatif (${formatIndonesianDate(altDate)} ${altTime}) terkirim ⇄`);
+        if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+      } catch (err) {
+        console.error('Error proposing alternate meeting time:', err);
+        if (onShowToast) onShowToast('⚠️ Gagal mengirim usulan waktu: ' + (err.message || 'Error'));
+      }
     });
   }
 
   // --- Open Modals for Meeting Responses ---
-  function handleAcceptMeeting(evtId) {
+  async function handleAcceptMeeting(evtId) {
     const userChar = getActiveUserCharacter();
-    respondToMeeting(evtId, userChar, 'accepted', 'Menyetujui jadwal meeting ✨');
-    if (onShowToast) onShowToast(`Kamu menyetujui jadwal meeting sahabat! ✨`);
-    if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+    try {
+      await respondToMeeting(evtId, userChar, 'accepted', 'Menyetujui jadwal meeting ✨');
+      if (onShowToast) onShowToast(`Kamu menyetujui jadwal meeting sahabat! ✨`);
+      if (onTriggerSparkle) onTriggerSparkle(window.innerWidth / 2, window.innerHeight / 2);
+    } catch (err) {
+      console.error('Error accepting meeting:', err);
+      if (onShowToast) onShowToast('⚠️ Gagal menyetujui meeting: ' + (err.message || 'Error'));
+    }
   }
 
   function handleOpenRejectModal(evtId) {
@@ -565,6 +681,29 @@ export function initOrbitView(options = {}) {
       });
     } else {
       detailMeetingResponsesSection.style.display = 'none';
+    }
+
+    // Role-based actions: Only creator can delete/manage event
+    const btnDelete = document.getElementById('btn-delete-event');
+    const activeChar = getActiveUserCharacter();
+    if (btnDelete) {
+      if (evt.proposer === activeChar) {
+        btnDelete.style.display = 'inline-flex';
+        btnDelete.onclick = async () => {
+          if (confirm(`Yakin ingin menghapus agenda "${evt.title}" dari Our Calendar?`)) {
+            const res = await deleteOrbitEvent(evt.id, activeChar);
+            if (res.success) {
+              closeModal(modalEventDetail);
+              if (onShowToast) onShowToast(`Agenda "${evt.title}" berhasil dihapus 🗑️`);
+            } else {
+              if (onShowToast) onShowToast('⚠️ ' + res.message);
+            }
+          }
+        };
+      } else {
+        btnDelete.style.display = 'none';
+        btnDelete.onclick = null;
+      }
     }
 
     openModal(modalEventDetail);
@@ -1006,9 +1145,55 @@ export function initOrbitView(options = {}) {
   // Master re-render function
   function renderAll() {
     renderHeader();
+    renderSelectedDayEvents();
     renderCalendar();
     renderMeetings();
     renderUpcoming();
+  }
+
+  // Render events for the selected date or empty state
+  function renderSelectedDayEvents() {
+    const container = document.getElementById('selected-day-events-container');
+    if (!container) return;
+
+    const selDate = getSelectedDateStr();
+    const dayEvents = getEventsForDate(selDate);
+
+    if (dayEvents.length === 0) {
+      container.innerHTML = `
+        <div class="orbit-empty-day-state">
+          <span class="empty-sparkle">✦</span>
+          <span>Belum ada agenda pada ${formatIndonesianDate(selDate)}. Klik <strong>"+ Tambah di Tanggal Ini"</strong> untuk menjadwalkan acara baru!</span>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = '';
+    const listWrapper = document.createElement('div');
+    listWrapper.className = 'selected-day-pills-row';
+
+    dayEvents.forEach(evt => {
+      const badge = getCategoryBadge(evt.category);
+      const pill = document.createElement('button');
+      pill.type = 'button';
+      pill.className = `selected-day-event-card cat-${evt.category}`;
+      pill.setAttribute('data-id', evt.id);
+      pill.innerHTML = `
+        <span class="event-icon">${badge.icon}</span>
+        <div class="event-body">
+          <strong class="event-title">${escapeHtml(evt.title)}</strong>
+          <span class="event-time">${evt.time ? evt.time + ' WIB' : 'Sepanjang Hari'} • ${escapeHtml(evt.location || 'Universe')}</span>
+        </div>
+        <span class="arrow-peek">→</span>
+      `;
+      pill.addEventListener('click', () => {
+        showEventDetail(evt);
+      });
+      listWrapper.appendChild(pill);
+    });
+
+    container.appendChild(listWrapper);
   }
 
   // Subscribe to reactive store changes

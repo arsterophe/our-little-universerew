@@ -1,0 +1,1037 @@
+/* ==========================================================================
+   KOTAK POS — DIGITAL LETTERS & MAILBOX SYSTEM
+   Shared Across All 3 Universes: KIDULT (Nyanya), TO YOU (Lala), SHADOW (Lele)
+   ========================================================================== */
+
+.view-kotak-pos {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  display: none;
+  overflow: hidden;
+  user-select: none;
+  z-index: 50;
+  transition: background 0.5s ease;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #f8fafc;
+}
+
+.view-kotak-pos.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   1. UNIVERSE THEME PALETTES
+   ========================================================================== */
+
+/* 1A. KIDULT — Dreamy Twilight Lavender & Sunset Elegance (Nyanya) */
+.view-kotak-pos.theme-kidult {
+  background: radial-gradient(circle at 50% 25%, #341b56 0%, #1f1238 50%, #0d081b 100%);
+  --mb-accent: #fbcfe8;
+  --mb-accent-hover: #f472b6;
+  --mb-accent-glow: rgba(244, 114, 182, 0.45);
+  --mb-primary: #c084fc;
+  --mb-border: rgba(216, 180, 254, 0.3);
+  --mb-card-bg: rgba(43, 23, 72, 0.78);
+  --mb-header-bg: rgba(28, 15, 48, 0.88);
+  --mb-active-tab-bg: linear-gradient(135deg, rgba(192, 132, 252, 0.28), rgba(244, 114, 182, 0.22));
+  --mb-tab-border: rgba(216, 180, 254, 0.6);
+  --mb-btn-bg: linear-gradient(135deg, #a855f7, #ec4899);
+  --mb-btn-glow: rgba(236, 72, 153, 0.4);
+}
+
+/* 1B. TO YOU — Warm Morning Sunlight & Peach Garden (Lala) */
+.view-kotak-pos.theme-to_you,
+.view-kotak-pos.theme-toyou {
+  background: radial-gradient(circle at 50% 20%, #1f3b4d 0%, #122838 50%, #091520 100%);
+  --mb-accent: #fed7aa;
+  --mb-accent-hover: #fb923c;
+  --mb-accent-glow: rgba(251, 146, 60, 0.45);
+  --mb-primary: #38bdf8;
+  --mb-border: rgba(186, 230, 253, 0.3);
+  --mb-card-bg: rgba(18, 44, 62, 0.8);
+  --mb-header-bg: rgba(12, 30, 44, 0.88);
+  --mb-active-tab-bg: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(251, 146, 60, 0.2));
+  --mb-tab-border: rgba(186, 230, 253, 0.6);
+  --mb-btn-bg: linear-gradient(135deg, #0ea5e9, #f59e0b);
+  --mb-btn-glow: rgba(245, 158, 11, 0.4);
+}
+
+/* 1C. SHADOW — Midnight Crystal Moon Sanctuary & Indigo Blue (Lele) */
+.view-kotak-pos.theme-shadow {
+  background: radial-gradient(circle at 50% 25%, #181c3e 0%, #0d0f26 50%, #050614 100%);
+  --mb-accent: #c4b5fd;
+  --mb-accent-hover: #a78bfa;
+  --mb-accent-glow: rgba(167, 139, 250, 0.45);
+  --mb-primary: #818cf8;
+  --mb-border: rgba(196, 181, 253, 0.3);
+  --mb-card-bg: rgba(16, 20, 48, 0.82);
+  --mb-header-bg: rgba(10, 12, 32, 0.9);
+  --mb-active-tab-bg: linear-gradient(135deg, rgba(129, 140, 248, 0.25), rgba(168, 85, 247, 0.22));
+  --mb-tab-border: rgba(196, 181, 253, 0.6);
+  --mb-btn-bg: linear-gradient(135deg, #6366f1, #9333ea);
+  --mb-btn-glow: rgba(147, 51, 234, 0.4);
+}
+
+/* ==========================================================================
+   2. AMBIENT BACKGROUND & PARTICLES
+   ========================================================================== */
+
+.mailbox-ambient-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.mailbox-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.35;
+  filter: blur(1px);
+  animation: floatParticle 16s infinite ease-in-out;
+}
+
+@keyframes floatParticle {
+  0% { transform: translateY(105vh) scale(0.6); opacity: 0; }
+  15% { opacity: 0.4; }
+  85% { opacity: 0.4; }
+  100% { transform: translateY(-10vh) scale(1.1); opacity: 0; }
+}
+
+/* ==========================================================================
+   3. TOP HUD HEADER
+   ========================================================================== */
+
+.mailbox-hud-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.75rem;
+  background: var(--mb-header-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--mb-border);
+  gap: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.mailbox-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.mailbox-badge-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--mb-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 0 15px var(--mb-accent-glow);
+  animation: pulseGlow 4s infinite alternate ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 10px var(--mb-accent-glow); }
+  100% { box-shadow: 0 0 22px var(--mb-accent-glow); }
+}
+
+.mailbox-title-meta h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: linear-gradient(120deg, #ffffff, var(--mb-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mailbox-sub {
+  margin: 0.1rem 0 0 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mailbox-univ-tag {
+  color: var(--mb-accent);
+  font-weight: 700;
+}
+
+/* Nav Tabs */
+.mailbox-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.28);
+  padding: 0.3rem 0.4rem;
+  border-radius: 9999px;
+  border: 1px solid var(--mb-border);
+}
+
+.mailbox-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+}
+
+.mailbox-tab-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mailbox-tab-btn.active {
+  color: #ffffff;
+  background: var(--mb-active-tab-bg);
+  border-color: var(--mb-tab-border);
+  box-shadow: 0 0 14px var(--mb-accent-glow);
+}
+
+.mailbox-counter-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background: #f43f5e;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
+}
+
+/* Right Actions */
+.mailbox-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mailbox-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.85rem 0.35rem 0.45rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--mb-border);
+  border-radius: 9999px;
+}
+
+.mailbox-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--mb-accent);
+}
+
+.mailbox-user-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.btn-mailbox-return {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1.05rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--mb-border);
+  border-radius: 9999px;
+  color: #f8fafc;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.btn-mailbox-return:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   4. MAIN CONTENT CONTAINER
+   ========================================================================== */
+
+.mailbox-main-stage {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.75rem 2rem 2.5rem 2rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Scrollbar */
+.mailbox-main-stage::-webkit-scrollbar {
+  width: 7px;
+}
+.mailbox-main-stage::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+.mailbox-main-stage::-webkit-scrollbar-thumb {
+  background: var(--mb-border);
+  border-radius: 9999px;
+}
+
+/* Panels */
+.mailbox-panel {
+  display: none;
+  animation: fadeInPanel 0.28s ease-out;
+}
+
+.mailbox-panel.active {
+  display: block;
+}
+
+@keyframes fadeInPanel {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mailbox-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--mb-border);
+  padding-bottom: 0.75rem;
+}
+
+.mailbox-section-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mailbox-section-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   5. LETTER CARDS GRID (SURAT MASUK & SURAT TERKIRIM)
+   ========================================================================== */
+
+.mailbox-letters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 1.25rem;
+}
+
+.letter-card {
+  position: relative;
+  background: var(--mb-card-bg);
+  border: 1px solid var(--mb-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  cursor: pointer;
+  transition: all 0.24s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.letter-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--mb-accent);
+  box-shadow: 0 8px 24px var(--mb-accent-glow);
+}
+
+.letter-card.is-unread {
+  border-left: 4px solid #f43f5e;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), var(--mb-card-bg));
+}
+
+.letter-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.letter-author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.letter-author-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--mb-accent);
+}
+
+.letter-author-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.letter-author-univ {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.letter-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.letter-status-badge.unread {
+  background: rgba(244, 63, 94, 0.2);
+  color: #f43f5e;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+.letter-status-badge.read {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.letter-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.letter-card-snippet {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.letter-card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.65rem;
+  font-size: 0.73rem;
+  color: #94a3b8;
+}
+
+.letter-paper-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+  font-size: 0.7rem;
+}
+
+.letter-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-letter-icon-action {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: all 0.18s ease;
+}
+
+.btn-letter-icon-action:hover {
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.15);
+}
+
+/* Empty State */
+.mailbox-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  background: var(--mb-card-bg);
+  border: 1px dashed var(--mb-border);
+  border-radius: 20px;
+  gap: 0.75rem;
+  max-width: 520px;
+  margin: 2rem auto;
+}
+
+.empty-state-icon {
+  font-size: 3.2rem;
+  filter: drop-shadow(0 0 15px var(--mb-accent-glow));
+  margin-bottom: 0.35rem;
+}
+
+.mailbox-empty-state h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.mailbox-empty-state p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.btn-empty-compose {
+  margin-top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem;
+  background: var(--mb-btn-bg);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--mb-btn-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-empty-compose:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* ==========================================================================
+   6. TULIS SURAT (COMPOSE FORM)
+   ========================================================================== */
+
+.mailbox-compose-card {
+  background: var(--mb-card-bg);
+  border: 1px solid var(--mb-border);
+  border-radius: 20px;
+  padding: 1.85rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.compose-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.compose-field-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compose-counter {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Recipient Cards */
+.recipient-selection-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.recipient-option-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid var(--mb-border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recipient-option-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--mb-accent);
+}
+
+.recipient-option-card.selected {
+  background: var(--mb-active-tab-bg);
+  border-color: var(--mb-accent);
+  box-shadow: 0 0 16px var(--mb-accent-glow);
+}
+
+.recipient-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--mb-accent);
+}
+
+.recipient-card-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.recipient-card-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.recipient-card-univ {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+/* Paper Theme Selector */
+.paper-theme-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.paper-theme-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--mb-border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paper-theme-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.paper-theme-pill.selected {
+  background: #ffffff;
+  color: #1e1b4b;
+  border-color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+/* Form Inputs */
+.mailbox-input-title {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--mb-border);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.mailbox-input-title:focus {
+  border-color: var(--mb-accent);
+  box-shadow: 0 0 10px var(--mb-accent-glow);
+}
+
+.mailbox-textarea-body {
+  width: 100%;
+  min-height: 220px;
+  padding: 1.1rem 1.25rem;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid var(--mb-border);
+  color: #f8fafc;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.mailbox-textarea-body:focus {
+  border-color: var(--mb-accent);
+  box-shadow: 0 0 10px var(--mb-accent-glow);
+}
+
+/* Compose Actions */
+.compose-actions-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--mb-border);
+}
+
+.btn-compose-cancel {
+  padding: 0.65rem 1.25rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--mb-border);
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-compose-cancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.btn-compose-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.6rem;
+  border-radius: 9999px;
+  background: var(--mb-btn-bg);
+  border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--mb-btn-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-compose-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.btn-compose-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   7. BACA SURAT (LETTER READER MODAL)
+   ========================================================================== */
+
+.mailbox-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5, 7, 20, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeInBackdrop 0.24s ease-out;
+}
+
+.mailbox-modal-backdrop.open {
+  display: flex;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.letter-sheet-card {
+  position: relative;
+  width: 100%;
+  max-width: 660px;
+  max-height: 88vh;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+  color: #1e1b4b;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 30px var(--mb-accent-glow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUpLetter 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+@keyframes slideUpLetter {
+  from { opacity: 0; transform: translateY(30px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Paper Theme Variations */
+.letter-sheet-card.paper-dreamy {
+  background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%);
+  border-color: #e9d5ff;
+}
+.letter-sheet-card.paper-morning {
+  background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
+  border-color: #fed7aa;
+}
+.letter-sheet-card.paper-crystal {
+  background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+  border-color: #c7d2fe;
+}
+.letter-sheet-card.paper-parchment {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+  border-color: #fde68a;
+}
+
+/* Sheet Header */
+.letter-sheet-header {
+  padding: 1.5rem 1.75rem 1rem 1.75rem;
+  border-bottom: 1px dashed rgba(30, 27, 75, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.letter-sheet-sender {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.letter-sheet-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #a855f7;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sheet-sender-meta h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e1b4b;
+}
+
+.sheet-sender-sub {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.btn-sheet-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+  color: #334155;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sheet-close:hover {
+  background: #f43f5e;
+  color: #ffffff;
+  border-color: #f43f5e;
+}
+
+/* Sheet Body Area */
+.letter-sheet-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.75rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.letter-sheet-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1e1b4b;
+  line-height: 1.3;
+}
+
+.letter-sheet-date {
+  font-size: 0.78rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.letter-sheet-content {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: #334155;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Sheet Footer */
+.letter-sheet-footer {
+  padding: 1rem 1.75rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-top: 1px solid rgba(30, 27, 75, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-sheet-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.95rem;
+  background: transparent;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: 9999px;
+  color: #e11d48;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sheet-delete:hover {
+  background: #f43f5e;
+  color: #ffffff;
+}
+
+.btn-sheet-reply {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #9333ea, #db2777);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-sheet-reply:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+/* ==========================================================================
+   8. RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 840px) {
+  .mailbox-hud-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.75rem 1rem;
+    gap: 0.65rem;
+  }
+  .mailbox-brand-group {
+    justify-content: space-between;
+  }
+  .mailbox-nav-tabs {
+    justify-content: center;
+  }
+  .mailbox-tab-btn {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.78rem;
+  }
+  .mailbox-top-actions {
+    justify-content: space-between;
+  }
+  .recipient-selection-cards {
+    grid-template-columns: 1fr;
+  }
+  .mailbox-letters-grid {
+    grid-template-columns: 1fr;
+  }
+  .mailbox-main-stage {
+    padding: 1rem 1rem 2rem 1rem;
+  }
+}
+

@@ -3,6 +3,7 @@
  */
 
 import { UNIVERSE_DATA, KIDULT_LOCATIONS, TOYOU_LOCATIONS, SHADOW_LOCATIONS } from './universes_view.js';
+import { PHOTOBOOTH_FRAMES, PHOTOBOOTH_CAPTIONS, PHOTOBOOTH_LAYOUTS, generateRoomCode } from './photobooth_view.js';
 
 let passed = 0;
 let total = 0;
@@ -76,6 +77,19 @@ assert(Boolean(SHADOW_LOCATIONS.kolam_berendam), 'SHADOW 2D World has Lokasi F1:
 assert(Boolean(SHADOW_LOCATIONS.sungai_kristal), 'SHADOW 2D World has Lokasi F2: Sungai Kristal');
 assert(Boolean(SHADOW_LOCATIONS.galeri_seni), 'SHADOW 2D World has Lokasi G: Galeri Seni Kristal');
 
+// 5. Verify Our Little Photobooth (Separate Top-Level Feature) Data & Config
+assert(Boolean(PHOTOBOOTH_FRAMES.moon_stars) && PHOTOBOOTH_FRAMES.moon_stars.name === 'Moon & Stars', 'Photobooth has Frame 1: Moon & Stars');
+assert(Boolean(PHOTOBOOTH_FRAMES.pastel_flowers) && PHOTOBOOTH_FRAMES.pastel_flowers.name === 'Pastel Flowers', 'Photobooth has Frame 2: Pastel Flowers');
+assert(Boolean(PHOTOBOOTH_FRAMES.crystal_dreams) && PHOTOBOOTH_FRAMES.crystal_dreams.name === 'Crystal Dreams', 'Photobooth has Frame 3: Crystal Dreams');
+assert(Boolean(PHOTOBOOTH_FRAMES.retro_memories) && PHOTOBOOTH_FRAMES.retro_memories.name === 'Retro Memories', 'Photobooth has Frame 4: Retro Memories');
+assert(PHOTOBOOTH_CAPTIONS.includes('Our Little Memories'), 'Photobooth has caption: Our Little Memories');
+assert(PHOTOBOOTH_CAPTIONS.includes('Together, Even From Afar'), 'Photobooth has caption: Together, Even From Afar');
+assert(PHOTOBOOTH_CAPTIONS.includes('A Little Moment With You'), 'Photobooth has caption: A Little Moment With You');
+assert(PHOTOBOOTH_LAYOUTS.includes(2) && PHOTOBOOTH_LAYOUTS.includes(3) && PHOTOBOOTH_LAYOUTS.includes(4), 'Photobooth supports 2, 3, and 4 panel layouts');
+assert(/^[A-Z]{3}-\d{3}$/.test(generateRoomCode()), 'Photobooth generates valid room invitation code');
+
 console.log(`\n========================================`);
 console.log(`SUMMARY: ${passed}/${total} PASSED (100%)`);
 console.log(`========================================\n`);
+
+process.exit(passed === total ? 0 : 1);

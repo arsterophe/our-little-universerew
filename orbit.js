@@ -4,9 +4,26 @@
  * Shared schedule, event calendar, and remote meeting coordinator
  * for the three besties: Nyanya, Lala, and Lele.
  * 
- * Note: Data in this phase is maintained in a local reactive store,
- * strictly architected for seamless future Firebase Firestore integration.
+ * Integrated with Cloud Firestore real-time synchronization,
+ * idempotent migration, local backup, and verified UID security.
  */
+
+import {
+  auth,
+  db,
+  identifyUserCharacter,
+  dbSaveOrbitEvent,
+  dbDeleteOrbitEvent,
+  dbRespondToMeeting,
+  dbFetchOrbitEvents,
+  dbSubscribeOrbitEvents,
+  dbMigrateOrbitEvents,
+  backupLocalStorageKey,
+  subscribeDatabaseStatus,
+  getDatabaseStatus,
+  updateDatabaseStatus
+} from './firebase.js';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // 1. Initial Mock Data for Our Little Orbit (October - November 2026)
 export const INITIAL_ORBIT_EVENTS = [
@@ -159,8 +176,37 @@ export const INITIAL_ORBIT_EVENTS = [
   }
 ];
 
-// Reactive Store
-let orbitEvents = [...INITIAL_ORBIT_EVENTS];
+// Reactive Store & Persistence Setup
+const ORBIT_STORAGE_KEY = 'olu_orbit_events_v2';
+
+function loadStoredOrbitEvents() {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const raw = window.localStorage.getItem(ORBIT_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Gagal memuat events dari localStorage:', e);
+    }
+  }
+  return [...INITIAL_ORBIT_EVENTS];
+}
+
+function saveStoredOrbitEvents(events) {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      window.localStorage.setItem(ORBIT_STORAGE_KEY, JSON.stringify(events));
+    } catch (e) {
+      console.warn('Gagal menyimpan events ke localStorage:', e);
+    }
+  }
+}
+
+let orbitEvents = loadStoredOrbitEvents();
 let currentDate = new Date(2026, 9, 20); // Default to October 2026 (matching system date)
 let selectedDateStr = '2026-10-20';
 let activeViewMode = 'month'; // 'month' or 'week'
@@ -178,6 +224,73 @@ export function subscribeOrbit(fn) {
     const idx = listeners.indexOf(fn);
     if (idx > -1) listeners.splice(idx, 1);
   };
+}
+
+// ==============================================================================
+// FIRESTORE REAL-TIME SYNC & IDEMPOTENT MIGRATION
+// ==============================================================================
+
+let firestoreUnsubscribe = null;
+let isFirestoreSynced = false;
+
+export function initOrbitFirebaseSync() {
+  if (!auth) return;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        // Synchronize active perspective with authenticated character
+        const authChar = identifyUserCharacter(user);
+        if (authChar) {
+          activeUserCharacter = authChar;
+          notifyListeners();
+        }
+
+        // 1. Mandatory backup of localStorage key before any write
+        backupLocalStorageKey(ORBIT_STORAGE_KEY);
+
+        // 2. Perform idempotent migration of existing local events to Firestore
+        await dbMigrateOrbitEvents(user, orbitEvents);
+
+        // 3. Clear existing listener if any
+        if (firestoreUnsubscribe) {
+          firestoreUnsubscribe();
+          firestoreUnsubscribe = null;
+        }
+
+        // 4. Start real-time Firestore listener
+        firestoreUnsubscribe = dbSubscribeOrbitEvents(
+          user,
+          (remoteEvents) => {
+            if (Array.isArray(remoteEvents) && remoteEvents.length > 0) {
+              orbitEvents = remoteEvents;
+              saveStoredOrbitEvents(orbitEvents);
+              notifyListeners();
+            }
+          },
+          (err) => {
+            console.error('Firestore listener error on Our Calendar:', err);
+          }
+        );
+
+        isFirestoreSynced = true;
+      } catch (err) {
+        console.error('Gagal sinkronisasi kalender ke Firestore:', err);
+      }
+    } else {
+      if (firestoreUnsubscribe) {
+        firestoreUnsubscribe();
+        firestoreUnsubscribe = null;
+      }
+      isFirestoreSynced = false;
+      updateDatabaseStatus('idle', 'Mode Offline (Cache) — Masuk akun untuk sinkronisasi Cloud');
+    }
+  });
+}
+
+// Auto-initialize sync on load
+if (typeof window !== 'undefined') {
+  initOrbitFirebaseSync();
 }
 
 // Getters
@@ -275,7 +388,15 @@ export function getMeetingInvitations() {
 
 // Event Actions
 export function addOrbitEvent(newEventData) {
-  const id = 'evt-' + Date.now();
+  if (!newEventData || !newEventData.title || !newEventData.title.trim()) {
+    throw new Error('Judul kegiatan tidak boleh kosong');
+  }
+  if (!newEventData.date) {
+    throw new Error('Tanggal kegiatan wajib dipilih');
+  }
+
+  const id = 'evt-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+  const proposerKey = newEventData.proposer || activeUserCharacter || 'nyanya';
   const created = {
     id,
     title: newEventData.title.trim(),
@@ -283,21 +404,114 @@ export function addOrbitEvent(newEventData) {
     date: newEventData.date,
     time: newEventData.time || '19:00',
     location: newEventData.location ? newEventData.location.trim() : 'Our Little Universe',
-    proposer: newEventData.proposer || activeUserCharacter,
-    proposerName: getCharacterDisplayName(newEventData.proposer || activeUserCharacter),
+    proposer: proposerKey,
+    proposerName: getCharacterDisplayName(proposerKey),
     description: newEventData.description ? newEventData.description.trim() : '',
     participants: newEventData.participants || ['nyanya', 'lala', 'lele'],
     status: newEventData.category === 'meeting' ? 'pending' : 'confirmed',
     responses: {
-      nyanya: { status: newEventData.proposer === 'nyanya' ? 'accepted' : 'pending' },
-      lala: { status: newEventData.proposer === 'lala' ? 'accepted' : 'pending' },
-      lele: { status: newEventData.proposer === 'lele' ? 'accepted' : 'pending' }
+      nyanya: { status: proposerKey === 'nyanya' ? 'accepted' : 'pending' },
+      lala: { status: proposerKey === 'lala' ? 'accepted' : 'pending' },
+      lele: { status: proposerKey === 'lele' ? 'accepted' : 'pending' }
     }
   };
 
   orbitEvents.unshift(created);
+  saveStoredOrbitEvents(orbitEvents);
   notifyListeners();
+
+  let cloudPromise = null;
+  if (auth && auth.currentUser) {
+    cloudPromise = dbSaveOrbitEvent(created, auth.currentUser);
+  }
+
+  created.then = function (onResolve, onReject) {
+    if (cloudPromise) {
+      return cloudPromise.then(() => onResolve(created), onReject);
+    }
+    return Promise.resolve(created).then(onResolve, onReject);
+  };
+
   return created;
+}
+
+// Delete Orbit Event (With strict owner permission check)
+export function deleteOrbitEvent(eventId, actorChar) {
+  const idx = orbitEvents.findIndex(e => e.id === eventId);
+  if (idx === -1) {
+    return { success: false, message: 'Kegiatan tidak ditemukan di kalender.' };
+  }
+
+  const evt = orbitEvents[idx];
+  // Ownership check: only the proposer can delete
+  if (evt.proposer && actorChar && evt.proposer !== actorChar) {
+    const ownerName = getCharacterDisplayName(evt.proposer).split(' ')[0];
+    return {
+      success: false,
+      message: `Hanya pembuat acara (${ownerName}) yang dapat menghapus kegiatan ini.`
+    };
+  }
+
+  orbitEvents.splice(idx, 1);
+  saveStoredOrbitEvents(orbitEvents);
+  notifyListeners();
+
+  let cloudPromise = null;
+  if (auth && auth.currentUser) {
+    cloudPromise = dbDeleteOrbitEvent(eventId, auth.currentUser);
+  }
+
+  const result = { success: true, message: 'Kegiatan berhasil dihapus dari kalender.' };
+  result.then = function (onResolve, onReject) {
+    if (cloudPromise) {
+      return cloudPromise.then(() => onResolve(result), (err) => onReject(err));
+    }
+    return Promise.resolve(result).then(onResolve, onReject);
+  };
+
+  return result;
+}
+
+// Update Orbit Event (With strict owner permission check)
+export function updateOrbitEvent(eventId, updatedData, actorChar) {
+  const evt = orbitEvents.find(e => e.id === eventId);
+  if (!evt) {
+    return { success: false, message: 'Kegiatan tidak ditemukan di kalender.' };
+  }
+
+  // Ownership check
+  if (evt.proposer && actorChar && evt.proposer !== actorChar) {
+    const ownerName = getCharacterDisplayName(evt.proposer).split(' ')[0];
+    return {
+      success: false,
+      message: `Hanya pembuat acara (${ownerName}) yang dapat mengubah kegiatan ini.`
+    };
+  }
+
+  if (updatedData.title && updatedData.title.trim()) evt.title = updatedData.title.trim();
+  if (updatedData.date) evt.date = updatedData.date;
+  if (updatedData.time) evt.time = updatedData.time;
+  if (updatedData.location !== undefined) evt.location = updatedData.location.trim();
+  if (updatedData.description !== undefined) evt.description = updatedData.description.trim();
+  if (updatedData.category) evt.category = updatedData.category;
+
+  saveStoredOrbitEvents(orbitEvents);
+  notifyListeners();
+
+  let cloudPromise = null;
+  if (auth && auth.currentUser) {
+    cloudPromise = dbSaveOrbitEvent(evt, auth.currentUser);
+  }
+
+  const result = { success: true, message: 'Kegiatan berhasil diperbarui.', event: evt };
+  result.then = function (onResolve, onReject) {
+    if (cloudPromise) {
+      return cloudPromise.then(() => onResolve(result), (err) => onReject(err));
+    }
+    return Promise.resolve(result).then(onResolve, onReject);
+  };
+
+  return result;
 }
 
 // Respond to Meeting Proposal
@@ -334,8 +548,16 @@ export function respondToMeeting(eventId, userChar, responseType, note = '', alt
     evt.status = 'confirmed';
   }
 
+  saveStoredOrbitEvents(orbitEvents);
   notifyListeners();
-  return true;
+
+  let cloudPromise = null;
+  if (auth && auth.currentUser) {
+    cloudPromise = dbRespondToMeeting(eventId, auth.currentUser, responseType, note, altDate, altTime);
+  }
+
+  const result = true;
+  return result;
 }
 
 // Helpers

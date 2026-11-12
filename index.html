@@ -11,19 +11,36 @@
   <!-- Google Fonts: Cinzel, Cormorant Garamond, Plus Jakarta Sans, Alex Brush, and Great Vibes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
-
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/orbit.css">
   <link rel="stylesheet" href="/moments.css">
   <link rel="stylesheet" href="/universes.css">
+  <link rel="stylesheet" href="/stories.css">
+  <link rel="stylesheet" href="/photobooth.css">
+  <link rel="stylesheet" href="/messages.css">
+  <link rel="stylesheet" href="/games.css">
+  <link rel="stylesheet" href="/universe_state.css">
+  <link rel="stylesheet" href="/star_messages.css">
+  <link rel="stylesheet" href="/mailbox.css">
+  <link rel="stylesheet" href="/shadow_gazebo.css">
+  <link rel="stylesheet" href="/shadow_garden.css">
+  <link rel="stylesheet" href="/shadow_art_gallery.css">
+  <link rel="stylesheet" href="/shadow_crystal_tower.css">
 </head>
 
 <body>
   <!-- Ambient Audio / Cosmic Canvas Background -->
   <div class="universe-container" id="universe-app">
+
+    <!-- Cosmic Initial Page Loader (Fades out seamlessly in milliseconds) -->
+    <div id="cosmic-app-loader" class="cosmic-app-loader" aria-live="polite">
+      <div class="loader-inner">
+        <span class="loader-star">✦</span>
+        <span class="loader-text" id="loader-status-text">Memuat Our Little Universe...</span>
+      </div>
+    </div>
 
     <!-- Canvas for interactive stars, nebula dust, and floating light particles -->
     <canvas id="stars-canvas" class="stars-canvas"></canvas>
@@ -131,8 +148,8 @@
                   <span class="char-symbol">★</span>
                 </div>
                 <div class="card-image-wrapper">
-                  <img src="/assets/card_nyanya_hd_2x.png" alt="Nyanya - The Moonlit Shadow Witch"
-                    class="char-card-img" />
+                  <img src="/assets/card_nyanya_hd.png" srcset="/assets/card_nyanya_hd.png 1x, /assets/card_nyanya_hd_2x.png 2x" alt="Nyanya - The Moonlit Shadow Witch"
+                    class="char-card-img" width="275" height="420" loading="eager" fetchpriority="high" decoding="async" />
                 </div>
                 <div class="card-caption">
                   <h2 class="char-name">Nyanya</h2>
@@ -152,7 +169,7 @@
                   <span class="char-symbol">☼</span>
                 </div>
                 <div class="card-image-wrapper">
-                  <img src="/assets/card_lala_hd_2x.png" alt="Lala The Everglow Fairy" class="char-card-img" />
+                  <img src="/assets/card_lala_hd.png" srcset="/assets/card_lala_hd.png 1x, /assets/card_lala_hd_2x.png 2x" alt="Lala The Everglow Fairy" class="char-card-img" width="275" height="420" loading="eager" fetchpriority="high" decoding="async" />
                 </div>
                 <div class="card-caption">
                   <h2 class="char-name">Lala</h2>
@@ -172,7 +189,7 @@
                   <span class="char-symbol">☾</span>
                 </div>
                 <div class="card-image-wrapper">
-                  <img src="/assets/card_lele_hd_2x.png" alt="Lele The Eclipse Guardian" class="char-card-img" />
+                  <img src="/assets/card_lele_hd.png" srcset="/assets/card_lele_hd.png 1x, /assets/card_lele_hd_2x.png 2x" alt="Lele The Eclipse Guardian" class="char-card-img" width="275" height="420" loading="eager" fetchpriority="high" decoding="async" />
                 </div>
                 <div class="card-caption">
                   <h2 class="char-name">Lele</h2>
@@ -218,8 +235,8 @@
             <div class="character-aura-halo" id="char-aura-halo"></div>
             <div class="character-glow-rings"></div>
             <div class="character-portrait-wrapper" id="char-portrait-wrapper">
-              <img src="/assets/portrait_nyanya_hd_2x.png" alt="Karakter Terpilih" id="login-char-img"
-                class="login-char-img" />
+              <img src="/assets/portrait_nyanya_hd.png" alt="Karakter Terpilih" id="login-char-img"
+                class="login-char-img" loading="lazy" decoding="async">
             </div>
             <!-- Character Floating Stars / Spells -->
             <div class="char-magic-sparkles" aria-hidden="true">
@@ -364,6 +381,14 @@
                 <span class="nav-icon">🪐</span>
                 <span class="nav-label">Universes</span>
               </button>
+              <button type="button" class="univ-nav-btn" data-nav="calendar" id="nav-btn-calendar">
+                <span class="nav-icon">📅</span>
+                <span class="nav-label">Our Calendar</span>
+              </button>
+              <button type="button" class="univ-nav-btn" data-nav="stories" id="nav-btn-stories">
+                <span class="nav-icon">📚</span>
+                <span class="nav-label">Our Stories</span>
+              </button>
               <button type="button" class="univ-nav-btn" data-nav="messages" id="nav-btn-messages">
                 <span class="nav-icon">✉</span>
                 <span class="nav-label">Messages</span>
@@ -376,6 +401,10 @@
                 <span class="nav-icon">📸</span>
                 <span class="nav-label">Gallery</span>
               </button>
+              <button type="button" class="univ-nav-btn" data-nav="photobooth" id="nav-btn-photobooth">
+                <span class="nav-icon">🎞️</span>
+                <span class="nav-label">Photobooth</span>
+              </button>
               <button type="button" class="univ-nav-btn" data-nav="more" id="nav-btn-more">
                 <span class="nav-icon">🎛</span>
                 <span class="nav-label">More</span>
@@ -387,8 +416,8 @@
           <div class="univ-profile-pill-wrapper" style="position: relative;">
             <div class="univ-profile-pill" id="univ-profile-pill" title="Profil & Pengaturan Akun">
               <img src="/assets/avatar_nyanya_hd.png" alt="Profil Pengguna" class="univ-profile-avatar"
-                id="univ-user-avatar" />
-              <span class="univ-profile-name" id="univ-user-greeting">Hello, Ale</span>
+                id="univ-user-avatar" loading="lazy" decoding="async">
+              <span class="univ-profile-name" id="univ-user-greeting">Hello, Nyanya</span>
               <span class="univ-profile-sparkle">✦</span>
             </div>
 
@@ -438,14 +467,17 @@
               <div class="island-ambient-glow"></div>
               <div class="island-planetary-ring"></div>
               <img src="/assets/island_kidult_floating.png" alt="KIDULT - Nyanya's Universe"
-                class="floating-island-image" />
+                class="floating-island-image" loading="lazy" decoding="async">
             </div>
             <div class="island-avatar-badge">
-              <img src="/assets/avatar_nyanya_hd.png" alt="Nyanya - The Moonlit Shadow Witch" />
+              <img src="/assets/avatar_nyanya_hd.png" alt="Nyanya - The Moonlit Shadow Witch" loading="lazy" decoding="async">
             </div>
             <div class="island-glass-card">
               <h2 class="island-card-title"><span class="island-symbol-icon">★</span> KIDULT</h2>
               <p class="island-card-sub">NYANYA'S UNIVERSE</p>
+              <div class="island-universe-badge-container">
+                <span class="island-universe-badge univ-badge my-universe"><span class="badge-star">★</span> MY UNIVERSE</span>
+              </div>
             </div>
             <p class="island-script-quote">Small joys make a big universe.</p>
           </button>
@@ -457,14 +489,17 @@
               <div class="island-ambient-glow"></div>
               <div class="island-planetary-ring"></div>
               <img src="/assets/island_toyou_floating.png" alt="TO YOU - Lala's Universe"
-                class="floating-island-image" />
+                class="floating-island-image" loading="lazy" decoding="async">
             </div>
             <div class="island-avatar-badge">
-              <img src="/assets/avatar_lala_hd.png" alt="Lala - The Everglow Fairy" />
+              <img src="/assets/avatar_lala_hd.png" alt="Lala - The Everglow Fairy" loading="lazy" decoding="async">
             </div>
             <div class="island-glass-card">
               <h2 class="island-card-title"><span class="island-symbol-icon">☼</span> TO YOU</h2>
               <p class="island-card-sub">LALA'S UNIVERSE</p>
+              <div class="island-universe-badge-container">
+                <span class="island-universe-badge univ-badge visit-universe"><span class="badge-star">✦</span> VISIT UNIVERSE</span>
+              </div>
             </div>
             <p class="island-script-quote">A little closer, for a brighter tomorrow.</p>
           </button>
@@ -476,14 +511,17 @@
               <div class="island-ambient-glow"></div>
               <div class="island-planetary-ring"></div>
               <img src="/assets/island_shadow_floating.png" alt="SHADOW - Lele's Universe"
-                class="floating-island-image" />
+                class="floating-island-image" loading="lazy" decoding="async">
             </div>
             <div class="island-avatar-badge">
-              <img src="/assets/avatar_lele_hd.png" alt="Lele - The Eclipse Guardian" />
+              <img src="/assets/avatar_lele_hd.png" alt="Lele - The Eclipse Guardian" loading="lazy" decoding="async">
             </div>
             <div class="island-glass-card">
               <h2 class="island-card-title"><span class="island-symbol-icon">☾</span> SHADOW</h2>
               <p class="island-card-sub">LELE'S UNIVERSE</p>
+              <div class="island-universe-badge-container">
+                <span class="island-universe-badge univ-badge visit-universe"><span class="badge-star">✦</span> VISIT UNIVERSE</span>
+              </div>
             </div>
             <p class="island-script-quote">Same sky, different shadows.</p>
           </button>
@@ -527,12 +565,46 @@
 
         <!-- Full-screen 2D Storybook Environment Stage -->
         <div class="kidult-2d-stage" id="kidult-2d-stage">
-          <!-- Main 2D Illustrated Island Environment -->
-          <img src="/assets/kidult_world_scene.jpg" alt="Dunia 2D KIDULT - Vanya's Universe" class="kidult-scene-img" />
+          <!-- Main 2D Illustrated Island Environment (Luxury Fairytale Floating Island at Twilight) -->
+          <img src="/assets/kidult_luxury_fairytale_twilight.jpg" alt="Dunia 2D KIDULT - Luxury Fairytale Floating Island at Twilight" class="kidult-scene-img" loading="eager" decoding="async">
 
-          <!-- Subtle Ambient Sunset & Galaxy Shimmer Overlays -->
-          <div class="kidult-sunset-glow" aria-hidden="true"></div>
-          <div class="kidult-river-shimmer" aria-hidden="true"></div>
+          <!-- ATMOSPHERIC LAYERS: Twinkling Stars, Drifting Lanterns, Castle Windows, Flowing River & Fireflies -->
+          <div class="kidult-celestial-stars" aria-hidden="true">
+            <span class="k-star s1">✦</span>
+            <span class="k-star s2">✧</span>
+            <span class="k-star s3">★</span>
+            <span class="k-star s4">⋆</span>
+            <span class="k-star s5">✦</span>
+            <span class="k-star s6">✧</span>
+            <span class="k-star s7">★</span>
+            <span class="k-star s8">⋆</span>
+          </div>
+
+          <div class="kidult-floating-lanterns" aria-hidden="true">
+            <div class="k-sky-lantern sl1"><span class="lantern-glow"></span>🏮</div>
+            <div class="k-sky-lantern sl2"><span class="lantern-glow"></span>🏮</div>
+            <div class="k-sky-lantern sl3"><span class="lantern-glow"></span>🏮</div>
+            <div class="k-sky-lantern sl4"><span class="lantern-glow"></span>🏮</div>
+            <div class="k-sky-lantern sl5"><span class="lantern-glow"></span>🏮</div>
+          </div>
+
+          <div class="kidult-castle-window-glows" aria-hidden="true">
+            <span class="castle-win-glow win-clock"></span>
+            <span class="castle-win-glow win-upper-left"></span>
+            <span class="castle-win-glow win-upper-right"></span>
+            <span class="castle-win-glow win-door-main"></span>
+            <span class="castle-win-glow win-greenhouse-core"></span>
+            <span class="castle-win-glow win-gazebo-core"></span>
+          </div>
+
+          <div class="kidult-river-flow-layer" aria-hidden="true">
+            <div class="river-shimmer-mist"></div>
+            <span class="river-ripple r1"></span>
+            <span class="river-ripple r2"></span>
+            <span class="river-water-lantern rwl1">🪷</span>
+            <span class="river-water-lantern rwl2">🪷</span>
+          </div>
+
           <div class="kidult-fireflies" aria-hidden="true">
             <span class="k-firefly f1">✦</span>
             <span class="k-firefly f2">✧</span>
@@ -542,7 +614,12 @@
             <span class="k-firefly f6">✧</span>
           </div>
 
-          <!-- TOP-LEFT HUD: Universe Title, Back Button & Nyanya Character Card -->
+          <div class="kidult-lavender-clouds" aria-hidden="true">
+            <div class="k-cloud-wisp cw1"></div>
+            <div class="k-cloud-wisp cw2"></div>
+          </div>
+
+          <!-- TOP-LEFT HUD: Universe Title, Back Button, Nyanya Glass Profile Card & Star Messages -->
           <div class="kidult-hud-topleft">
             <div class="kidult-title-bar">
               <button type="button" class="kidult-back-orb" id="btn-kidult-back"
@@ -556,73 +633,158 @@
               </div>
             </div>
 
-            <!-- Glassmorphism Character Identity Card (Matching Reference) -->
+            <!-- Glassmorphism Character Identity Card (Luxury Fairytale Design) -->
             <div class="kidult-char-card" id="kidult-char-card">
               <div class="kidult-char-avatar-wrap">
-                <img src="/assets/chibi_nyanya_avatar.png" alt="Chibi Nyanya - The Moonlit Shadow Witch"
-                  class="kidult-char-avatar" />
+                <img src="/assets/avatar_nyanya_hd.png" alt="Nyanya - The Moonlit Shadow Witch"
+                  class="kidult-char-avatar" loading="lazy" decoding="async">
               </div>
               <div class="kidult-char-info">
                 <h2 class="kidult-char-name">Nyanya</h2>
-                <p class="kidult-char-role">The Moonlit Shadow Witch</p>
+                <p class="kidult-char-role">The Moonlit Shadow Witch ♡</p>
                 <p class="kidult-char-quote">Small joy, make a big universe.</p>
               </div>
             </div>
+
+            <!-- Quick Star Messages Pill Button -->
+            <button type="button" class="kidult-quick-pill kidult-star-messages-pill" id="btn-kidult-star-messages"
+              aria-label="Buka Star Messages (Teleskop)">
+              <span class="quick-pill-icon">🔭</span>
+              <span class="quick-pill-text">Star Messages (Teleskop)</span>
+            </button>
           </div>
 
-          <!-- TOP-RIGHT HUD: Return Button & Greeting Pill -->
+          <!-- BOTTOM-LEFT: MOOD & REKOMENDASI MUSIK CARD (WITH MINIMALIST HORIZONTAL PICKER) -->
+          <div class="kidult-mood-container" id="kidult-mood-container">
+            <div class="kidult-mood-music-card" id="kidult-mood-card">
+              <div class="mood-icon-wrap" id="kidult-mood-icon-wrap" title="Mood Hari Ini">
+                <span class="mood-moon-icon" id="kidult-mood-icon">🌸</span>
+              </div>
+              <div class="mood-details">
+                <span class="mood-header-text">Mood Hari Ini</span>
+                <div class="mood-state-row">
+                  <strong class="mood-state-text" id="kidult-mood-text">Tenang</strong>
+                  <button type="button" class="btn-toggle-mood-picker" id="btn-toggle-mood-picker" title="Pilih Mood Hari Ini" aria-label="Buka Pilihan Mood">
+                    <span class="picker-caret-icon" id="kidult-picker-caret">▾</span>
+                  </button>
+                </div>
+                <span class="mood-song-title" id="kidult-mood-song">♫ Dreamy Piano ♫</span>
+              </div>
+              <button type="button" class="mood-play-btn" id="btn-kidult-mood-play" aria-label="Putar Musik Suasana">
+                <span class="play-icon" id="kidult-music-icon">▶</span>
+              </button>
+            </div>
+
+            <!-- Horizontal Mood Choices Bar (Appears near the panel on click) -->
+            <div class="kidult-mood-options-bar" id="kidult-mood-options-bar" aria-label="Pilihan Mood Hari Ini">
+              <button type="button" class="mood-option-pill" data-mood="bahagia" title="Bahagia">
+                <span class="mood-opt-icon">😊</span>
+                <span class="mood-opt-label">Bahagia</span>
+              </button>
+              <button type="button" class="mood-option-pill" data-mood="bersemangat" title="Bersemangat">
+                <span class="mood-opt-icon">🥰</span>
+                <span class="mood-opt-label">Bersemangat</span>
+              </button>
+              <button type="button" class="mood-option-pill active" data-mood="tenang" title="Tenang">
+                <span class="mood-opt-icon">🌸</span>
+                <span class="mood-opt-label">Tenang</span>
+              </button>
+              <button type="button" class="mood-option-pill" data-mood="sedih" title="Sedih">
+                <span class="mood-opt-icon">🌧️</span>
+                <span class="mood-opt-label">Sedih</span>
+              </button>
+              <button type="button" class="mood-option-pill" data-mood="lelah" title="Lelah">
+                <span class="mood-opt-icon">🌙</span>
+                <span class="mood-opt-label">Lelah</span>
+              </button>
+              <button type="button" class="mood-option-pill" data-mood="bersyukur" title="Bersyukur">
+                <span class="mood-opt-icon">✨</span>
+                <span class="mood-opt-label">Bersyukur</span>
+              </button>
+              <button type="button" class="mood-option-pill" data-mood="melamun" title="Melamun">
+                <span class="mood-opt-icon">💭</span>
+                <span class="mood-opt-label">Melamun</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- BOTTOM-RIGHT: FLOATING GALLERY BUTTON -->
+          <button type="button" class="kidult-gallery-btn" id="btn-kidult-gallery"
+            title="Buka Our Little Moments / Galeri Foto" aria-label="Buka Our Little Moments">
+            <span class="gallery-icon">🌸</span>
+            <span class="gallery-label">Gallery</span>
+          </button>
+
+          <!-- TOP-RIGHT HUD: Return Button, Story Pill, User Greeting & Cloud Status -->
           <div class="kidult-hud-topright">
-            <button type="button" class="kidult-return-pill" id="btn-kidult-return-univ"
-              aria-label="Kembali ke halaman pemilihan tiga universe">
-              <span>←</span>
-              <span>Pilih Universe</span>
+            <button type="button" class="univ-goto-btn kidult-return-pill" id="btn-kidult-return-univ"
+              aria-label="Kembali ke tiga universe">
+              <span class="goto-icon">🪐</span>
+              <span class="goto-text">Pergi ke Universe</span>
+            </button>
+            <button type="button" class="univ-goto-btn kidult-story-pill" id="btn-kidult-story"
+              aria-label="Buka Ruang Menulis Story">
+              <span class="goto-icon">📖</span>
+              <span class="goto-text">Story (Karya)</span>
             </button>
             <div class="kidult-user-pill" id="kidult-user-pill">
-              <img src="/assets/chibi_nyanya_avatar.png" alt="Vanya" class="kidult-user-avatar"
-                id="kidult-user-avatar" />
-              <span class="kidult-user-greeting" id="kidult-user-greeting">Hello, Vanya</span>
+              <img src="/assets/avatar_nyanya_hd.png" alt="Nyanya" class="kidult-user-avatar"
+                id="kidult-user-avatar" loading="lazy" decoding="async">
+              <span class="kidult-user-greeting" id="kidult-user-greeting">Hello, Nyanya ♡</span>
               <span class="kidult-user-sparkle">✦</span>
             </div>
           </div>
+
+          <!-- CLOUD SYNC & DECORATION CONTROLS (FASE 8) -->
+          <div class="universe-hud-state-bar" id="kidult-hud-state-bar">
+            <span class="universe-sync-badge status-saved" id="kidult-sync-badge">
+              <span class="sync-icon">☁️</span>
+              <span class="sync-text">Tersimpan di Cloud ✓</span>
+            </span>
+            <button type="button" class="btn-universe-decor-toggle" id="btn-kidult-decor-toggle" title="Mode Dekorasi Pulau">
+              <span class="decor-toggle-icon">🌸</span>
+              <span class="decor-toggle-text">Dekorasi</span>
+            </button>
+          </div>
+
+          <!-- STAGE DECORATION LAYER (FASE 8) -->
+          <div class="universe-decor-layer" id="kidult-decor-layer" aria-label="Dekorasi KIDULT"></div>
 
           <!-- ==================================================== -->
           <!-- INTERACTIVE 2D WORLD HOTSPOTS (6 CONNECTED LOCATIONS)-->
           <!-- ==================================================== -->
 
-          <!-- 1. RUMAH VANYA -->
+          <!-- 1. RUMAH VANYA (VICTORIAN FAIRYTALE CASTLE) -->
           <button type="button" class="kidult-hotspot hotspot-rumah" data-kidult-loc="rumah"
             aria-label="Lokasi 1: Rumah Vanya">
             <span class="hotspot-building-zone" aria-hidden="true"></span>
             <span class="kidult-loc-pill">
               <span class="loc-pill-icon">🏠</span>
-              <span class="loc-pill-text">Rumah</span>
+              <span class="loc-pill-text">Rumah ✦</span>
             </span>
           </button>
 
-          <!-- 2. RUMAH KACA -->
+          <!-- 2. RUMAH KACA (GRAND BOTANICAL GREENHOUSE DOME) -->
           <button type="button" class="kidult-hotspot hotspot-rumah-kaca" data-kidult-loc="rumah_kaca"
             aria-label="Lokasi 2: Rumah Kaca">
             <span class="hotspot-building-zone" aria-hidden="true"></span>
             <span class="kidult-loc-pill">
-              <span class="loc-pill-icon">🌿</span>
-              <span class="loc-pill-text">Rumah Kaca</span>
+              <span class="loc-pill-icon">🌱</span>
+              <span class="loc-pill-text">Rumah Kaca ✦</span>
             </span>
           </button>
 
-          <!-- 3. AREA TELESKOP BINTANG (STAR MESSAGES) -->
+          <!-- 3. AREA TELESKOP BINTANG (STAR MESSAGES / OBSERVATION PLATFORM) -->
           <button type="button" class="kidult-hotspot hotspot-teleskop" data-kidult-loc="teleskop"
             aria-label="Lokasi 3: Star Messages (Teleskop Bintang)">
             <span class="hotspot-building-zone" aria-hidden="true"></span>
-            <span class="kidult-loc-pill loc-pill-multiline">
-              <span class="loc-pill-icon">★</span>
-              <span class="loc-pill-stack">
-                <strong>Star Messages</strong>
-                <small>(Teleskop)</small>
-              </span>
+            <span class="kidult-loc-pill">
+              <span class="loc-pill-icon">⭐</span>
+              <span class="loc-pill-text">Teleskop</span>
             </span>
           </button>
 
-          <!-- 4. KOTAK POS -->
+          <!-- 4. KOTAK POS (VINTAGE PURPLE MAILBOX) -->
           <button type="button" class="kidult-hotspot hotspot-kotak-pos" data-kidult-loc="kotak_pos"
             aria-label="Lokasi 4: Kotak Pos">
             <span class="hotspot-building-zone" aria-hidden="true"></span>
@@ -632,7 +794,7 @@
             </span>
           </button>
 
-          <!-- 5. SUNGAI SENJA -->
+          <!-- 5. SUNGAI SENJA (TWILIGHT STREAM & WATERFALL) -->
           <button type="button" class="kidult-hotspot hotspot-sungai-senja" data-kidult-loc="sungai_senja"
             aria-label="Lokasi 5: Sungai Senja">
             <span class="hotspot-building-zone" aria-hidden="true"></span>
@@ -642,12 +804,12 @@
             </span>
           </button>
 
-          <!-- 6. GAZEBO TEPI SUNGAI -->
+          <!-- 6. GAZEBO TEPI SUNGAI (LUXURY ROTUNDA GAZEBO) -->
           <button type="button" class="kidult-hotspot hotspot-gazebo" data-kidult-loc="gazebo"
             aria-label="Lokasi 6: Gazebo Tepi Sungai">
             <span class="hotspot-building-zone" aria-hidden="true"></span>
             <span class="kidult-loc-pill">
-              <span class="loc-pill-icon">🏛</span>
+              <span class="loc-pill-icon">☕</span>
               <span class="loc-pill-text">Gazebo</span>
             </span>
           </button>
@@ -685,6 +847,9 @@
               ✨ Suasana: Tenang, hangat, dan bermandikan cahaya senja galaksi.
             </div>
 
+            <!-- INTERACTIVE ELEMENT STATE (FASE 8) -->
+            <div class="loc-element-state-box" id="kidult-element-state-box" style="display: none;"></div>
+
             <div class="kidult-panel-actions" id="kidult-loc-actions">
               <button type="button" class="kidult-panel-btn primary" id="btn-kidult-loc-action">
                 <span>✦</span>
@@ -695,6 +860,29 @@
               </button>
             </div>
           </aside>
+
+          <!-- PALET DEKORASI KIDULT (FASE 8) -->
+          <div class="universe-decor-dock" id="kidult-decor-dock" aria-label="Palet Dekorasi KIDULT">
+            <div class="decor-dock-header">
+              <div class="decor-dock-title">
+                <span>⭐ Palet Dekorasi KIDULT</span>
+                <span class="decor-dock-count" id="kidult-decor-count">0 / 50</span>
+              </div>
+              <button type="button" class="btn-close-decor-dock" id="btn-close-kidult-dock" aria-label="Tutup Palet Dekorasi">✕</button>
+            </div>
+            <div class="decor-catalog-grid" id="kidult-catalog-grid"></div>
+            <div class="decor-dock-actions">
+              <span class="decor-hint-text">💡 Klik item untuk menempatkan di pulau. Tarik untuk memindahkan.</span>
+              <button type="button" class="btn-decor-reset" id="btn-kidult-decor-reset">Reset Default</button>
+            </div>
+          </div>
+
+          <!-- BOTTOM-RIGHT GOTO UNIVERSES BUTTON -->
+          <button type="button" class="univ-goto-btn kidult-back-btn" id="btn-kidult-back-bottom"
+            aria-label="Kembali ke tiga universe">
+            <span class="goto-icon">🌌</span>
+            <span class="goto-text">Pergi ke Universe</span>
+          </button>
 
         </div>
 
@@ -713,7 +901,7 @@
           <div class="toyou-parallax-layer layer-island-base" data-parallax-depth="0.18">
             <img src="/assets/toyou_world_scene.jpg"
               alt="Dunia 2D TO YOU - Bella's Universe (Lala - The Everglow Fairy)" class="toyou-scene-img"
-              fetchpriority="high" decoding="async" />
+              fetchpriority="high" decoding="async" loading="lazy">
           </div>
 
           <!-- LAYER 2: Drifting Sky Clouds & Morning Sunbeams (God-Rays) -->
@@ -856,7 +1044,7 @@
             <div class="toyou-char-card" id="toyou-char-card" title="Lala — The Everglow Fairy (Bella's Universe)">
               <div class="toyou-char-avatar-wrap">
                 <img src="/assets/chibi_lala_avatar.png" alt="Chibi Lala - The Everglow Fairy"
-                  class="toyou-char-avatar" />
+                  class="toyou-char-avatar" loading="lazy" decoding="async">
               </div>
               <div class="toyou-char-info">
                 <h2 class="toyou-char-name"><span class="toyou-sun-symbol">☼</span> Lala</h2>
@@ -866,11 +1054,21 @@
             </div>
           </div>
 
-          <!-- TOP-RIGHT HUD: Greeting Pill & Quick Location Directory ("Mau ke mana dulu, Lala?") -->
+          <!-- TOP-RIGHT HUD: Return Button, Greeting Pill & Quick Location Directory ("Mau ke mana dulu, Lala?") -->
           <div class="toyou-hud-topright">
+            <button type="button" class="univ-goto-btn toyou-return-pill" id="btn-toyou-top-return"
+              aria-label="Kembali ke tiga universe">
+              <span class="goto-icon">🌌</span>
+              <span class="goto-text">Pergi ke Universe</span>
+            </button>
+            <button type="button" class="univ-goto-btn toyou-story-pill" id="btn-toyou-story"
+              aria-label="Buka Ruang Menulis Story">
+              <span class="goto-icon">✍️</span>
+              <span class="goto-text">Story (Karya)</span>
+            </button>
             <div class="toyou-user-pill" id="toyou-user-pill">
-              <img src="/assets/chibi_lala_avatar.png" alt="Bella" class="toyou-user-avatar" id="toyou-user-avatar" />
-              <span class="toyou-user-greeting" id="toyou-user-greeting">Hello, Bella</span>
+              <img src="/assets/avatar_lala_hd.png" alt="Lala" class="toyou-user-avatar" id="toyou-user-avatar" loading="lazy" decoding="async">
+              <span class="toyou-user-greeting" id="toyou-user-greeting">Hello, Lala</span>
               <span class="toyou-user-sparkle">✦</span>
             </div>
 
@@ -903,6 +1101,21 @@
               </button>
             </nav>
           </div>
+
+          <!-- CLOUD SYNC & DECORATION CONTROLS (FASE 8) -->
+          <div class="universe-hud-state-bar" id="toyou-hud-state-bar">
+            <span class="universe-sync-badge status-saved" id="toyou-sync-badge">
+              <span class="sync-icon">☁️</span>
+              <span class="sync-text">Tersimpan di Cloud ✦</span>
+            </span>
+            <button type="button" class="btn-universe-decor-toggle" id="btn-toyou-decor-toggle" title="Mode Dekorasi Pulau">
+              <span class="decor-toggle-icon">🎨</span>
+              <span class="decor-toggle-text">Dekorasi</span>
+            </button>
+          </div>
+
+          <!-- STAGE DECORATION LAYER (FASE 8) -->
+          <div class="universe-decor-layer" id="toyou-decor-layer" aria-label="Dekorasi TO YOU"></div>
 
           <!-- ==================================================== -->
           <!-- INTERACTIVE 2D WORLD HOTSPOTS (6 CONNECTED LOCATIONS)-->
@@ -991,10 +1204,10 @@
             <span>✦</span> A little closer, for a brighter tomorrow. <span>✦</span>
           </div>
 
-          <button type="button" class="toyou-back-btn" id="btn-toyou-back"
-            aria-label="Kembali ke halaman pemilihan universe">
-            <span>←</span>
-            <span>Kembali ke Universe</span>
+          <button type="button" class="univ-goto-btn toyou-back-btn" id="btn-toyou-back"
+            aria-label="Kembali ke tiga universe">
+            <span class="goto-icon">🌌</span>
+            <span class="goto-text">Pergi ke Universe</span>
           </button>
 
           <!-- COMPACT INTERACTIVE LOCATION DETAIL PANEL -->
@@ -1021,6 +1234,9 @@
               🌞 Suasana pagi cerah di hutan peri TO YOU.
             </div>
 
+            <!-- INTERACTIVE ELEMENT STATE (FASE 8) -->
+            <div class="loc-element-state-box" id="toyou-element-state-box" style="display: none;"></div>
+
             <div class="toyou-panel-actions">
               <button type="button" class="toyou-panel-btn primary" id="btn-toyou-loc-action">
                 <span>☼</span>
@@ -1031,6 +1247,22 @@
               </button>
             </div>
           </aside>
+
+          <!-- PALET DEKORASI TO YOU (FASE 8) -->
+          <div class="universe-decor-dock" id="toyou-decor-dock" aria-label="Palet Dekorasi TO YOU">
+            <div class="decor-dock-header">
+              <div class="decor-dock-title">
+                <span>☀️ Palet Dekorasi TO YOU</span>
+                <span class="decor-dock-count" id="toyou-decor-count">0 / 50</span>
+              </div>
+              <button type="button" class="btn-close-decor-dock" id="btn-close-toyou-dock" aria-label="Tutup Palet Dekorasi">✕</button>
+            </div>
+            <div class="decor-catalog-grid" id="toyou-catalog-grid"></div>
+            <div class="decor-dock-actions">
+              <span class="decor-hint-text">💡 Klik item untuk menempatkan di pulau. Tarik untuk memindahkan.</span>
+              <button type="button" class="btn-decor-reset" id="btn-toyou-decor-reset">Reset Default</button>
+            </div>
+          </div>
 
         </div>
 
@@ -1049,7 +1281,7 @@
           <div class="shadow-parallax-layer layer-shadow-base" data-parallax-depth="0.14">
             <img src="/assets/shadow_world_scene.jpg"
               alt="Dunia 2D SHADOW - Crystal Moon Sanctuary (Lele - The Eclipse Guardian)" class="shadow-scene-img"
-              decoding="async" width="2048" height="1152" />
+              decoding="async" width="2048" height="1152" loading="lazy">
           </div>
 
           <!-- LAYER 2: Starry Night Sky Twinkles, Crescent Moon Halo & Thin Drifting Mist -->
@@ -1161,7 +1393,7 @@
             <div class="shadow-char-card" id="shadow-char-card" title="Lele — The Eclipse Guardian (Crystal Moon Sanctuary)">
               <div class="shadow-char-avatar-wrap">
                 <img src="/assets/chibi_lele_avatar.png" alt="Chibi Lele - The Eclipse Guardian"
-                  class="shadow-char-avatar" fetchpriority="low" width="76" height="76" />
+                  class="shadow-char-avatar" fetchpriority="low" width="76" height="76" loading="lazy" decoding="async">
               </div>
               <div class="shadow-char-info">
                 <h2 class="shadow-char-name"><span class="shadow-moon-symbol">✦</span> Lele</h2>
@@ -1171,48 +1403,40 @@
             </div>
           </div>
 
-          <!-- TOP-RIGHT HUD: Greeting Pill & Quick Location Directory ("Mau ke mana dulu, Lele?") -->
+          <!-- TOP-RIGHT HUD: Return Button, Story Pill & Greeting Pill -->
           <div class="shadow-hud-topright">
+            <button type="button" class="univ-goto-btn shadow-return-pill" id="btn-shadow-top-return"
+              aria-label="Kembali ke tiga universe">
+              <span class="goto-icon">🌌</span>
+              <span class="goto-text">Pergi ke Universe</span>
+            </button>
+            <button type="button" class="univ-goto-btn shadow-story-pill" id="btn-shadow-story"
+              aria-label="Buka Ruang Menulis Story">
+              <span class="goto-icon">✍️</span>
+              <span class="goto-text">Story (Karya)</span>
+            </button>
             <div class="shadow-user-pill" id="shadow-user-pill">
-              <img src="/assets/chibi_lele_avatar.png" alt="Lele" class="shadow-user-avatar" id="shadow-user-avatar"
-                fetchpriority="low" width="42" height="42" />
+              <img src="/assets/avatar_lele_hd.png" alt="Lele" class="shadow-user-avatar" id="shadow-user-avatar"
+                fetchpriority="low" width="42" height="42" loading="lazy" decoding="async">
               <span class="shadow-user-greeting" id="shadow-user-greeting">Hello, Lele</span>
               <span class="shadow-user-sparkle">✦ ☽</span>
             </div>
-
-            <!-- Quick Directory Menu Matching Reference ("Mau ke mana dulu, Lele?") -->
-            <nav class="shadow-quick-menu" aria-label="Daftar Lokasi Dunia SHADOW">
-              <p class="shadow-quick-title">Mau ke mana dulu,<br>Lele?</p>
-              <button type="button" class="shadow-quick-item" data-shadow-nav="rumah_kristal">
-                <span class="sq-icon">🏰</span>
-                <span>Rumah Kristal</span>
-              </button>
-              <button type="button" class="shadow-quick-item" data-shadow-nav="galeri_seni">
-                <span class="sq-icon">🖼</span>
-                <span>Galeri Seni</span>
-              </button>
-              <button type="button" class="shadow-quick-item" data-shadow-nav="teleskop">
-                <span class="sq-icon">🔭</span>
-                <span>Teleskop</span>
-              </button>
-              <button type="button" class="shadow-quick-item" data-shadow-nav="gazebo">
-                <span class="sq-icon">🏛</span>
-                <span>Gazebo</span>
-              </button>
-              <button type="button" class="shadow-quick-item" data-shadow-nav="ladang_bunga">
-                <span class="sq-icon">🌸</span>
-                <span>Ladang Bunga (Hydrangea)</span>
-              </button>
-              <button type="button" class="shadow-quick-item" data-shadow-nav="kolam_berendam">
-                <span class="sq-icon">💧</span>
-                <span>Kolam &amp; Sungai Kristal</span>
-              </button>
-              <button type="button" class="shadow-quick-item" data-shadow-nav="kotak_pos">
-                <span class="sq-icon">✉</span>
-                <span>Kotak Pos</span>
-              </button>
-            </nav>
           </div>
+
+          <!-- CLOUD SYNC & DECORATION CONTROLS (FASE 8) -->
+          <div class="universe-hud-state-bar" id="shadow-hud-state-bar">
+            <span class="universe-sync-badge status-saved" id="shadow-sync-badge">
+              <span class="sync-icon">☁️</span>
+              <span class="sync-text">Tersimpan di Cloud ✦</span>
+            </span>
+            <button type="button" class="btn-universe-decor-toggle" id="btn-shadow-decor-toggle" title="Mode Dekorasi Pulau">
+              <span class="decor-toggle-icon">🎨</span>
+              <span class="decor-toggle-text">Dekorasi</span>
+            </button>
+          </div>
+
+          <!-- STAGE DECORATION LAYER (FASE 8) -->
+          <div class="universe-decor-layer" id="shadow-decor-layer" aria-label="Dekorasi SHADOW"></div>
 
           <!-- ==================================================== -->
           <!-- INTERACTIVE 2D WORLD HOTSPOTS (CRYSTAL MOON SANCTUARY)-->
@@ -1303,7 +1527,7 @@
               <span class="shadow-pill-icon">🎨</span>
               <span class="shadow-pill-text">Galeri Seni</span>
             </span>
-            <span class="shadow-hover-hint" aria-hidden="true">✦ Lihat pajangan lukisan malam di Galeri Seni</span>
+            <span class="shadow-hover-hint" aria-hidden="true">✦ Masuki Moonlit Art Gallery — Museum Seni Pribadi Lele</span>
           </button>
 
           <!-- INTERACTIVE CHIBI LELE ON THE COBBLESTONE PATH (WITH DARK ECLIPSE WINGS & CRYSTAL AURA) -->
@@ -1318,10 +1542,10 @@
           </button>
 
           <!-- BOTTOM-RIGHT BACK BUTTON -->
-          <button type="button" class="shadow-back-btn" id="btn-shadow-back"
-            aria-label="Kembali ke halaman pemilihan universe">
-            <span>←</span>
-            <span>Kembali ke Universe</span>
+          <button type="button" class="univ-goto-btn shadow-back-btn" id="btn-shadow-back"
+            aria-label="Kembali ke tiga universe">
+            <span class="goto-icon">🌌</span>
+            <span class="goto-text">Pergi ke Universe</span>
           </button>
 
           <!-- COMPACT INTERACTIVE LOCATION DETAIL PANEL (SHADOW THEME) -->
@@ -1348,6 +1572,9 @@
               🌙 Cahaya kristal biru-ungu &amp; keperakan bersinar tenang di malam berbintang.
             </div>
 
+            <!-- INTERACTIVE ELEMENT STATE (FASE 8) -->
+            <div class="loc-element-state-box" id="shadow-element-state-box" style="display: none;"></div>
+
             <div class="shadow-panel-actions">
               <button type="button" class="shadow-panel-btn primary" id="btn-shadow-loc-action">
                 <span>☾</span>
@@ -1359,11 +1586,972 @@
             </div>
           </aside>
 
+          <!-- PALET DEKORASI SHADOW (FASE 8) -->
+          <div class="universe-decor-dock" id="shadow-decor-dock" aria-label="Palet Dekorasi SHADOW">
+            <div class="decor-dock-header">
+              <div class="decor-dock-title">
+                <span>🌙 Palet Dekorasi SHADOW</span>
+                <span class="decor-dock-count" id="shadow-decor-count">0 / 50</span>
+              </div>
+              <button type="button" class="btn-close-decor-dock" id="btn-close-shadow-dock" aria-label="Tutup Palet Dekorasi">✕</button>
+            </div>
+            <div class="decor-catalog-grid" id="shadow-catalog-grid"></div>
+            <div class="decor-dock-actions">
+              <span class="decor-hint-text">💡 Klik item untuk menempatkan di pulau. Tarik untuk memindahkan.</span>
+              <button type="button" class="btn-decor-reset" id="btn-shadow-decor-reset">Reset Default</button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+      <!-- ============================================== -->
+      <!-- VIEW: SHADOW — MOONLIT SERENITY GAZEBO         -->
+      <!-- LELE'S UNIVERSE IMMERSIVE GAZEBO SANCTUARY     -->
+      <!-- ============================================== -->
+      <section class="view-section view-shadow-gazebo" id="view-shadow-gazebo"
+        aria-label="Moonlit Serenity Gazebo" aria-hidden="true">
+
+        <!-- Background Atmospheric Vignette & Gentle Fireflies -->
+        <div class="gazebo-ambient-vignette" aria-hidden="true"></div>
+        <div class="gazebo-fireflies-layer" aria-hidden="true">
+          <div class="gazebo-firefly" style="width: 5px; height: 5px; top: 35%; left: 22%; animation-delay: 0s;"></div>
+          <div class="gazebo-firefly" style="width: 6px; height: 6px; top: 55%; left: 68%; animation-delay: 2.5s;"></div>
+          <div class="gazebo-firefly" style="width: 4px; height: 4px; top: 25%; left: 78%; animation-delay: 5s;"></div>
+          <div class="gazebo-firefly" style="width: 7px; height: 7px; top: 72%; left: 38%; animation-delay: 1.2s;"></div>
+          <div class="gazebo-firefly" style="width: 5px; height: 5px; top: 48%; left: 88%; animation-delay: 3.8s;"></div>
+        </div>
+
+        <!-- 1. TOP BAR -->
+        <header class="gazebo-top-bar">
+          <div class="gazebo-brand-area">
+            <button type="button" class="btn-gazebo-back" id="btn-gazebo-back" aria-label="Kembali ke Universe SHADOW">
+              <span>←</span>
+              <span>Kembali</span>
+            </button>
+            <div class="gazebo-title-group">
+              <span class="gazebo-crescent-icon" aria-hidden="true">☾</span>
+              <div class="gazebo-title-texts">
+                <h1>SHADOW</h1>
+                <p>Lele's Universe — ✦</p>
+              </div>
+            </div>
+            <p class="gazebo-hero-quote">
+              "Di sini, semua pikiran bisa beristirahat... dan cerita-cerita baru bisa dimulai." — Lele ♡
+            </p>
+          </div>
+
+          <!-- Ambient Music Player Pill -->
+          <div class="gazebo-music-pill">
+            <div class="music-title-wrap">
+              <span class="music-note-icon" id="gazebo-music-icon">🎵</span>
+              <span>Seruling Malam</span>
+            </div>
+            <button type="button" class="btn-music-play" id="btn-gazebo-music-toggle" aria-label="Putar / Jeda Musik">
+              ▶
+            </button>
+            <div class="music-vol-group">
+              <button type="button" class="btn-music-mute" id="btn-gazebo-music-mute" aria-label="Mute / Unmute Musik">
+                🔊
+              </button>
+              <input type="range" class="gazebo-vol-slider" id="slider-gazebo-music-vol" min="0" max="100" value="70" aria-label="Volume Musik">
+            </div>
+            <!-- Audio element ready for external / local asset -->
+            <audio id="audio-gazebo-seruling" src="/assets/seruling_malam.mp3" preload="none"></audio>
+          </div>
+        </header>
+
+        <!-- 2. FOUR CENTRAL ACTIVITY CARDS -->
+        <main class="gazebo-center-stage">
+          <div class="gazebo-cards-grid">
+            <!-- Card 1: Tea Time -->
+            <div class="gazebo-card" id="gazebo-card-tea" role="button" tabindex="0" aria-label="Buka Tea Time">
+              <div class="card-icon-halo">🫖</div>
+              <h3>Tea Time</h3>
+              <p>Nikmati teh hangat di bawah cahaya bulan ♡</p>
+            </div>
+
+            <!-- Card 2: Perpustakaan Kecil -->
+            <div class="gazebo-card" id="gazebo-card-library" role="button" tabindex="0" aria-label="Buka Perpustakaan Kecil">
+              <div class="card-icon-halo">📖</div>
+              <h3>Perpustakaan Kecil</h3>
+              <p>Baca karya cerita yang pernah kamu tulis ♡</p>
+            </div>
+
+            <!-- Card 3: Jurnal Malam -->
+            <div class="gazebo-card" id="gazebo-card-journal" role="button" tabindex="0" aria-label="Buka Jurnal Malam">
+              <div class="card-icon-halo">📜</div>
+              <h3>Jurnal Malam</h3>
+              <p>Tulis catatan di bawah langit malam ♡</p>
+            </div>
+
+            <!-- Card 4: Quiet Moment -->
+            <div class="gazebo-card" id="gazebo-card-quiet" role="button" tabindex="0" aria-label="Buka Quiet Moment">
+              <div class="card-icon-halo">🔮</div>
+              <h3>Quiet Moment</h3>
+              <p>Dengarkan suara malam dan nikmati ketenangan ♡</p>
+            </div>
+          </div>
+        </main>
+
+        <!-- 3. BOTTOM FOOTER & BADGES -->
+        <footer class="gazebo-bottom-bar">
+          <div class="gazebo-serenity-badge">
+            <span class="badge-star-icon">✦</span>
+            <span class="badge-quote-text">Gazebo ini adalah tempat kecil untuk bermimpi, membaca, dan merasa tenang. — Lele ♡</span>
+          </div>
+
+          <div class="gazebo-table-tea-indicator" id="gazebo-table-tea-indicator">
+            <span>🍵</span>
+            <span id="gazebo-table-tea-text">Jasmine Tea · Sedang Disajikan 🌙</span>
+          </div>
+        </footer>
+
+        <!-- 4. GAZEBO MODAL DIALOG CONTAINER -->
+        <div class="gazebo-modal-backdrop" id="gazebo-modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="gazebo-modal-dialog">
+            <div class="gazebo-modal-header">
+              <div class="modal-header-meta">
+                <span class="modal-header-icon" id="gazebo-modal-header-icon">🍵</span>
+                <div>
+                  <h2 id="gazebo-modal-header-title">Aktivitas Gazebo</h2>
+                  <p id="gazebo-modal-header-sub">Suasana tenang malam hari</p>
+                </div>
+              </div>
+              <button type="button" class="btn-gazebo-modal-close" id="btn-gazebo-modal-close" aria-label="Tutup Dialog">✕</button>
+            </div>
+
+            <div class="gazebo-modal-body" id="gazebo-modal-body">
+              <!-- Dynamically rendered by shadow_gazebo_view.js -->
+            </div>
+          </div>
         </div>
 
       </section>
 
+      <!-- ======================================================== -->
+      <!-- VIEW: SHADOW — MOONLIT HYDRANGEA GARDEN                 -->
+      <!-- LELE'S SECRET FLOWER SANCTUARY                           -->
+      <!-- ======================================================== -->
+      <section class="view-section view-shadow-garden" id="view-shadow-garden"
+        aria-label="Moonlit Hydrangea Garden" aria-hidden="true">
+
+        <!-- Atmospheric Scenic Layers & Floating Petals -->
+        <div class="garden-scenic-scenery" aria-hidden="true">
+          <div class="garden-moon"></div>
+          <div class="garden-mist"></div>
+          <div class="garden-hydrangea-bushes">
+            <div class="garden-bush"></div>
+            <div class="garden-bush"></div>
+            <div class="garden-bush"></div>
+            <div class="garden-bush"></div>
+            <div class="garden-bush"></div>
+            <div class="garden-bush"></div>
+            <div class="garden-bush"></div>
+          </div>
+          <!-- Floating Fireflies -->
+          <div class="garden-firefly" style="top: 45%; left: 15%; animation-delay: 0s;"></div>
+          <div class="garden-firefly" style="top: 30%; left: 65%; animation-delay: 2.2s;"></div>
+          <div class="garden-firefly" style="top: 65%; left: 82%; animation-delay: 4.5s;"></div>
+          <div class="garden-firefly" style="top: 75%; left: 35%; animation-delay: 1.5s;"></div>
+          <div class="garden-firefly" style="top: 50%; left: 52%; animation-delay: 3.8s;"></div>
+          <!-- Drifting Petals -->
+          <div class="garden-floating-petal" style="left: 20%; background: #60a5fa; animation-delay: 0s;"></div>
+          <div class="garden-floating-petal" style="left: 45%; background: #c084fc; animation-delay: 3s;"></div>
+          <div class="garden-floating-petal" style="left: 70%; background: #f472b6; animation-delay: 6s;"></div>
+          <div class="garden-floating-petal" style="left: 85%; background: #ffffff; animation-delay: 9s;"></div>
+        </div>
+
+        <!-- 1. TOP BAR -->
+        <header class="garden-top-bar">
+          <div class="garden-top-left">
+            <button type="button" class="btn-garden-back" id="btn-garden-back" aria-label="Kembali ke Universe SHADOW">
+              <span>←</span>
+              <span>Kembali</span>
+            </button>
+            <div class="garden-branding">
+              <div class="garden-branding-title">
+                <span>☾</span>
+                <span>MOONLIT HYDRANGEA GARDEN</span>
+              </div>
+              <div class="garden-branding-subtitle">Lele's Secret Garden · SHADOW</div>
+            </div>
+          </div>
+
+          <!-- Top-Right Melodi Audio Player -->
+          <div class="garden-music-pill">
+            <div class="garden-music-info">
+              <span id="garden-music-note">🌸</span>
+              <span class="garden-music-title">Melodi Taman</span>
+            </div>
+            <button type="button" class="btn-garden-music-toggle" id="btn-garden-music-toggle"
+              aria-label="Putar atau jeda musik taman">
+              <span id="garden-music-icon">▶</span>
+            </button>
+            <input type="range" class="garden-volume-slider" id="garden-music-volume" min="0" max="1" step="0.05"
+              value="0.45" aria-label="Volume musik taman" />
+          </div>
+        </header>
+
+        <!-- 2. CENTER CONTENT & 4 ACTIVITY CARDS -->
+        <main class="garden-content">
+          <div class="garden-hero-quote">
+            <p>"Di bawah pendar bulan, setiap kelopak hydrangea mekar untuk mengingatkan kita tentang arti ketenangan, kehangatan, dan harapan baru."</p>
+            <span>— Lele ☾</span>
+          </div>
+
+          <div class="garden-cards-grid">
+            <!-- CARD 1: LITTLE GARDENER -->
+            <div class="garden-card" id="garden-card-gardener" tabindex="0" role="button"
+              aria-label="Buka aktivitas Little Gardener">
+              <div class="garden-card-icon-wrap" style="color: #60a5fa;">
+                <span>🌱</span>
+              </div>
+              <div class="garden-card-title">Little Gardener</div>
+              <div class="garden-card-subtitle">Rawat &amp; Bunga Mekar</div>
+              <p class="garden-card-desc">Pilih bunga hydrangea Lele, siram dengan embun kristal, bersihkan daun, dan bantu bermekaran.</p>
+              <div class="garden-card-badge">
+                <span>✦</span>
+                <span>Perawatan Bunga Persisten</span>
+              </div>
+            </div>
+
+            <!-- CARD 2: FLOWER OF FEELINGS -->
+            <div class="garden-card" id="garden-card-feelings" tabindex="0" role="button"
+              aria-label="Buka ensiklopedia Flower of Feelings">
+              <div class="garden-card-icon-wrap" style="color: #c084fc;">
+                <span>📜</span>
+              </div>
+              <div class="garden-card-title">Flower of Feelings</div>
+              <div class="garden-card-subtitle">Ensiklopedia Perasaan</div>
+              <p class="garden-card-desc">Pelajari makna sakral warna hydrangea &amp; snowdrop, dan pilih bunga cerminan suasana hatimu.</p>
+              <div class="garden-card-badge">
+                <span>✦</span>
+                <span>Makna &amp; Mood Hati</span>
+              </div>
+            </div>
+
+            <!-- CARD 3: CREATE YOUR BOUQUET -->
+            <div class="garden-card" id="garden-card-bouquet" tabindex="0" role="button"
+              aria-label="Buka mini-game merangkai buket">
+              <div class="garden-card-icon-wrap" style="color: #f472b6;">
+                <span>💐</span>
+              </div>
+              <div class="garden-card-title">Create Your Bouquet</div>
+              <div class="garden-card-subtitle">Rangkai Buket Kristal</div>
+              <p class="garden-card-desc">Rangkai kombinasi bunga dan pita pilihanmu, beri nama, lalu simpan ke Galeri Lele.</p>
+              <div class="garden-card-badge">
+                <span>✦</span>
+                <span>Tersimpan di Galeri</span>
+              </div>
+            </div>
+
+            <!-- CARD 4: MOONLIGHT POND -->
+            <div class="garden-card" id="garden-card-pond" tabindex="0" role="button"
+              aria-label="Buka relaksasi Moonlight Pond">
+              <div class="garden-card-icon-wrap" style="color: #fef08a;">
+                <span>🌙</span>
+              </div>
+              <div class="garden-card-title">Moonlight Pond</div>
+              <div class="garden-card-subtitle">Kolam Pantulan Bulan</div>
+              <p class="garden-card-desc">Duduk santai di tepi kolam malam, nikmati pantulan bulan, gemericik air, dan ketenangan jiwa.</p>
+              <div class="garden-card-badge">
+                <span>✦</span>
+                <span>Relaksasi &amp; Ambience</span>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- 3. BOTTOM BAR -->
+        <footer class="garden-bottom-bar">
+          <div class="garden-serenity-badge">
+            <span class="garden-serenity-star">✦</span>
+            <span>Ladang Bunga Hydrangea &amp; Snowdrop · Tempat Harapan Mekar</span>
+          </div>
+          <div class="garden-status-pill">
+            <div class="garden-status-item">
+              <span>Bunga Mekar:</span>
+              <span class="garden-status-value" id="garden-status-blooming-val">3 / 5 Bunga</span>
+            </div>
+            <div class="garden-status-item">
+              <span>· Mood Bunga:</span>
+              <span class="garden-status-value" id="garden-status-mood-val">Ketenangan (Biru)</span>
+            </div>
+          </div>
+        </footer>
+
+        <!-- MODAL 1: LITTLE GARDENER -->
+        <div class="garden-modal-backdrop" id="modal-little-gardener" role="dialog" aria-modal="true"
+          aria-labelledby="modal-gardener-title">
+          <div class="garden-modal-card">
+            <div class="garden-modal-header">
+              <div class="garden-modal-title-group">
+                <span class="garden-modal-icon">🌱</span>
+                <div>
+                  <h3 class="garden-modal-title" id="modal-gardener-title">Little Gardener</h3>
+                  <div class="garden-modal-subtitle">Rawat Koleksi Bunga Hydrangea Lele</div>
+                </div>
+              </div>
+              <button type="button" class="btn-garden-modal-close" aria-label="Tutup dialog">✕</button>
+            </div>
+            <div class="garden-modal-body">
+              <div class="gardener-layout">
+                <div class="gardener-plants-list" id="gardener-plants-list">
+                  <!-- Populated dynamically by shadow_garden_view.js -->
+                </div>
+                <div class="gardener-active-stage">
+                  <div class="gardener-visual-flower" id="gardener-visual-flower">🌸</div>
+                  <h4 id="gardener-active-title" style="margin: 0 0 4px; color: #ffffff;">Hydrangea</h4>
+                  <p id="gardener-active-desc" style="font-size: 0.8rem; color: #cbd5e1; margin: 0 0 14px;">Deskripsi bunga...</p>
+
+                  <div class="gardener-plant-metrics">
+                    <div class="gardener-metric-row">
+                      <span>💧 Kelembapan Embun:</span>
+                      <div class="gardener-progress-bar">
+                        <div class="gardener-progress-fill" id="gardener-water-fill" style="width: 75%;"></div>
+                      </div>
+                      <span id="gardener-water-val">75%</span>
+                    </div>
+                    <div class="gardener-metric-row">
+                      <span>✨ Kebersihan Dedaunan:</span>
+                      <div class="gardener-progress-bar">
+                        <div class="gardener-progress-fill" id="gardener-clean-fill" style="width: 80%;"></div>
+                      </div>
+                      <span id="gardener-clean-val">80%</span>
+                    </div>
+                    <div class="gardener-metric-row">
+                      <span>🌸 Vitalitas &amp; Kesehatan:</span>
+                      <div class="gardener-progress-bar">
+                        <div class="gardener-progress-fill" id="gardener-health-fill" style="width: 90%;"></div>
+                      </div>
+                      <span id="gardener-health-val">90%</span>
+                    </div>
+                  </div>
+
+                  <div class="gardener-actions-row">
+                    <button type="button" class="btn-gardener-action" id="btn-gardener-water">
+                      <span style="font-size: 1.2rem;">💧</span>
+                      <span>Siram Embun</span>
+                    </button>
+                    <button type="button" class="btn-gardener-action" id="btn-gardener-clean">
+                      <span style="font-size: 1.2rem;">✨</span>
+                      <span>Bersihkan Daun</span>
+                    </button>
+                    <button type="button" class="btn-gardener-action" id="btn-gardener-bloom">
+                      <span style="font-size: 1.2rem;">🌸</span>
+                      <span>Bantu Mekar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 2: FLOWER OF FEELINGS -->
+        <div class="garden-modal-backdrop" id="modal-flower-feelings" role="dialog" aria-modal="true"
+          aria-labelledby="modal-feelings-title">
+          <div class="garden-modal-card">
+            <div class="garden-modal-header">
+              <div class="garden-modal-title-group">
+                <span class="garden-modal-icon">📜</span>
+                <div>
+                  <h3 class="garden-modal-title" id="modal-feelings-title">Flower of Feelings</h3>
+                  <div class="garden-modal-subtitle">Ensiklopedia Makna Bunga &amp; Cerminan Hati</div>
+                </div>
+              </div>
+              <button type="button" class="btn-garden-modal-close" aria-label="Tutup dialog">✕</button>
+            </div>
+            <div class="garden-modal-body">
+              <div class="feelings-grid" id="feelings-grid">
+                <!-- 5 Flowers cards populated dynamically -->
+              </div>
+
+              <div class="feelings-detail-pane">
+                <div class="feelings-detail-art" id="feelings-detail-art">🌸</div>
+                <div class="feelings-detail-info">
+                  <h4 class="feelings-detail-title" id="feelings-detail-title">Hydrangea Biru Ketenangan</h4>
+                  <div class="feelings-detail-meaning-tag" id="feelings-detail-meaning-tag">Makna: Ketenangan</div>
+                  <p class="feelings-detail-quote" id="feelings-detail-quote">"Kutipan Lele..."</p>
+
+                  <div style="margin-bottom: 12px;">
+                    <label for="feelings-personal-note" style="display: block; font-size: 0.75rem; color: #a5b4fc; margin-bottom: 4px;">Catatan Hatimu Malam Ini (Opsional):</label>
+                    <input type="text" id="feelings-personal-note" class="bouquet-text-input" style="width: 100%; box-sizing: border-box;" placeholder="Apa yang sedang kamu rasakan malam ini?..." />
+                  </div>
+
+                  <button type="button" class="feelings-pick-btn" id="btn-feelings-pick">
+                    Jadikan Bungaku Malam Ini (Ketenangan) ✦
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 3: CREATE YOUR BOUQUET -->
+        <div class="garden-modal-backdrop" id="modal-create-bouquet" role="dialog" aria-modal="true"
+          aria-labelledby="modal-bouquet-title">
+          <div class="garden-modal-card" style="max-width: 880px;">
+            <div class="garden-modal-header">
+              <div class="garden-modal-title-group">
+                <span class="garden-modal-icon">💐</span>
+                <div>
+                  <h3 class="garden-modal-title" id="modal-bouquet-title">Create Your Bouquet</h3>
+                  <div class="garden-modal-subtitle">Rangkai Buket Kristal &amp; Simpan ke Galeri Lele</div>
+                </div>
+              </div>
+              <button type="button" class="btn-garden-modal-close" aria-label="Tutup dialog">✕</button>
+            </div>
+            <div class="garden-modal-body">
+              <div class="bouquet-layout">
+                <div class="bouquet-crafting-panel">
+                  <div>
+                    <div class="bouquet-section-title">1. Pilih Bunga (1–4 Tangkai)</div>
+                    <div class="bouquet-flower-selectors" id="bouquet-flower-selectors">
+                      <!-- Rendered by shadow_garden_view.js -->
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="bouquet-section-title">2. Pilih Pita / Hiasan</div>
+                    <div class="bouquet-ribbon-selectors" id="bouquet-ribbon-selectors">
+                      <!-- Rendered by shadow_garden_view.js -->
+                    </div>
+                  </div>
+
+                  <div class="bouquet-input-group">
+                    <label for="bouquet-name-input" class="bouquet-section-title">3. Nama Buket</label>
+                    <input type="text" id="bouquet-name-input" class="bouquet-text-input" placeholder="Beri nama buket indahmu..." maxlength="50" />
+                  </div>
+
+                  <div class="bouquet-input-group">
+                    <label for="bouquet-dedication-input" class="bouquet-section-title">4. Dedikasi / Pesan</label>
+                    <input type="text" id="bouquet-dedication-input" class="bouquet-text-input" placeholder="Pesan singkat untuk buket ini..." maxlength="80" />
+                  </div>
+
+                  <button type="button" class="btn-save-bouquet" id="btn-save-bouquet">
+                    <span>✨</span>
+                    <span>Simpan Buket ke Galeri Lele ☾</span>
+                  </button>
+                </div>
+
+                <div class="bouquet-preview-panel">
+                  <div class="bouquet-section-title" style="margin-bottom: 8px;">Preview Buket Langsung</div>
+                  <div class="bouquet-canvas-container">
+                    <canvas id="bouquet-canvas" width="220" height="220"></canvas>
+                  </div>
+                  <div style="font-size: 0.75rem; color: #cbd5e1; font-style: italic;">
+                    "Bunga yang dirangkai dengan ketulusan hati akan selalu abadi."
+                  </div>
+                </div>
+              </div>
+
+              <!-- History of created bouquets -->
+              <div style="margin-top: 24px; border-top: 1px solid rgba(192, 132, 252, 0.2); padding-top: 16px;">
+                <div class="bouquet-section-title">Koleksi Buket Lele di Taman</div>
+                <div class="bouquet-history-list" id="bouquet-history-list">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- FULLSCREEN VIEW: MOONLIGHT POND IMMERSION MODE           -->
+      <!-- Total Redesign: High-Quality 2D Fantasy Donghua Environment -->
+      <!-- ======================================================== -->
+      <div class="view-moonlight-pond" id="view-moonlight-pond" role="dialog" aria-modal="true" aria-label="Moonlight Pond Immersion">
+        <!-- 1. HIGH-RESOLUTION 2D FANTASY ENVIRONMENT BACKDROP -->
+        <div class="pond-environment-backdrop" aria-hidden="true">
+          <div class="pond-bg-art"></div>
+          <div class="pond-ambient-lunar-glow"></div>
+          <div class="pond-ambient-mist-layer"></div>
+        </div>
+
+        <!-- 2. NATURAL ORGANIC WATER SURFACE INTERACTION -->
+        <div class="pond-water-overlay-layer" aria-hidden="true">
+          <div class="pond-water-ripple-ring ripple-1"></div>
+          <div class="pond-water-ripple-ring ripple-2"></div>
+          <div class="pond-water-ripple-ring ripple-3"></div>
+          <div class="pond-moon-reflection"></div>
+          <!-- Floating Animated Water Lilies on the Pond -->
+          <div class="pond-floating-lotus pad-1" style="top: 56%; left: 34%;">
+            <img src="/assets/pond_lotus_pad.svg" alt="" class="pond-lotus-img" />
+          </div>
+          <div class="pond-floating-lotus pad-2" style="top: 64%; right: 32%; animation-delay: 2.2s;">
+            <img src="/assets/pond_lotus_pad.svg" alt="" class="pond-lotus-img" />
+          </div>
+          <div class="pond-floating-lotus pad-3" style="top: 72%; left: 45%; animation-delay: 4.5s;">
+            <img src="/assets/pond_lotus_pad.svg" alt="" class="pond-lotus-img" />
+          </div>
+        </div>
+
+        <!-- 3. DETAILED FOREGROUND BOTANICALS (HYDRANGEA & SNOWDROPS) -->
+        <div class="pond-foreground-botanicals" aria-hidden="true">
+          <!-- Foreground Left: Multi-tiered Hydrangeas & Nodding Snowdrops -->
+          <div class="pond-botanical-group group-left">
+            <div class="pond-svg-hydrangea fg-h1" style="bottom: -25px; left: -20px; width: 220px; height: 190px;">
+              <img src="/assets/hydrangea_blossom.svg" alt="" class="botanical-svg-img" />
+            </div>
+            <div class="pond-svg-hydrangea fg-h2" style="bottom: 40px; left: 95px; width: 170px; height: 150px; filter: hue-rotate(45deg);">
+              <img src="/assets/hydrangea_blossom.svg" alt="" class="botanical-svg-img" />
+            </div>
+            <div class="pond-svg-snowdrop fg-s1" style="bottom: 10px; left: 160px; width: 95px; height: 155px;">
+              <img src="/assets/snowdrop_cluster.svg" alt="" class="botanical-svg-img" />
+            </div>
+            <div class="pond-svg-snowdrop fg-s2" style="bottom: 50px; left: 230px; width: 80px; height: 130px; animation-delay: 1.8s;">
+              <img src="/assets/snowdrop_cluster.svg" alt="" class="botanical-svg-img" />
+            </div>
+          </div>
+
+          <!-- Foreground Right: Multi-tiered Hydrangeas & Nodding Snowdrops -->
+          <div class="pond-botanical-group group-right">
+            <div class="pond-svg-hydrangea fg-h3" style="bottom: -20px; right: -25px; width: 230px; height: 200px; filter: hue-rotate(-30deg);">
+              <img src="/assets/hydrangea_blossom.svg" alt="" class="botanical-svg-img" />
+            </div>
+            <div class="pond-svg-hydrangea fg-h4" style="bottom: 45px; right: 110px; width: 165px; height: 145px; filter: hue-rotate(85deg);">
+              <img src="/assets/hydrangea_blossom.svg" alt="" class="botanical-svg-img" />
+            </div>
+            <div class="pond-svg-snowdrop fg-s3" style="bottom: 15px; right: 175px; width: 90px; height: 150px; animation-delay: 2.5s;">
+              <img src="/assets/snowdrop_cluster.svg" alt="" class="botanical-svg-img" />
+            </div>
+            <div class="pond-svg-snowdrop fg-s4" style="bottom: 55px; right: 245px; width: 75px; height: 125px; animation-delay: 0.8s;">
+              <img src="/assets/snowdrop_cluster.svg" alt="" class="botanical-svg-img" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. LIVING PARTICLES: FIREFLIES & DRIFTING PETALS -->
+        <div class="pond-particles-layer" aria-hidden="true">
+          <div class="pond-firefly" style="top: 42%; left: 24%; animation-delay: 0s;"></div>
+          <div class="pond-firefly" style="top: 36%; left: 68%; animation-delay: 2.2s;"></div>
+          <div class="pond-firefly" style="top: 58%; left: 42%; animation-delay: 4.4s;"></div>
+          <div class="pond-firefly" style="top: 68%; left: 78%; animation-delay: 1.5s;"></div>
+          <div class="pond-firefly" style="top: 52%; left: 16%; animation-delay: 3.8s;"></div>
+          <div class="pond-firefly" style="top: 30%; left: 50%; animation-delay: 5.5s;"></div>
+
+          <div class="pond-drifting-petal p-blue" style="top: 18%; left: 28%; animation-delay: 0s;"></div>
+          <div class="pond-drifting-petal p-lavender" style="top: 25%; left: 62%; animation-delay: 3.2s;"></div>
+          <div class="pond-drifting-petal p-pink" style="top: 30%; left: 46%; animation-delay: 6.5s;"></div>
+          <div class="pond-drifting-petal p-white" style="top: 20%; left: 76%; animation-delay: 9.8s;"></div>
+        </div>
+
+        <!-- 5. ELEGANT SUBTLE TOP BAR -->
+        <header class="pond-top-bar">
+          <button type="button" class="btn-garden-back" id="btn-pond-back" aria-label="Kembali ke Ladang Bunga">
+            <span>←</span>
+            <span>Kembali ke Taman</span>
+          </button>
+          <div class="pond-header-title">
+            <span class="pond-header-moon">☾</span>
+            <span class="pond-header-name">MOONLIGHT POND</span>
+            <span class="pond-header-dot">·</span>
+            <span class="pond-header-sub">Lele's Secret Sanctuary</span>
+          </div>
+        </header>
+
+        <!-- 6. COMPACT TRANSLUCENT BOTTOM INTERACTION BAR -->
+        <footer class="pond-bottom-interaction">
+          <div class="pond-reflection-card" id="pond-reflection-card">
+            "Air kolam yang tenang memantulkan bulan tanpa gelombang. Begitu pula hati ketika melepaskan semua keresahan." — Lele ☾
+          </div>
+          <button type="button" class="btn-pond-meditate" id="btn-pond-meditate">
+            ✦ Duduk Menikmati Suasana Malam
+          </button>
+        </footer>
+      </div>
+
+
+
       <!-- ============================================== -->
+      <!-- ======================================================== -->
+      <!-- VIEW: SHADOW — MOONLIT ART GALLERY (LELE'S ART MUSEUM)   -->
+      <!-- ======================================================== -->
+      <section class="view-section view-shadow-art-gallery" id="view-shadow-art-gallery"
+        aria-label="Moonlit Art Gallery — Lele's Personal Art Museum" aria-hidden="true">
+
+        <!-- Entrance Light Curtain -->
+        <div class="museum-entrance-curtain" id="museum-entrance-curtain" aria-hidden="true">
+          <div class="curtain-panel curtain-left"></div>
+          <div class="curtain-panel curtain-right"></div>
+        </div>
+
+        <!-- Architectural Backdrop & Polished Floor Reflection -->
+        <div class="museum-backdrop-layer" aria-hidden="true"></div>
+        <div class="museum-floor-sheen" aria-hidden="true"></div>
+
+        <!-- Gentle Luminous Dust Motes & Moonlight Breathing Glow -->
+        <div class="museum-atmosphere-layer" aria-hidden="true">
+          <div class="museum-moonlight-pulse"></div>
+          <div class="museum-dust-mote" style="top: 18%; left: 16%;"></div>
+          <div class="museum-dust-mote" style="top: 32%; left: 34%;"></div>
+          <div class="museum-dust-mote" style="top: 24%; left: 52%;"></div>
+          <div class="museum-dust-mote" style="top: 42%; left: 68%;"></div>
+          <div class="museum-dust-mote" style="top: 28%; left: 82%;"></div>
+          <div class="museum-dust-mote" style="top: 58%; left: 26%;"></div>
+          <div class="museum-dust-mote" style="top: 64%; left: 60%;"></div>
+          <div class="museum-dust-mote" style="top: 48%; left: 45%;"></div>
+        </div>
+
+        <!-- Top Navigation Bar -->
+        <header class="museum-top-header">
+          <div class="museum-header-left">
+            <button type="button" class="btn-museum-back" id="btn-art-gallery-back" aria-label="Kembali ke SHADOW">
+              <span>←</span>
+              <span>Kembali ke SHADOW</span>
+            </button>
+            <div class="museum-title-block">
+              <span class="museum-brand-kicker">☾ LELE'S PERSONAL ART MUSEUM</span>
+              <h2 class="museum-main-title">MOONLIT ART GALLERY</h2>
+            </div>
+          </div>
+
+          <nav class="museum-rooms-nav" aria-label="Ruangan Museum">
+            <button type="button" class="museum-room-tab active" data-museum-room="exhibition">
+              <span>🏛️</span><span>Ruang Pameran</span>
+            </button>
+            <button type="button" class="museum-room-tab" data-museum-room="atelier">
+              <span>🎨</span><span>Little Atelier</span>
+            </button>
+            <button type="button" class="museum-room-tab" data-museum-room="manager">
+              <span>📋</span><span>Kelola Karya</span>
+            </button>
+            <button type="button" class="museum-room-tab" data-museum-room="quiet_corner">
+              <span>🛋️</span><span>Quiet Corner</span>
+            </button>
+          </nav>
+
+          <div class="museum-header-right">
+            <div class="museum-audio-pill">
+              <button type="button" class="btn-museum-audio-toggle" id="btn-museum-audio-toggle" aria-label="Kontrol musik instrumental museum">
+                <span>🎵</span><span>Putar Musik Museum</span>
+              </button>
+              <input type="range" class="museum-audio-vol" id="slider-museum-audio-vol" min="0" max="100" value="55" aria-label="Volume musik museum" />
+            </div>
+            <button type="button" class="btn-visitor-preview-toggle" id="btn-museum-visitor-preview">
+              👁️ Mode Pengunjung
+            </button>
+          </div>
+        </header>
+
+        <div class="museum-visitor-banner" id="museum-visitor-banner" style="display: none;"></div>
+        <div class="museum-storage-notice" id="museum-storage-notice" style="display: none;" role="status" aria-live="polite"></div>
+
+        <!-- Museum Rooms Stage -->
+        <div class="museum-stage-scroll">
+
+          <!-- ROOM 1: THE EXHIBITION -->
+          <div class="museum-room-panel active" data-room-panel="exhibition">
+            <section class="masterpiece-showcase" aria-label="My Favorite Masterpiece">
+              <div class="masterpiece-overhead-spotlight" aria-hidden="true"></div>
+              <div class="masterpiece-header-row">
+                <span class="masterpiece-kicker">✦ My Favorite Masterpiece ✦</span>
+                <button type="button" class="btn-choose-masterpiece" id="btn-choose-masterpiece">
+                  ⭐ Pilih Karya Utama
+                </button>
+              </div>
+              <div id="masterpiece-showcase-body"></div>
+            </section>
+
+            <div class="museum-collections-bar">
+              <div class="collections-pills-wrap" id="museum-collections-pills"></div>
+              <button type="button" class="btn-manage-collections" id="btn-manage-collections">
+                ⚙️ Kelola Koleksi
+              </button>
+            </div>
+
+            <div class="museum-exhibition-wall" id="museum-exhibition-wall"></div>
+
+            <div class="museum-artistic-empty" id="museum-exhibition-empty" style="display: none;">
+              <div class="empty-easel-ornament">🖼️ 🌙 ✨</div>
+              <h3>Dinding Pameran Masih Hening</h3>
+              <p id="museum-empty-desc">
+                Dinding pameran masih menanti goresan kuas pertamamu, Lele. Masuk ke Little Atelier untuk mengunggah karya senimu sendiri.
+              </p>
+              <button type="button" class="btn-museum-primary" id="btn-empty-open-atelier">
+                🎨 Buka Little Atelier
+              </button>
+            </div>
+          </div>
+
+          <!-- ROOM 2: LITTLE ATELIER (STUDIO UPLOAD & EDITOR) -->
+          <div class="museum-room-panel" data-room-panel="atelier">
+            <div class="atelier-card" style="margin-bottom:20px;">
+              <h3 id="atelier-form-heading" style="margin:0 0 6px;font-family:'Cinzel',Georgia,serif;color:#fef3c7;">🎨 Little Atelier — Unggah Karya Baru</h3>
+              <p style="margin:0;color:#cbd5e1;font-size:0.86rem;">Studio pribadi Lele untuk mengunggah, menyunting, dan menuliskan cerita di balik setiap lukisan.</p>
+            </div>
+
+            <form id="atelier-artwork-form" class="atelier-studio-grid">
+              <div class="atelier-card">
+                <input type="file" id="atelier-file-input" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+                <div class="atelier-dropzone" id="atelier-dropzone">
+                  <div id="atelier-drop-prompt" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                    <span style="font-size:2.4rem;">🎨</span>
+                    <strong style="color:#fef3c7;">Pilih atau Seret Gambar Karya Seni ke Sini</strong>
+                    <span style="font-size:0.8rem;color:#94a3b8;">Mendukung JPG, PNG, WebP, GIF (Maks. 25 MB). Rasio gambar asli terjaga utuh.</span>
+                  </div>
+                  <div class="atelier-preview-frame" id="atelier-preview-frame">
+                    <img id="atelier-preview-img" src="" alt="Preview karya seni" />
+                    <div id="atelier-preview-meta" style="font-size:0.78rem;color:#cbd5e1;"></div>
+                    <button type="button" class="btn-museum-secondary" id="btn-atelier-change-img">🖼️ Ganti Gambar</button>
+                  </div>
+                </div>
+                <div class="atelier-error-banner" id="atelier-error-banner"></div>
+              </div>
+
+              <div class="atelier-card">
+                <div class="atelier-form-group">
+                  <label for="atelier-input-title">Judul Karya *</label>
+                  <input type="text" id="atelier-input-title" class="atelier-input" placeholder="Misal: Cahaya Bulan di Balik Tirai" maxlength="150" required />
+                </div>
+
+                <div class="atelier-form-group">
+                  <label for="atelier-input-desc">Deskripsi Karya</label>
+                  <textarea id="atelier-input-desc" class="atelier-textarea" rows="3" placeholder="Gambarkan suasana, medium, atau detail karya..." maxlength="2000"></textarea>
+                </div>
+
+                <div class="atelier-row-2col">
+                  <div class="atelier-form-group">
+                    <label for="atelier-input-date">Tanggal Pembuatan</label>
+                    <input type="date" id="atelier-input-date" class="atelier-input" />
+                  </div>
+                  <div class="atelier-form-group">
+                    <label for="atelier-select-collection">Koleksi</label>
+                    <select id="atelier-select-collection" class="atelier-select"></select>
+                  </div>
+                </div>
+
+                <div class="atelier-form-group">
+                  <label for="atelier-select-status">Status Publikasi</label>
+                  <select id="atelier-select-status" class="atelier-select">
+                    <option value="published">✦ Published — Tayang di Ruang Pameran Publik</option>
+                    <option value="draft">🔒 Draft — Privat (Hanya Lele yang Melihat)</option>
+                    <option value="in_development">🛠️ In Development — Masih Dikembangkan (Privat)</option>
+                  </select>
+                </div>
+
+                <div class="atelier-story-box">
+                  <h4>📖 Story Behind the Art</h4>
+                  <div class="atelier-form-group">
+                    <label for="atelier-story-inspiration">Apa inspirasi karya ini?</label>
+                    <textarea id="atelier-story-inspiration" class="atelier-textarea" rows="2" placeholder="Ceritakan momen atau ide awal karya ini..."></textarea>
+                  </div>
+                  <div class="atelier-form-group">
+                    <label for="atelier-story-meaning">Apa yang ingin disampaikan?</label>
+                    <textarea id="atelier-story-meaning" class="atelier-textarea" rows="2" placeholder="Makna atau perasaan di balik goresannya..."></textarea>
+                  </div>
+                  <div class="atelier-form-group">
+                    <label for="atelier-story-process">Bagaimana proses pembuatannya?</label>
+                    <textarea id="atelier-story-process" class="atelier-textarea" rows="2" placeholder="Teknik, alat, atau pengalaman saat menggambar..."></textarea>
+                  </div>
+                  <label class="atelier-privacy-switch">
+                    <input type="checkbox" id="atelier-check-story-public" checked />
+                    <span>Izinkan pengunjung museum membaca cerita ini (nonaktifkan untuk menyimpan cerita sebagai privat)</span>
+                  </label>
+                </div>
+
+                <div class="atelier-form-group" style="margin-top:14px;">
+                  <label for="atelier-input-private-notes">🔒 Catatan Pribadi Seniman (Selalu Privat — Tidak Pernah Tampil ke Pengunjung)</label>
+                  <textarea id="atelier-input-private-notes" class="atelier-textarea" rows="2" placeholder="Catatan perbaikan, pengingat warna, atau refleksi pribadi Lele..."></textarea>
+                </div>
+
+                <div class="atelier-actions-row">
+                  <button type="submit" class="btn-museum-primary" id="btn-atelier-submit">✦ Simpan Karya ke Museum</button>
+                  <button type="button" class="btn-museum-secondary" id="btn-atelier-reset">Reset Form</button>
+                  <button type="button" class="btn-museum-danger" id="btn-atelier-delete" style="display:none;">🗑️ Hapus Karya</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- ROOM 3: ARTWORK STATUS MANAGER -->
+          <div class="museum-room-panel" data-room-panel="manager">
+            <div class="manager-toolbar">
+              <div class="collections-pills-wrap">
+                <button type="button" class="collection-pill manager-status-filter active" data-status-filter="all">Semua Status</button>
+                <button type="button" class="collection-pill manager-status-filter" data-status-filter="published">🟢 Published</button>
+                <button type="button" class="collection-pill manager-status-filter" data-status-filter="draft">🔒 Draft</button>
+                <button type="button" class="collection-pill manager-status-filter" data-status-filter="in_development">🛠️ In Development</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <select id="manager-collection-select" class="atelier-select" style="width:auto;" aria-label="Filter koleksi"></select>
+                <div id="manager-counts-bar" style="display:flex;gap:12px;font-size:0.82rem;color:#cbd5e1;flex-wrap:wrap;"></div>
+              </div>
+            </div>
+            <div class="manager-list" id="manager-artwork-list"></div>
+          </div>
+
+          <!-- ROOM 4: QUIET CORNER -->
+          <div class="museum-room-panel" data-room-panel="quiet_corner">
+            <div class="quiet-corner-stage">
+              <div class="quiet-corner-card">
+                <span class="museum-brand-kicker">🛋️ QUIET CORNER · SUDUT HENING</span>
+                <h3>Beristirahat di Tepi Jendela Bulan</h3>
+                <p class="quiet-corner-quote" id="quiet-corner-quote-text"></p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                  <button type="button" class="btn-museum-primary" id="btn-quiet-audio-toggle">🎵 Putar Musik Malam Lembut</button>
+                  <button type="button" class="btn-museum-secondary" id="btn-quiet-next-quote">✧ Ganti Refleksi</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- LIGHTBOX MODAL -->
+        <div class="museum-modal-overlay" id="modal-art-lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="artwork-lightbox-shell">
+            <div class="lightbox-canvas-stage">
+              <button type="button" class="lightbox-nav-arrow prev" id="btn-lightbox-prev" aria-label="Karya sebelumnya">‹</button>
+              <img class="lightbox-artwork-img" id="lightbox-artwork-img" src="" alt="Detail karya seni" />
+              <button type="button" class="lightbox-nav-arrow next" id="btn-lightbox-next" aria-label="Karya berikutnya">›</button>
+            </div>
+            <div class="lightbox-info-sidebar">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+                <button type="button" class="btn-museum-secondary" id="btn-lightbox-zoom" style="padding:6px 12px;font-size:0.78rem;">🔍 Perbesar Detail</button>
+                <button type="button" class="btn-museum-secondary" id="btn-lightbox-close" style="padding:6px 12px;font-size:0.82rem;">✕ Tutup</button>
+              </div>
+              <h3 id="lightbox-title" style="margin:0 0 8px;font-family:'Cinzel',Georgia,serif;color:#fef3c7;font-size:1.3rem;"></h3>
+              <div id="lightbox-meta" style="font-size:0.82rem;color:#cbd5e1;margin-bottom:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;"></div>
+              <p id="lightbox-desc" style="font-size:0.88rem;color:#e2e8f0;line-height:1.6;white-space:pre-wrap;"></p>
+              <div id="lightbox-story-wrap"></div>
+              <div id="lightbox-owner-actions" style="display:none;gap:10px;flex-wrap:wrap;margin-top:16px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MASTERPIECE PICKER MODAL -->
+        <div class="museum-modal-overlay" id="modal-masterpiece-picker" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="museum-dialog-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="margin:0;font-family:'Cinzel',Georgia,serif;color:#fef3c7;">⭐ Pilih My Favorite Masterpiece</h3>
+              <button type="button" class="btn-museum-secondary" id="btn-close-masterpiece-picker" style="padding:5px 11px;">✕</button>
+            </div>
+            <div id="masterpiece-picker-list"></div>
+          </div>
+        </div>
+
+        <!-- CURATED COLLECTIONS MANAGER MODAL -->
+        <div class="museum-modal-overlay" id="modal-collections-manager" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="museum-dialog-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h3 style="margin:0;font-family:'Cinzel',Georgia,serif;color:#fef3c7;">🏛️ Kelola Koleksi Museum</h3>
+              <button type="button" class="btn-museum-secondary" id="btn-close-collections" style="padding:5px 11px;">✕</button>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:16px;">
+              <input type="text" id="input-new-col-icon" class="atelier-input" value="🌙" style="width:54px;text-align:center;" maxlength="4" aria-label="Ikon koleksi baru" />
+              <input type="text" id="input-new-col-name" class="atelier-input" placeholder="Nama koleksi baru..." maxlength="40" />
+              <button type="button" class="btn-museum-primary" id="btn-create-collection" style="white-space:nowrap;">+ Buat</button>
+            </div>
+            <div id="collections-manager-list"></div>
+          </div>
+        </div>
+
+        <!-- SAFE DELETE CONFIRMATION MODAL -->
+        <div class="museum-modal-overlay" id="modal-art-confirm-delete" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="museum-dialog-box" style="max-width:420px;text-align:center;">
+            <div style="font-size:2.2rem;margin-bottom:8px;">🗑️ 🌙</div>
+            <h3 style="margin:0 0 8px;color:#fef3c7;">Hapus Karya Seni?</h3>
+            <p style="font-size:0.88rem;color:#cbd5e1;line-height:1.5;margin-bottom:18px;">
+              Apakah kamu yakin ingin menghapus karya <strong id="delete-confirm-art-title"></strong>? Tindakan ini akan menghapus karya dan catatannya secara permanen.
+            </p>
+            <div style="display:flex;justify-content:center;gap:12px;">
+              <button type="button" class="btn-museum-secondary" id="btn-cancel-art-delete">Batal</button>
+              <button type="button" class="btn-museum-danger" id="btn-execute-art-delete">Ya, Hapus Karya</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW: SHADOW — RUANG KRISTAL (2D LIFE SIMULATION GAME)   -->
+      <!-- ======================================================== -->
+      <section class="view-section view-shadow-crystal-tower" id="view-shadow-crystal-tower"
+        aria-label="Ruang Kristal — Crystal Tower 2D Life Simulation" aria-hidden="true">
+        <div class="crystal-game-stage">
+          <div class="crystal-canvas-frame">
+            <canvas id="crystal-tower-canvas" width="960" height="600"></canvas>
+            <div class="crystal-room-fade" id="crystal-room-fade"></div>
+
+            <!-- Minimal Translucent Top HUD -->
+            <div class="crystal-hud-top">
+              <div class="crystal-hud-group">
+                <div class="crystal-hud-pill" id="crystal-hud-room-name">🏰 Kamar Pribadi Lele</div>
+                <button type="button" class="crystal-hud-btn" id="btn-crystal-atmosphere" title="Ubah Waktu & Cuaca">
+                  🌙 Night · Clear Night
+                </button>
+              </div>
+              <div class="crystal-hud-group">
+                <button type="button" class="crystal-hud-btn" id="btn-crystal-audio-toggle">🎵 Putar Audio</button>
+                <button type="button" class="crystal-hud-btn" id="btn-crystal-pause-menu">⏸ Menu (ESC)</button>
+              </div>
+            </div>
+
+            <!-- Contextual Activity Progress Bar -->
+            <div class="crystal-activity-bar" id="crystal-activity-bar" role="status" aria-live="polite">
+              <div class="crystal-activity-top">
+                <span id="crystal-activity-label">✨ Aktivitas berjalan...</span>
+                <button type="button" class="crystal-hud-btn" id="btn-crystal-cancel-activity" style="padding:3px 10px;font-size:0.74rem;">Hentikan</button>
+              </div>
+              <div class="crystal-progress-track">
+                <div class="crystal-progress-fill" id="crystal-progress-fill"></div>
+              </div>
+            </div>
+
+            <!-- Mobile / Touch On-Screen D-Pad & Interact Button -->
+            <div class="crystal-touch-controls" id="crystal-touch-controls">
+              <div class="crystal-dpad" aria-label="Kontrol Arah Layar">
+                <div></div>
+                <button type="button" class="crystal-dpad-btn" data-dir="up" aria-label="Jalan ke Atas">▲</button>
+                <div></div>
+                <button type="button" class="crystal-dpad-btn" data-dir="left" aria-label="Jalan ke Kiri">◀</button>
+                <div></div>
+                <button type="button" class="crystal-dpad-btn" data-dir="right" aria-label="Jalan ke Kanan">▶</button>
+                <div></div>
+                <button type="button" class="crystal-dpad-btn" data-dir="down" aria-label="Jalan ke Bawah">▼</button>
+                <div></div>
+              </div>
+              <button type="button" class="crystal-action-btn-touch" id="btn-crystal-touch-interact" disabled>
+                [ E ] Dekati Objek
+              </button>
+            </div>
+
+            <!-- Entrance Curtain Overlay -->
+            <div class="crystal-entrance-curtain" id="crystal-entrance-curtain">
+              <div style="font-size:2.4rem;">🏰 🌙 💎</div>
+              <h2 class="crystal-entrance-title">Crystal Tower — Ruang Kristal</h2>
+              <p class="crystal-entrance-sub">
+                Rumah fantasi pribadi Lele di jantung SHADOW. Berjalanlah menjelajahi setiap ruangan, dekati benda, dan nikmati hari dengan tenang.
+              </p>
+              <div class="crystal-controls-chips">
+                <span class="crystal-key-chip">WASD / Panah · Berjalan</span>
+                <span class="crystal-key-chip">E · Interaksi Objek</span>
+                <span class="crystal-key-chip">ESC · Pause Menu &amp; Inventory</span>
+              </div>
+              <button type="button" class="crystal-hud-btn primary" id="btn-crystal-enter-play">
+                ✦ Mulai Jelajahi Ruang Kristal
+              </button>
+            </div>
+
+            <!-- Diegetic In-Game Overlay Modal -->
+            <div class="crystal-modal-overlay" id="crystal-modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+              <div class="crystal-modal-card">
+                <div class="crystal-modal-header">
+                  <h3 id="crystal-modal-title">Ruang Kristal</h3>
+                  <button type="button" class="crystal-hud-btn" id="btn-crystal-modal-close" style="padding:5px 11px;">✕</button>
+                </div>
+                <div id="crystal-modal-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- UNIVERSES INTERACTIVE MODALS                   -->
       <!-- ============================================== -->
 
@@ -1374,7 +2562,7 @@
           <div class="univ-modal-header">
             <div class="univ-modal-title-row">
               <img src="/assets/avatar_nyanya_hd.png" alt="Nyanya - The Moonlit Shadow Witch" id="univ-modal-avatar"
-                class="univ-modal-avatar" />
+                class="univ-modal-avatar" loading="lazy" decoding="async">
               <div>
                 <h3 class="univ-modal-title" id="univ-modal-title">★ KIDULT</h3>
                 <div class="univ-modal-owner" id="univ-modal-owner">NYANYA'S UNIVERSE</div>
@@ -1437,6 +2625,400 @@
         </div>
       </div>
 
+      <!-- ======================================================== -->
+      <!-- VIEW: STAR MESSAGES — MESSAGES ACROSS THE UNIVERSE        -->
+      <!-- TELESCOPE SHARED FEATURE: KIDULT, TO YOU, & SHADOW       -->
+      <!-- ======================================================== -->
+      <section class="view-section view-star-messages theme-kidult" id="view-star-messages"
+        aria-label="Star Messages — Messages Across the Universe" aria-hidden="true">
+
+        <!-- Animated Background Sky Canvas & Nebulae -->
+        <canvas id="star-sky-canvas" class="telescope-sky-canvas"></canvas>
+        <div class="telescope-nebula-layer" aria-hidden="true">
+          <div class="nebula-cloud nc1"></div>
+          <div class="nebula-cloud nc2"></div>
+        </div>
+        <div class="telescope-reticle-overlay" aria-hidden="true">
+          <div class="telescope-grid-marks"></div>
+        </div>
+
+        <!-- TOP HUD: Observatory Title, Navigation Tabs & Return Button -->
+        <header class="star-hud-header">
+          <div class="star-observatory-badge">
+            <div class="observatory-lens-icon">🔭</div>
+            <div class="observatory-title-text">
+              <h1>STAR MESSAGES</h1>
+              <p class="observatory-sub">TELESKOP AJAIB · <span class="observatory-univ-tag" id="observatory-univ-tag">KIDULT · NYANYA'S UNIVERSE</span></p>
+            </div>
+          </div>
+
+          <!-- Navigation Tabs -->
+          <nav class="star-nav-tabs" aria-label="Navigasi Star Messages">
+            <button type="button" class="star-tab-btn active" data-tab="explore" id="tab-btn-explore">
+              <span>🔭</span>
+              <span>Jelajahi Bintang</span>
+            </button>
+            <button type="button" class="star-tab-btn" data-tab="inbox" id="tab-btn-inbox">
+              <span>📥</span>
+              <span>Pesan untukku</span>
+              <span class="tab-unread-counter" id="tab-inbox-unread" style="display:none;">0</span>
+            </button>
+            <button type="button" class="star-tab-btn" data-tab="compose" id="tab-btn-compose">
+              <span>✨</span>
+              <span>Kirim Pesan Bintang</span>
+            </button>
+            <button type="button" class="star-tab-btn" data-tab="favorites" id="tab-btn-favorites">
+              <span>💖</span>
+              <span>Bintang Kenangan</span>
+            </button>
+          </nav>
+
+          <!-- Return to Universe Button -->
+          <button type="button" class="btn-star-return-univ" id="btn-star-return-univ" aria-label="Kembali ke Universe">
+            <span>🌌</span>
+            <span>Kembali ke Universe</span>
+          </button>
+        </header>
+
+        <!-- A. JELAJAHI BINTANG: Interactive Celestial Star Field -->
+        <main class="star-sky-viewport" id="star-sky-viewport" role="region" aria-label="Langit Bintang Star Messages">
+          <div id="star-sky-nodes"></div>
+
+          <!-- Empty Sky Prompt -->
+          <div class="star-empty-sky-prompt" id="star-empty-sky-prompt" style="display: none;">
+            <span class="empty-icon">✨</span>
+            <h3>Langit Teleskop Siap Diamati</h3>
+            <p>Jelajahi langit dengan teleskop ajaib. Belum ada bintang pesan yang melintas di langitmu saat ini. Jadilah yang pertama mengirimkan bintang ke universe sahabatmu!</p>
+            <button type="button" class="btn-compose-first-star" id="btn-compose-first-star">
+              <span>✦</span>
+              <span>Luncurkan Bintang Pertama</span>
+            </button>
+          </div>
+        </main>
+
+        <!-- B. PESAN UNTUKKU: Inbox Panel Overlay -->
+        <div class="star-panel-overlay" id="star-panel-inbox" style="display: none;">
+          <div class="star-list-container">
+            <div class="star-list-header">
+              <h2>📥 Pesan Bintang untukku</h2>
+              <span style="font-size: 0.8rem; color: #94a3b8;">Pesan dari sahabat lintas universe</span>
+            </div>
+            <div class="star-cards-grid" id="star-inbox-grid"></div>
+          </div>
+        </div>
+
+        <!-- C. KIRIM PESAN BINTANG: Composer Panel Overlay -->
+        <div class="star-panel-overlay" id="star-panel-compose" style="display: none;">
+          <div class="star-composer-box" id="star-composer-box">
+            <div class="composer-header">
+              <h2>✨ Luncurkan Pesan Bintang Melintasi Universe</h2>
+              <p>Tulis pesan hangat, harapan, atau salam kosmik. Pesanmu akan bersinar sebagai bintang di langit universe penerima.</p>
+            </div>
+
+            <!-- Recipient Selection -->
+            <div>
+              <label class="form-group-label">Pilih Penerima Bintang</label>
+              <div class="recipient-cards-row" id="star-recipient-cards"></div>
+            </div>
+
+            <!-- Category Selection -->
+            <div>
+              <label class="form-group-label">Kategori Pesan</label>
+              <div class="star-categories-row" id="star-category-pills"></div>
+            </div>
+
+            <!-- Star Type Selection -->
+            <div>
+              <label class="form-group-label">Pendaran Warna Bintang</label>
+              <div class="star-types-row" id="star-type-pills"></div>
+            </div>
+
+            <!-- Message Text -->
+            <div class="star-msg-textarea-wrap">
+              <label class="form-group-label" for="star-msg-text">Isi Pesan Bintang</label>
+              <textarea id="star-msg-text" class="star-msg-textarea" maxlength="2000"
+                placeholder="Tuliskan pesan hangat atau harapanmu untuk sahabat..."></textarea>
+              <span class="star-char-counter" id="star-char-count">0 / 2000</span>
+            </div>
+
+            <!-- Actions -->
+            <div class="star-composer-actions">
+              <button type="button" class="btn-cancel-compose" id="btn-cancel-compose">Batal</button>
+              <button type="button" class="btn-submit-star-msg" id="btn-submit-star-msg">
+                <span>✦</span>
+                <span>Luncurkan Bintang ke Langit</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- D. BINTANG KENANGAN: Favorites Panel Overlay -->
+        <div class="star-panel-overlay" id="star-panel-favorites" style="display: none;">
+          <div class="star-list-container">
+            <div class="star-list-header">
+              <h2>💖 Bintang Kenangan Favorit</h2>
+              <span style="font-size: 0.8rem; color: #94a3b8;">Kumpulan pesan bintang yang kamu simpan</span>
+            </div>
+            <div class="star-cards-grid" id="star-favorites-grid"></div>
+          </div>
+        </div>
+
+        <!-- STAR LETTER MODAL (Opened when a star is clicked) -->
+        <div class="star-letter-modal-backdrop" id="star-letter-modal" role="dialog" aria-modal="true" aria-label="Kartu Pesan Bintang">
+          <div class="star-letter-card">
+            <div class="star-letter-header">
+              <div class="sender-profile-row">
+                <img src="/assets/avatar_nyanya_hd.png" alt="Pengirim" class="star-sender-avatar" id="star-letter-avatar">
+                <div class="star-sender-meta">
+                  <h3 class="star-sender-name" id="star-letter-sender-name">Pengirim</h3>
+                  <span class="star-sender-univ-badge" id="star-letter-univ-tag">UNIVERSE KIDULT</span>
+                </div>
+              </div>
+              <button type="button" class="btn-close-star-card" id="btn-close-star-letter" aria-label="Tutup Kartu Bintang">✕</button>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span class="star-category-pill" id="star-letter-category">🌸 Kehangatan</span>
+              <span class="star-letter-time" id="star-letter-time">-</span>
+            </div>
+
+            <div class="star-letter-body" id="star-letter-body"></div>
+
+            <div class="star-letter-footer">
+              <button type="button" class="btn-star-fav-toggle" id="btn-star-fav-toggle">
+                <span id="star-fav-icon">🤍</span>
+                <span id="star-fav-text">Simpan Kenangan</span>
+              </button>
+              <div class="star-letter-actions">
+                <button type="button" class="btn-star-reply" id="btn-star-reply">
+                  <span>✨ Balas Bintang</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW: KOTAK POS — DIGITAL LETTERS & MAILBOX              -->
+      <!-- SHARED FEATURE: KIDULT, TO YOU, & SHADOW                 -->
+      <!-- ======================================================== -->
+      <section class="view-section view-kotak-pos theme-kidult" id="view-kotak-pos"
+        aria-label="Kotak Pos — Surat Digital Sahabat" aria-hidden="true">
+
+        <!-- Ambient Backdrop & Particles -->
+        <div class="mailbox-ambient-backdrop" aria-hidden="true">
+          <div class="mailbox-particle" style="width: 140px; height: 140px; left: 10%; background: var(--mb-primary); animation-delay: 0s;"></div>
+          <div class="mailbox-particle" style="width: 90px; height: 90px; left: 60%; background: var(--mb-accent); animation-delay: 4s;"></div>
+          <div class="mailbox-particle" style="width: 110px; height: 110px; left: 85%; background: var(--mb-primary); animation-delay: 8s;"></div>
+        </div>
+
+        <!-- TOP HUD: Header, Tabs, User Info, Return Button -->
+        <header class="mailbox-hud-header">
+          <div class="mailbox-brand-group">
+            <div class="mailbox-badge-icon" aria-hidden="true">✉</div>
+            <div class="mailbox-title-meta">
+              <h1>KOTAK POS</h1>
+              <p class="mailbox-sub">SURAT DIGITAL SAHABAT · <span class="mailbox-univ-tag" id="mailbox-univ-tag">KIDULT · NYANYA'S UNIVERSE</span></p>
+            </div>
+          </div>
+
+          <!-- Navigation Tabs -->
+          <nav class="mailbox-nav-tabs" aria-label="Navigasi Kotak Pos">
+            <button type="button" class="mailbox-tab-btn active" data-tab="inbox" id="mailbox-tab-inbox">
+              <span>📥</span>
+              <span>Surat Masuk</span>
+              <span class="mailbox-counter-pill" id="mailbox-inbox-unread-count" style="display:none;">0</span>
+            </button>
+            <button type="button" class="mailbox-tab-btn" data-tab="compose" id="mailbox-tab-compose">
+              <span>✍️</span>
+              <span>Tulis Surat</span>
+            </button>
+            <button type="button" class="mailbox-tab-btn" data-tab="sent" id="mailbox-tab-sent">
+              <span>📤</span>
+              <span>Surat Terkirim</span>
+            </button>
+          </nav>
+
+          <!-- Right Actions: User Badge & Return Button -->
+          <div class="mailbox-top-actions">
+            <div class="mailbox-user-chip" id="mailbox-user-chip">
+              <img src="/assets/avatar_nyanya_hd.png" alt="Avatar" class="mailbox-user-avatar" id="mailbox-user-avatar">
+              <span class="mailbox-user-name" id="mailbox-user-name">Nyanya ★</span>
+            </div>
+            <button type="button" class="btn-mailbox-return" id="btn-mailbox-return-univ" aria-label="Kembali ke Universe">
+              <span>🏠</span>
+              <span>Kembali</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Main Stage Container -->
+        <main class="mailbox-main-stage" id="mailbox-main-stage">
+          <!-- 1. TAB: SURAT MASUK -->
+          <section class="mailbox-panel active" id="mailbox-panel-inbox" aria-label="Daftar Surat Masuk">
+            <div class="mailbox-section-header">
+              <h2><span>📥</span> Surat Masuk (<span id="mailbox-inbox-total">0</span>)</h2>
+              <span class="mailbox-section-desc">Surat hangat yang dikirimkan sahabat ke kotak posmu</span>
+            </div>
+
+            <!-- Empty State Prompt -->
+            <div class="mailbox-empty-state" id="mailbox-empty-inbox" style="display:none;">
+              <span class="empty-state-icon">💌</span>
+              <h3>Kotak Posmu Masih Menunggu</h3>
+              <p>Belum ada surat masuk saat ini. Tulis dan kirimkan surat pertama untuk menyapa sahabatmu di universenya!</p>
+              <button type="button" class="btn-empty-compose" id="btn-empty-inbox-compose">
+                <span>✍️</span>
+                <span>Tulis Surat Sekarang</span>
+              </button>
+            </div>
+
+            <!-- Letters Grid -->
+            <div class="mailbox-letters-grid" id="mailbox-inbox-grid"></div>
+          </section>
+
+          <!-- 2. TAB: TULIS SURAT -->
+          <section class="mailbox-panel" id="mailbox-panel-compose" aria-label="Formulir Tulis Surat">
+            <div class="mailbox-compose-card">
+              <div class="mailbox-section-header" style="border:none; padding:0; margin-bottom:0.5rem;">
+                <div>
+                  <h2 style="font-size:1.25rem;"><span>✍️</span> Tulis Surat Hangat</h2>
+                  <span class="mailbox-section-desc">Pilih sahabat penerima dan rangkai kata-katamu</span>
+                </div>
+              </div>
+
+              <!-- Recipient Selector -->
+              <div class="compose-field-group">
+                <label class="compose-field-label">
+                  <span>Pilih Sahabat Penerima</span>
+                </label>
+                <div class="recipient-selection-cards" id="mailbox-recipient-cards">
+                  <!-- Generated dynamically based on logged in user -->
+                </div>
+              </div>
+
+              <!-- Paper Theme Selector -->
+              <div class="compose-field-group">
+                <label class="compose-field-label">
+                  <span>Tema Kertas Surat</span>
+                </label>
+                <div class="paper-theme-selector" id="mailbox-paper-selector">
+                  <button type="button" class="paper-theme-pill selected" data-paper="dreamy">
+                    <span>🌸</span>
+                    <span>Senja Lavender (KIDULT)</span>
+                  </button>
+                  <button type="button" class="paper-theme-pill" data-paper="morning">
+                    <span>☀️</span>
+                    <span>Cahaya Pagi (TO YOU)</span>
+                  </button>
+                  <button type="button" class="paper-theme-pill" data-paper="crystal">
+                    <span>💎</span>
+                    <span>Malam Kristal (SHADOW)</span>
+                  </button>
+                  <button type="button" class="paper-theme-pill" data-paper="parchment">
+                    <span>📜</span>
+                    <span>Perkamen Klasik Emas</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Title Input -->
+              <div class="compose-field-group">
+                <label for="mailbox-input-title" class="compose-field-label">
+                  <span>Judul Surat</span>
+                  <span class="compose-counter" id="mailbox-title-counter">0 / 120</span>
+                </label>
+                <input type="text" id="mailbox-input-title" class="mailbox-input-title"
+                  placeholder="Contoh: Kabar hangat di bawah langit senja..." maxlength="120" autocomplete="off">
+              </div>
+
+              <!-- Body Input -->
+              <div class="compose-field-group">
+                <label for="mailbox-input-body" class="compose-field-label">
+                  <span>Isi Surat</span>
+                  <span class="compose-counter" id="mailbox-body-counter">0 / 4000</span>
+                </label>
+                <textarea id="mailbox-input-body" class="mailbox-textarea-body"
+                  placeholder="Tuliskan surat penuh kehangatan dan ketulusan untuk sahabatmu..." maxlength="4000"></textarea>
+              </div>
+
+              <!-- Actions Footer -->
+              <div class="compose-actions-footer">
+                <button type="button" class="btn-compose-cancel" id="btn-mailbox-cancel-compose">
+                  Batal
+                </button>
+                <button type="button" class="btn-compose-submit" id="btn-mailbox-submit">
+                  <span>✉✨</span>
+                  <span>Kirim Surat</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. TAB: SURAT TERKIRIM -->
+          <section class="mailbox-panel" id="mailbox-panel-sent" aria-label="Daftar Surat Terkirim">
+            <div class="mailbox-section-header">
+              <h2><span>📤</span> Surat Terkirim (<span id="mailbox-sent-total">0</span>)</h2>
+              <span class="mailbox-section-desc">Arsip surat yang pernah kamu layangkan kepada sahabat</span>
+            </div>
+
+            <!-- Empty State Prompt -->
+            <div class="mailbox-empty-state" id="mailbox-empty-sent" style="display:none;">
+              <span class="empty-state-icon">📮</span>
+              <h3>Belum Ada Surat Terkirim</h3>
+              <p>Kamu belum pernah mengirimkan surat. Buat surat pertama sekarang!</p>
+              <button type="button" class="btn-empty-compose" id="btn-empty-sent-compose">
+                <span>✍️</span>
+                <span>Tulis Surat Sekarang</span>
+              </button>
+            </div>
+
+            <!-- Letters Grid -->
+            <div class="mailbox-letters-grid" id="mailbox-sent-grid"></div>
+          </section>
+        </main>
+
+        <!-- 4. MODAL BACA SURAT (LETTER READER) -->
+        <div class="mailbox-modal-backdrop" id="mailbox-read-modal" aria-hidden="true" role="dialog" aria-modal="true">
+          <article class="letter-sheet-card paper-dreamy" id="mailbox-sheet-card">
+            <!-- Sheet Header -->
+            <header class="letter-sheet-header">
+              <div class="letter-sheet-sender">
+                <img src="/assets/avatar_nyanya_hd.png" alt="Avatar Pengirim" class="letter-sheet-avatar" id="sheet-sender-avatar">
+                <div class="sheet-sender-meta">
+                  <h3 id="sheet-sender-name">Nyanya ★</h3>
+                  <p class="sheet-sender-sub" id="sheet-sender-sub">DARI UNIVERSE KIDULT</p>
+                </div>
+              </div>
+              <button type="button" class="btn-sheet-close" id="btn-sheet-close" aria-label="Tutup Surat">✕</button>
+            </header>
+
+            <!-- Sheet Content -->
+            <div class="letter-sheet-scroll">
+              <div class="letter-sheet-date" id="sheet-letter-date">
+                <span>📅</span>
+                <span id="sheet-date-text">11 November 2026 · 19:30</span>
+              </div>
+              <h2 class="letter-sheet-title" id="sheet-letter-title">Judul Surat</h2>
+              <div class="letter-sheet-content" id="sheet-letter-body">
+                Isi surat...
+              </div>
+            </div>
+
+            <!-- Sheet Footer -->
+            <footer class="letter-sheet-footer">
+              <button type="button" class="btn-sheet-delete" id="btn-sheet-delete">
+                <span>🗑️</span>
+                <span>Hapus Surat</span>
+              </button>
+              <button type="button" class="btn-sheet-reply" id="btn-sheet-reply">
+                <span>✍️ Balas Surat</span>
+              </button>
+            </footer>
+          </article>
+        </div>
+      </section>
+
       <!-- ============================================== -->
       <!-- VIEW 4: OUR LITTLE ORBIT (SHARED CALENDAR)     -->
       <!-- ============================================== -->
@@ -1458,6 +3040,12 @@
             <div class="user-viewing-badge" id="orbit-user-badge">
               <span class="badge-dot"></span>
               <span>Melihat sebagai: <strong id="orbit-viewer-name">Nyanya</strong></span>
+            </div>
+
+            <!-- Cloud Firestore Sync Badge -->
+            <div class="user-viewing-badge orbit-cloud-badge" id="orbit-cloud-status" title="Status Sinkronisasi Cloud Firestore">
+              <span class="badge-dot" id="orbit-cloud-dot" style="background: #22c55e; box-shadow: 0 0 8px #22c55e;"></span>
+              <span id="orbit-cloud-text">Cloud Firestore Terhubung ☁️</span>
             </div>
 
             <button type="button" class="btn-nav-universe" id="btn-orbit-goto-moments"
@@ -1549,6 +3137,9 @@
               </div>
               <button type="button" class="btn-today-pill" id="btn-strip-add-event">+ Tambah di Tanggal Ini</button>
             </div>
+
+            <!-- Selected Date Events List / Empty State -->
+            <div class="selected-day-events-container" id="selected-day-events-container"></div>
 
           </div>
 
@@ -1767,6 +3358,10 @@
 
           <div class="modal-actions-row">
             <button type="button" class="btn-modal-cancel" data-close-modal>Tutup</button>
+            <button type="button" class="btn-modal-delete" id="btn-delete-event"
+              style="display: none; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.45); color: #fca5a5; padding: 0.55rem 1.1rem; border-radius: 999px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+              🗑️ Hapus Agenda
+            </button>
           </div>
         </div>
       </div>
@@ -1958,7 +3553,7 @@
           <div class="story-viewer-header">
             <div class="story-viewer-author">
               <img src="/assets/portrait_nyanya_hd_2x.png" alt="Author" id="story-header-avatar"
-                class="story-header-avatar" />
+                class="story-header-avatar" loading="lazy" decoding="async">
               <div class="story-header-meta">
                 <span class="story-header-name" id="story-header-name">Nyanya</span>
                 <span class="story-header-time" id="story-header-time">2 jam lalu</span>
@@ -1976,7 +3571,7 @@
           <!-- Image & Navigation Click Zones -->
           <div class="story-image-container">
             <img src="/assets/moment_coffee_study.jpg" alt="Story Moment" id="story-main-image"
-              class="story-main-image" />
+              class="story-main-image" loading="lazy" decoding="async">
 
             <!-- Click zones for easy tap on mobile and desktop -->
             <div class="story-nav-zone prev" id="story-zone-prev" title="Story Sebelumnya"></div>
@@ -2025,7 +3620,7 @@
                 <span class="dropzone-sub">Klik atau seret file gambar JPG, PNG, atau WebP</span>
               </div>
               <div id="dropzone-preview" style="display: none; position: relative; width: 100%;">
-                <img src="" alt="Preview Momen" id="preview-image" class="preview-image-element" />
+                <img src="" alt="Preview Momen" id="preview-image" class="preview-image-element" loading="lazy" decoding="async">
                 <button type="button" id="btn-remove-preview" class="btn-remove-preview" title="Hapus foto">✕</button>
               </div>
             </div>
@@ -2069,7 +3664,1045 @@
         </div>
       </div>
 
+    <!-- ======================================================== -->
+    <!-- VIEW 6: OUR STORIES — PUBLIC READING LIBRARY             -->
+    <!-- ======================================================== -->
+    <section class="view-section view-our-stories" id="view-our-stories" aria-label="Our Stories Library" aria-hidden="true">
+      <!-- Top Navigation Bar -->
+      <header class="stories-top-nav">
+        <div class="stories-nav-left">
+          <button type="button" class="btn-stories-back" id="btn-stories-back-universe" aria-label="Kembali ke Universe">
+            <span>🌌</span>
+            <span>Kembali ke Universe</span>
+          </button>
+          <span class="stories-library-badge">✧ OUR STORIES · PERPUSTAKAAN SASTRA ✧</span>
+        </div>
+        <div class="stories-nav-right">
+          <button type="button" class="btn-nav-outline" id="btn-open-my-works">
+            <span>📖</span>
+            <span>Karya Saya</span>
+          </button>
+          <button type="button" class="btn-nav-primary-glow" id="btn-open-write-space">
+            <span>✍️</span>
+            <span>Tulis Karya Baru</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="stories-hero-section" id="stories-hero">
+        <span class="hero-supertitle">✦ Ruang Literasi Lintas Semesta ✦</span>
+        <h1 class="stories-hero-title">OUR STORIES</h1>
+        <p class="stories-hero-description">
+          Tempat berbagi cerita, karya sastra, puisi kosmik, dan imajinasi hangat dari seluruh universe.
+          Membaca karya sahabat dan mengabadikan kisah yang menyatukan kita di bawah langit yang sama.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="stories-search-container">
+          <div class="stories-search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="stories-search-input" placeholder="Cari karya sastra, judul, nama sahabat, atau sinopsis..." aria-label="Cari karya" />
+            <button type="button" class="btn-clear-search hidden" id="btn-stories-clear-search" aria-label="Hapus pencarian">✕</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Category & Filters Wrapper -->
+      <div class="stories-filters-wrapper">
+        <div class="filter-row-categories" id="stories-category-pills">
+          <!-- Dynamically populated categories -->
+        </div>
+
+        <div class="filter-row-secondary">
+          <div class="universe-filter-group" id="stories-universe-pills">
+            <span class="universe-group-label">Universe Asal:</span>
+            <button type="button" class="universe-filter-pill active" data-univ="all">Semua Universe</button>
+            <button type="button" class="universe-filter-pill" data-univ="kidult">KIDULT ⭐</button>
+            <button type="button" class="universe-filter-pill" data-univ="to_you">TO YOU ☀️</button>
+            <button type="button" class="universe-filter-pill" data-univ="shadow">SHADOW 🌙</button>
+          </div>
+
+          <div class="dropdown-filter-group">
+            <select id="select-story-genre" class="story-select-dropdown" aria-label="Filter Genre">
+              <!-- Dynamically populated genres -->
+            </select>
+            <select id="select-story-sort" class="story-select-dropdown" aria-label="Urutkan Karya">
+              <option value="latest">✨ Terbaru</option>
+              <option value="title">🔤 Judul (A-Z)</option>
+              <option value="wordCount">📊 Panjang Tulisan</option>
+            </select>
+            <button type="button" class="btn-filter-bookmark-pill" id="btn-filter-bookmarks" title="Tampilkan bookmark saja">
+              <span>☆</span>
+              <span>Bookmark</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Featured Story Section -->
+      <section class="featured-story-wrapper" id="featured-story-container" aria-label="Karya Pilihan">
+        <!-- Rendered dynamically -->
+      </section>
+
+      <!-- Explore Stories Section -->
+      <section class="stories-content-container">
+        <div class="stories-section-header">
+          <h3>Jelajahi Semua Karya</h3>
+          <span class="results-count-text" id="stories-results-count">0 karya ditemukan</span>
+        </div>
+
+        <!-- Story Cards Grid -->
+        <div class="stories-grid" id="stories-grid">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="stories-empty-state hidden" id="stories-empty-state">
+          <div class="empty-celestial-illustration">📚✨</div>
+          <h3 class="empty-title">Lembaran Cerita Masih Menanti Ditulis ✦</h3>
+          <p class="empty-desc">
+            Belum ada karya yang dipublikasikan di Our Stories. Jadilah yang pertama menulis dan membagikan kisah indah dari universe-mu!
+          </p>
+          <button type="button" class="btn-empty-write-cta" onclick="document.getElementById('btn-open-write-space').click()">
+            <span>✍️ Tulis Karya Sekarang</span>
+          </button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 7: STORY — PERSONAL WRITING SPACE & EDITOR          -->
+    <!-- ======================================================== -->
+    <section class="view-section view-story-workspace" id="view-story-workspace" aria-label="Personal Writing Space" aria-hidden="true">
+      <!-- Top Bar -->
+      <header class="workspace-top-bar">
+        <div class="workspace-bar-left">
+          <button type="button" class="btn-stories-back" id="btn-workspace-back" aria-label="Kembali ke Our Stories">
+            <span>←</span>
+            <span>Kembali</span>
+          </button>
+          <div class="workspace-title-info">
+            <h2 id="workspace-title">Ruang Menulis Pribadi ✦</h2>
+            <div class="workspace-status" id="workspace-status-indicator">
+              <span class="status-dot draft"></span> ✦ Draft tersimpan aman
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace-bar-tabs">
+          <button type="button" class="workspace-tab-btn active" id="btn-workspace-tab-editor">✍️ Tulis & Edit</button>
+          <button type="button" class="workspace-tab-btn" id="btn-workspace-tab-my-works">📚 Karya Saya</button>
+        </div>
+
+        <div class="workspace-bar-actions">
+          <button type="button" class="btn-editor-draft" id="btn-story-discard">Batalkan</button>
+          <button type="button" class="btn-editor-draft" id="btn-story-save-draft">💾 Simpan Draft</button>
+          <button type="button" class="btn-editor-publish" id="btn-story-publish">✨ Publikasikan</button>
+        </div>
+      </header>
+
+      <!-- Pane 1: Editor Pane -->
+      <div class="workspace-editor-container" id="workspace-editor-pane">
+        <div class="editor-author-banner" id="workspace-author-badge">
+          <!-- Injected dynamically -->
+        </div>
+
+        <!-- Title -->
+        <input type="text" class="editor-title-field" id="input-story-title" placeholder="Tuliskan judul karyamu di sini..." maxlength="120" />
+
+        <!-- Subtitle -->
+        <input type="text" class="editor-subtitle-field" id="input-story-subtitle" placeholder="Subjudul atau petikan pembuka opsional..." maxlength="160" />
+
+        <!-- Metadata Grid -->
+        <div class="editor-meta-grid">
+          <div class="editor-meta-group">
+            <label for="select-story-category">Jenis Karya</label>
+            <select id="select-story-category">
+              <option value="novel">📖 Novel</option>
+              <option value="cerpen" selected>📜 Cerpen</option>
+              <option value="puisi">✒️ Puisi</option>
+              <option value="sastra">🌿 Sastra</option>
+              <option value="lainnya">✨ Lainnya</option>
+            </select>
+          </div>
+
+          <div class="editor-meta-group">
+            <label for="select-story-form-genre">Genre</label>
+            <select id="select-story-form-genre">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <div class="editor-meta-group">
+            <label>Tema Sampul Editorial</label>
+            <div class="theme-swatches-row" id="story-theme-options">
+              <!-- Swatches injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Synopsis -->
+        <div class="editor-meta-group" style="margin-bottom: 1.25rem;">
+          <label for="input-story-synopsis">Sinopsis / Ringkasan Cerita</label>
+          <textarea id="input-story-synopsis" class="editor-synopsis-field" placeholder="Tuliskan gambaran singkat karya ini untuk pembaca di Our Stories..." rows="2"></textarea>
+        </div>
+
+        <!-- Formatting Toolbar -->
+        <div class="editor-toolbar" role="toolbar" aria-label="Toolbar Format Teks">
+          <div class="toolbar-buttons-group">
+            <button type="button" class="editor-tool-btn" data-cmd="bold" title="Tebal (Ctrl+B)"><b>B</b></button>
+            <button type="button" class="editor-tool-btn" data-cmd="italic" title="Miring (Ctrl+I)"><i>I</i></button>
+            <span class="toolbar-sep"></span>
+            <button type="button" class="editor-tool-btn" data-cmd="formatBlock" data-val="h2" title="Judul Bagian (H2)">H2</button>
+            <button type="button" class="editor-tool-btn" data-cmd="formatBlock" data-val="p" title="Paragraf Normal">P</button>
+            <button type="button" class="editor-tool-btn" data-cmd="formatBlock" data-val="blockquote" title="Kutipan">“ ”</button>
+            <span class="toolbar-sep"></span>
+            <button type="button" class="editor-tool-btn" data-cmd="justifyLeft" title="Rata Kiri">⫷</button>
+            <button type="button" class="editor-tool-btn" data-cmd="justifyCenter" title="Rata Tengah">≡</button>
+            <button type="button" class="editor-tool-btn" data-cmd="justifyFull" title="Rata Kanan Kiri">⫸</button>
+          </div>
+          <div class="live-word-count-badge" id="live-word-count-badge">0 kata · ± 1 mnt baca</div>
+        </div>
+
+        <!-- Rich Editable Area -->
+        <div class="story-editor-content" id="story-editor-content" contenteditable="true" role="textbox" aria-multiline="true">
+          <p>Mulai menuliskan kisahmu di sini...</p>
+        </div>
+      </div>
+
+      <!-- Pane 2: My Works Pane -->
+      <div class="workspace-my-works-container hidden" id="workspace-my-works-pane">
+        <div class="my-works-header-row">
+          <div class="my-works-filters">
+            <button type="button" class="my-works-filter-btn active" data-status="all">Semua Karya</button>
+            <button type="button" class="my-works-filter-btn" data-status="draft">Draft Pribadi</button>
+            <button type="button" class="my-works-filter-btn" data-status="published">Dipublikasikan</button>
+          </div>
+          <button type="button" class="btn-create-work-cta" id="btn-create-new-from-my-works">
+            ✍️ Tulis Karya Baru
+          </button>
+        </div>
+
+        <div class="my-works-list" id="my-works-list">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 8: READING MODE — BOOK-LIKE DIGITAL EXPERIENCE      -->
+    <!-- ======================================================== -->
+    <section class="view-section view-story-reading read-theme-sepia read-font-serif read-size-medium read-spacing-normal read-width-standard" id="view-story-reading" aria-label="Reading Mode" aria-hidden="true">
+      <!-- Fixed Reading Progress Tracker -->
+      <div class="reading-progress-track">
+        <div class="reading-progress-fill-top" id="reading-progress-bar"></div>
+      </div>
+
+      <!-- Fixed Top HUD -->
+      <header class="reading-top-hud">
+        <button type="button" class="btn-reading-hud" id="btn-reading-back" aria-label="Kembali ke Our Stories">
+          <span>← Our Stories</span>
+        </button>
+
+        <div class="reading-hud-center">
+          <h3 class="reading-hud-title" id="reading-header-title">Judul Karya</h3>
+          <span class="reading-hud-author" id="reading-header-author">Penulis</span>
+        </div>
+
+        <div class="reading-hud-right">
+          <span class="reading-progress-text" id="reading-progress-text" style="font-size: 0.8rem; opacity: 0.75; font-variant-numeric: tabular-nums;">0%</span>
+          <button type="button" class="btn-reading-hud" id="btn-reading-bookmark" title="Bookmark karya">☆ Bookmark</button>
+          <button type="button" class="btn-reading-hud" id="btn-reading-settings" title="Pengaturan Tampilan Baca">Aa Tampilan</button>
+        </div>
+      </header>
+
+      <!-- Reading Customization Settings Popover -->
+      <div class="reading-settings-drawer" id="reading-settings-panel">
+        <div class="drawer-header">
+          <h4>Pengaturan Membaca</h4>
+          <button type="button" class="btn-close-drawer" id="btn-close-reading-settings" aria-label="Tutup pengaturan">✕</button>
+        </div>
+
+        <!-- Font Size -->
+        <div class="pref-control-section">
+          <span class="pref-label">Ukuran Teks</span>
+          <div class="pref-button-row">
+            <button type="button" class="btn-pref-size" data-size="small">Kecil</button>
+            <button type="button" class="btn-pref-size active" data-size="medium">Sedang</button>
+            <button type="button" class="btn-pref-size" data-size="large">Besar</button>
+            <button type="button" class="btn-pref-size" data-size="xlarge">Ekstra</button>
+          </div>
+        </div>
+
+        <!-- Font Family -->
+        <div class="pref-control-section">
+          <span class="pref-label">Tipografi / Font</span>
+          <div class="pref-button-row">
+            <button type="button" class="btn-pref-font active" data-font="serif">Serif Buku</button>
+            <button type="button" class="btn-pref-font" data-font="sans">Modern Sans</button>
+            <button type="button" class="btn-pref-font" data-font="literary">Klasik</button>
+          </div>
+        </div>
+
+        <!-- Line Spacing -->
+        <div class="pref-control-section">
+          <span class="pref-label">Jarak Antarbaris</span>
+          <div class="pref-button-row">
+            <button type="button" class="btn-pref-spacing" data-spacing="compact">Rapat</button>
+            <button type="button" class="btn-pref-spacing active" data-spacing="normal">Normal</button>
+            <button type="button" class="btn-pref-spacing" data-spacing="relaxed">Renggang</button>
+          </div>
+        </div>
+
+        <!-- Width -->
+        <div class="pref-control-section">
+          <span class="pref-label">Lebar Halaman</span>
+          <div class="pref-button-row">
+            <button type="button" class="btn-pref-width" data-width="narrow">Ramping</button>
+            <button type="button" class="btn-pref-width active" data-width="standard">Standar</button>
+            <button type="button" class="btn-pref-width" data-width="wide">Luas</button>
+          </div>
+        </div>
+
+        <!-- Themes -->
+        <div class="pref-control-section">
+          <span class="pref-label">Mode Tema Membaca</span>
+          <div class="pref-button-row">
+            <button type="button" class="btn-pref-theme" data-theme="light">Terang</button>
+            <button type="button" class="btn-pref-theme active" data-theme="sepia">Sepia Hangat</button>
+            <button type="button" class="btn-pref-theme" data-theme="dark">Cosmic Dark</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Book-like Article Container -->
+      <article class="reading-article-container" id="reading-article-container">
+        <!-- Rendered dynamically -->
+      </article>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW: OUR LITTLE PHOTOBOOTH (FASE 5) -->
+    <!-- ========================================================================= -->
+    <section class="view-section view-photobooth" id="view-photobooth" aria-label="Our Little Photobooth" aria-hidden="true">
+      <!-- Ambient Pastel Backdrop Decorations -->
+      <div class="pb-ambient-decor" aria-hidden="true">
+        <span class="pb-floating-sticker st-1">✦</span>
+        <span class="pb-floating-sticker st-2">🌸</span>
+        <span class="pb-floating-sticker st-3">🌙</span>
+        <span class="pb-floating-sticker st-4">🎞️</span>
+        <span class="pb-floating-sticker st-5">★</span>
+      </div>
+
+      <div class="pb-container">
+        <!-- Top Navigation Bar -->
+        <header class="pb-top-bar">
+          <div class="pb-brand-group">
+            <div class="pb-brand-badge" aria-hidden="true">🎞️</div>
+            <div>
+              <h2 class="pb-main-title">Our Little Photobooth</h2>
+              <p class="pb-subtitle">Retro-Pastel Scrapbook Studio ✦ Nyanya, Lala, Lele</p>
+            </div>
+          </div>
+
+          <div class="pb-top-actions">
+            <!-- Step Navigation Pills -->
+            <nav class="pb-step-pills" aria-label="Tahapan Photobooth">
+              <button type="button" class="pb-step-pill active" data-pb-step="welcome">1. Masuk & Room</button>
+              <button type="button" class="pb-step-pill" data-pb-step="booth">2. Studio Kamera</button>
+              <button type="button" class="pb-step-pill" data-pb-step="result">3. Hasil & Custom</button>
+            </nav>
+
+            <!-- Active User Identity Banner -->
+            <div class="pb-active-identity-banner" id="pb-active-user-badge">
+              <img src="/assets/avatar_nyanya_hd.png" alt="Avatar User" class="pb-identity-avatar" id="pb-active-user-avatar" loading="lazy" decoding="async">
+              <div class="pb-identity-meta">
+                <span class="pb-identity-name" id="pb-active-user-name">Nyanya ★</span>
+                <span class="pb-identity-sub" id="pb-active-user-sub">Universe KIDULT</span>
+              </div>
+            </div>
+
+            <!-- Return Home Button -->
+            <button type="button" class="pb-btn-mini" id="btn-pb-return-home" title="Kembali ke Halaman Universe">
+              🏠 Kembali
+            </button>
+          </div>
+        </header>
+
+        <!-- STAGE A: WELCOME & ROOM ENTRY HERO -->
+        <div class="pb-stage-panel active" id="pb-stage-welcome">
+          <div class="pb-welcome-grid">
+            <!-- Left Hero Card -->
+            <div class="pb-hero-card">
+              <div class="pb-scrapbook-tape" aria-hidden="true"></div>
+              <span class="pb-hero-badge">✦ PHOTO STUDIO PRIVAT</span>
+              <h3 class="pb-hero-heading">Abadikan Pose Manis Bersama Sahabat</h3>
+              <p class="pb-hero-quote">"Tiga Dunia Kecil, Sejuta Kenangan Abadi"</p>
+              <p class="pb-hero-desc">
+                Masuk ke studio kamera photobooth bernuansa retro-pastel scrapbook. Ambil 2 hingga 4 pose lucu bersama sahabat, hias dengan bingkai aesthetic dan stiker gemas, lalu simpan ke Galeri Pribadi Cloud atau unduh strip foto kenanganmu!
+              </p>
+
+              <!-- Custom Retro-Pastel Photobooth Illustration -->
+              <div class="pb-illustration-stage" aria-hidden="true">
+                <div class="pb-booth-machine">
+                  <div class="pb-booth-marquee">PHOTOBOOTH</div>
+                  <div class="pb-booth-body">
+                    <div class="pb-booth-curtain"></div>
+                    <div class="pb-booth-screen">
+                      <span>📷</span>
+                      <span style="font-size:0.5rem; font-weight:700;">✦ SMILE ✦</span>
+                    </div>
+                  </div>
+                  <div class="pb-booth-slot">STRIP DISPENSER</div>
+                </div>
+
+                <div class="pb-mini-strip-art">
+                  <div class="pb-mini-frame">★</div>
+                  <div class="pb-mini-frame">💖</div>
+                  <div class="pb-mini-frame">☾</div>
+                  <span class="pb-mini-caption">Besties Forever</span>
+                </div>
+              </div>
+
+              <button type="button" class="pb-cta-primary" id="btn-pb-start">
+                📷 Masuk Studio Kamera (Mode Lokal)
+              </button>
+            </div>
+
+            <!-- Right Column: Identity Selection & Room Actions -->
+            <div class="pb-room-entry-column">
+              <!-- Select Character Card -->
+              <div class="pb-action-card">
+                <div class="pb-card-title-row">
+                  <div class="pb-card-icon">🌟</div>
+                  <h4 class="pb-card-title">Pilih Identitas Karakter</h4>
+                </div>
+                <p class="pb-card-desc">Pilih akun karaktermu untuk sesi foto dan watermark foto strip.</p>
+                <div class="pb-char-selector-row">
+                  <button type="button" class="pb-char-chip active" data-pb-char="nyanya">⭐ Nyanya</button>
+                  <button type="button" class="pb-char-chip" data-pb-char="lala">☀️ Lala</button>
+                  <button type="button" class="pb-char-chip" data-pb-char="lele">🌙 Lele</button>
+                </div>
+              </div>
+
+              <!-- Create Room Card -->
+              <div class="pb-action-card">
+                <div class="pb-card-title-row">
+                  <div class="pb-card-icon">🏠</div>
+                  <h4 class="pb-card-title">Buat Room Sesi Bersama</h4>
+                </div>
+                <p class="pb-card-desc">Buat kode room 6 karakter untuk berfoto bersama teman lintas browser/tab.</p>
+                <button type="button" class="pb-btn-secondary" id="btn-pb-create-room">
+                  ✨ Buat Room Baru
+                </button>
+              </div>
+
+              <!-- Join Room Card -->
+              <div class="pb-action-card">
+                <div class="pb-card-title-row">
+                  <div class="pb-card-icon">🔑</div>
+                  <h4 class="pb-card-title">Gabung Room Sahabat</h4>
+                </div>
+                <p class="pb-card-desc">Punya kode room dari teman? Masukkan kode di bawah untuk bergabung.</p>
+                <div class="pb-join-input-row">
+                  <input type="text" class="pb-code-input" id="pb-join-code-input" placeholder="KODE ROOM" maxlength="8" autocomplete="off" />
+                  <button type="button" class="pb-btn-secondary" id="btn-pb-join-room">Gabung</button>
+                </div>
+                <div class="pb-inline-feedback" id="pb-join-error-msg" style="display: none;"></div>
+              </div>
+
+              <!-- Honest Architecture & Privacy Note -->
+              <div class="pb-architecture-note">
+                🔒 <strong>Privasi & Keamanan Foto</strong>: Kamera diakses langsung secara lokal di browsermu dengan izin eksplisit. Media photo strip disimpan ke Firebase Storage terautentikasi dan tunduk pada aturan proteksi privasi.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STAGE B & C: ACTIVE ROOM BAR + DUAL CAMERA BOOTH -->
+        <div class="pb-stage-panel" id="pb-stage-booth">
+          <!-- Room Status Bar -->
+          <div class="pb-room-status-bar">
+            <div class="pb-room-code-box">
+              <span class="pb-room-label">Status Sesi:</span>
+              <span class="pb-room-code-badge" id="pb-room-code-display">MODE LOKAL</span>
+              <button type="button" class="pb-btn-mini" id="btn-pb-copy-code" style="display: none;">📋 Salin Kode</button>
+              <button type="button" class="pb-btn-mini danger" id="btn-pb-leave-room" style="display: none;">🚪 Keluar Room</button>
+            </div>
+
+            <div class="pb-presence-group">
+              <div class="pb-presence-pill">
+                <span class="pb-status-dot"></span>
+                <span id="pb-self-presence-text">Nyanya (Aktif)</span>
+              </div>
+              <div class="pb-presence-pill">
+                <span class="pb-status-dot waiting" id="pb-partner-status-dot"></span>
+                <span id="pb-partner-presence-text">Slot Pendamping: Kosong</span>
+              </div>
+              <span class="pb-hero-badge" id="pb-sync-mode-badge">1 Peserta</span>
+            </div>
+          </div>
+
+          <!-- Booth Workspace: Camera Viewport + Pose Tray Sidebar -->
+          <div class="pb-booth-workspace">
+            <!-- Left: Camera Stage Card -->
+            <div class="pb-camera-stage-card">
+              <div class="pb-inline-feedback" id="pb-camera-error-msg" style="display: none;"></div>
+
+              <!-- Dual Viewports (Local User + Friend Slot) -->
+              <div class="pb-dual-viewports">
+                <!-- Viewport 1 (Local Camera) -->
+                <div class="pb-viewport-box">
+                  <span class="pb-viewport-tag" id="pb-local-slot-tag">Kamera Utama (Nyanya)</span>
+                  <video class="pb-video-element" id="pb-local-video" autoplay playsinline muted></video>
+                  <img class="pb-slot-preview-img" id="pb-local-fallback-img" alt="Fallback Foto" style="display: none;" loading="lazy" decoding="async">
+
+                  <!-- Inactive Placeholder -->
+                  <div class="pb-camera-placeholder" id="pb-local-placeholder">
+                    <span class="pb-placeholder-icon">📷</span>
+                    <h4 class="pb-placeholder-title">Kamera Belum Aktif</h4>
+                    <p class="pb-placeholder-sub">Klik tombol 'Nyalakan Kamera' di bawah untuk memulai sesi foto langsung.</p>
+                    <button type="button" class="pb-btn-secondary" id="btn-pb-request-camera">📹 Nyalakan Kamera</button>
+                  </div>
+
+                  <!-- Countdown Overlay -->
+                  <div class="pb-countdown-overlay" id="pb-countdown-overlay">
+                    <span class="pb-countdown-number" id="pb-countdown-number">3</span>
+                    <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; color:#fbcfe8;">Bersiap pose! ✨</span>
+                  </div>
+
+                  <!-- Shutter Flash -->
+                  <div class="pb-shutter-flash" id="pb-shutter-flash"></div>
+                </div>
+
+                <!-- Viewport 2 (Partner Camera / Upload Slot) -->
+                <div class="pb-viewport-box">
+                  <span class="pb-viewport-tag" id="pb-partner-slot-tag">Slot Sahabat</span>
+                  <img class="pb-slot-preview-img" id="pb-partner-preview-img" alt="Foto Sahabat" style="display: none;" loading="lazy" decoding="async">
+
+                  <div class="pb-camera-placeholder" id="pb-partner-placeholder">
+                    <span class="pb-placeholder-icon" id="pb-partner-placeholder-icon">👥</span>
+                    <h4 class="pb-placeholder-title" id="pb-partner-placeholder-title">Menunggu Sahabat</h4>
+                    <p class="pb-placeholder-sub" id="pb-partner-placeholder-desc">Bagikan kode room untuk mengajak sahabat berfoto bersama, atau unggah foto manual.</p>
+                    <button type="button" class="pb-btn-mini" id="btn-pb-upload-partner">📁 Unggah Foto Sahabat</button>
+                    <input type="file" id="pb-partner-upload-input" accept="image/*" style="display: none;" />
+                    <button type="button" class="pb-btn-mini danger" id="btn-pb-clear-partner" style="display: none;">✕ Hapus Foto</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hidden Local Upload Input -->
+              <input type="file" id="pb-local-upload-input" accept="image/*" style="display: none;" />
+
+              <!-- Camera Controls Toolbar -->
+              <div class="pb-camera-controls-bar">
+                <div class="pb-control-group">
+                  <button type="button" class="pb-btn-shutter" id="btn-pb-capture-pose">
+                    <span id="pb-capture-btn-label">📸 Ambil Pose</span>
+                  </button>
+                  <select class="pb-code-input" id="pb-timer-select" style="padding: 0.5rem 0.8rem; font-size: 0.8rem; width: auto;" title="Pilih durasi hitung mundur">
+                    <option value="3" selected>⏱️ 3 Detik</option>
+                    <option value="5">⏱️ 5 Detik</option>
+                    <option value="0">⏱️ Tanpa Timer</option>
+                  </select>
+                  <button type="button" class="pb-btn-mini" id="btn-pb-retake-pose">↩️ Ambil Ulang</button>
+                </div>
+
+                <div class="pb-control-group">
+                  <button type="button" class="pb-btn-mini" id="btn-pb-toggle-camera">📷 Matikan Kamera</button>
+                  <button type="button" class="pb-btn-mini" id="btn-pb-mirror-toggle">🪞 Cermin (On)</button>
+                  <button type="button" class="pb-btn-mini" id="btn-pb-upload-self">📁 Unggah Manual</button>
+                  <span class="pb-room-label" id="pb-camera-status-text">Kamera Siap</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Pose Sidebar Card -->
+            <div class="pb-pose-sidebar-card">
+              <h4 class="pb-card-title" style="font-size:1rem;">🎞️ Format Photo Strip</h4>
+              <div class="pb-layout-pills">
+                <button type="button" class="pb-layout-btn" data-pb-layout="2">2 Panel</button>
+                <button type="button" class="pb-layout-btn" data-pb-layout="3">3 Panel</button>
+                <button type="button" class="pb-layout-btn active" data-pb-layout="4">4 Panel</button>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.4rem;">
+                <span class="pb-card-title" style="font-size:0.9rem;">Daftar Pose</span>
+                <span class="pb-hero-badge" id="pb-pose-counter">0 / 4 Pose</span>
+              </div>
+
+              <div class="pb-poses-grid" id="pb-poses-list"></div>
+
+              <button type="button" class="pb-cta-primary" id="btn-pb-goto-strip" style="font-size: 0.9rem; padding: 0.75rem 1rem; margin-top:0.6rem;">
+                ✨ Lihat Hasil & Customizer →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STAGE D: PHOTO STRIP RESULT & SCRAPBOOK STUDIO -->
+        <div class="pb-stage-panel" id="pb-stage-result">
+          <div class="pb-result-workspace">
+            <!-- Left: Strip Preview Column -->
+            <div class="pb-strip-preview-column">
+              <div class="pb-strip-status-banner" id="pb-strip-completion-status">Photo Strip Lengkap</div>
+
+              <div class="pb-canvas-wrap">
+                <canvas id="pb-strip-canvas" width="440" height="1280"></canvas>
+              </div>
+
+              <div style="width: 100%; display: flex; flex-direction: column; gap: 0.65rem;">
+                <!-- Download Button -->
+                <button type="button" class="pb-cta-primary" id="btn-pb-download">
+                  <span id="pb-download-btn-label">💾 Unduh Photo Strip (PNG)</span>
+                </button>
+
+                <!-- Privacy Selector & Cloud Save Button -->
+                <div style="display: flex; gap: 0.6rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                  <div style="display: flex; gap: 0.4rem; align-items: center; font-size: 0.78rem;">
+                    <label for="pb-save-visibility" style="color: #fce7f3; font-weight: 600;">Privasi:</label>
+                    <select id="pb-save-visibility" class="pb-code-input" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; width: auto;">
+                      <option value="private" selected>🔒 Private (Galeri Pribadi)</option>
+                      <option value="friends">⭐ Shared (Sahabat Universe)</option>
+                    </select>
+                  </div>
+                  <button type="button" class="pb-cta-primary" id="btn-pb-save-cloud" style="flex: 1; min-width: 220px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #a7f3d0; font-size: 0.92rem; padding: 0.75rem 1.1rem;">
+                    ☁️ Simpan ke Galeri Pribadi Cloud
+                  </button>
+                </div>
+
+                <div class="pb-inline-feedback" id="pb-cloud-feedback" style="display: none; width: 100%; box-sizing: border-box;"></div>
+
+                <div style="display: flex; gap: 0.5rem; justify-content: space-between; margin-top: 0.3rem;">
+                  <button type="button" class="pb-btn-mini" id="btn-pb-back-to-booth">📷 Kembali ke Kamera</button>
+                  <button type="button" class="pb-btn-mini danger" id="btn-pb-restart-session">🔄 Mulai Ulang Semua Pose</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Scrapbook Customizer Column -->
+            <div class="pb-customizer-column">
+              <h4 class="pb-card-title" style="font-size:1.15rem;">🎨 Studio Scrapbook & Frame</h4>
+
+              <!-- Frame Themes -->
+              <div>
+                <span class="pb-card-title" style="font-size:0.88rem; display:block; margin-bottom:0.45rem;">Pilih Tema Frame</span>
+                <div class="pb-frame-options-grid">
+                  <button type="button" class="pb-frame-card active" data-pb-frame="moon_stars">
+                    <span class="pb-frame-swatch sw-moon"></span>
+                    <span>Moon & Stars</span>
+                  </button>
+                  <button type="button" class="pb-frame-card" data-pb-frame="pastel_flowers">
+                    <span class="pb-frame-swatch sw-flower"></span>
+                    <span>Pastel Flowers</span>
+                  </button>
+                  <button type="button" class="pb-frame-card" data-pb-frame="crystal_dreams">
+                    <span class="pb-frame-swatch sw-crystal"></span>
+                    <span>Crystal Dreams</span>
+                  </button>
+                  <button type="button" class="pb-frame-card" data-pb-frame="retro_memories">
+                    <span class="pb-frame-swatch sw-retro"></span>
+                    <span>Retro Memories</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Captions -->
+              <div>
+                <span class="pb-card-title" style="font-size:0.88rem; display:block; margin-bottom:0.45rem;">Pilih / Tulis Catatan Manis</span>
+                <div class="pb-caption-pills">
+                  <button type="button" class="pb-caption-btn active" data-pb-caption="Our Little Memories">"Our Little Memories"</button>
+                  <button type="button" class="pb-caption-btn" data-pb-caption="Forever Besties">"Forever Besties ★"</button>
+                  <button type="button" class="pb-caption-btn" data-pb-caption="A Sweet Starlit Night">"A Sweet Starlit Night 🌙"</button>
+                  <button type="button" class="pb-caption-btn" data-pb-caption="Twinkling Smiles">"Twinkling Smiles ✨"</button>
+                </div>
+                <input type="text" class="pb-code-input" id="pb-custom-caption-input" placeholder="Tulis caption scrapbook kustom..." maxlength="40" style="margin-top:0.5rem; text-transform:none; letter-spacing:normal;" />
+              </div>
+
+              <!-- Sticker Sets -->
+              <div>
+                <span class="pb-card-title" style="font-size:0.88rem; display:block; margin-bottom:0.45rem;">Pilih Set Stiker Scrapbook</span>
+                <div class="pb-sticker-pills">
+                  <button type="button" class="pb-sticker-btn active" data-pb-sticker="stars">✦ Bintang & Kilau</button>
+                  <button type="button" class="pb-sticker-btn" data-pb-sticker="hearts">💖 Hati & Kasih</button>
+                  <button type="button" class="pb-sticker-btn" data-pb-sticker="moons">🌙 Bulan & Galaksi</button>
+                  <button type="button" class="pb-sticker-btn" data-pb-sticker="flowers">🌸 Bunga Pastel</button>
+                </div>
+              </div>
+
+              <!-- Date Stamp Toggle -->
+              <div style="padding-top: 0.35rem; border-top: 1px solid rgba(216, 180, 254, 0.25);">
+                <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-size:0.82rem; color:#f1f5f9;">
+                  <input type="checkbox" id="pb-toggle-date" checked />
+                  <span>Tampilkan Cap Tanggal Cantik di Bagian Bawah Strip</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW: OUR LITTLE MESSAGES (FASE 6) -->
+    <!-- ========================================================================= -->
+    <section class="view-section view-messages" id="view-messages" aria-label="Our Little Messages" aria-hidden="true">
+      <div class="msg-container">
+        <!-- Top Bar -->
+        <header class="msg-top-bar">
+          <div class="msg-brand-group">
+            <div class="msg-brand-icon" aria-hidden="true">✉</div>
+            <div>
+              <h2 class="msg-title">Our Little Messages</h2>
+              <p class="msg-subtitle">Kotak Surat & Obrolan Realtime Sahabat ✦ Nyanya, Lala, Lele</p>
+            </div>
+          </div>
+
+          <div class="msg-top-actions">
+            <!-- Active User Identity Banner -->
+            <div class="pb-active-identity-banner" id="msg-active-user-badge">
+              <img src="/assets/avatar_nyanya_hd.png" alt="Avatar User" class="pb-identity-avatar" id="msg-active-user-avatar" loading="lazy" decoding="async">
+              <div class="pb-identity-meta">
+                <span class="pb-identity-name" id="msg-active-user-name">Nyanya ★</span>
+                <span class="pb-identity-sub" id="msg-active-user-sub">Universe KIDULT</span>
+              </div>
+            </div>
+
+            <!-- Return Home Button -->
+            <button type="button" class="msg-btn-back" id="btn-msg-return-home" title="Kembali ke Halaman Universe">
+              🏠 Kembali
+            </button>
+          </div>
+        </header>
+
+        <!-- Main Chat Grid -->
+        <div class="msg-main-grid">
+          <!-- Left Sidebar: Conversations List -->
+          <aside class="msg-conversations-card" aria-label="Daftar Percakapan Sahabat">
+            <div class="msg-sidebar-header">
+              <h3 class="msg-sidebar-title">💬 Percakapan Sahabat</h3>
+            </div>
+            <div class="msg-conversation-items" id="msg-conversation-list" role="tablist">
+              <!-- Rendered dynamically by messages_view.js -->
+            </div>
+          </aside>
+
+          <!-- Right: Chat Window Pane -->
+          <main class="msg-chat-card" aria-label="Jendela Percakapan">
+            <!-- Chat Header -->
+            <div class="msg-chat-header">
+              <div class="msg-chat-partner-info">
+                <img src="/assets/avatar_lala_hd.png" alt="Partner Avatar" class="msg-partner-avatar" id="msg-partner-avatar" loading="lazy" decoding="async">
+                <div>
+                  <h4 class="msg-partner-name" id="msg-partner-name">Lala ☼</h4>
+                  <p class="msg-partner-sub" id="msg-partner-sub">Universe TO YOU</p>
+                </div>
+              </div>
+              <div id="msg-thread-status" style="display:none; font-size:0.75rem; color:#fde047;"></div>
+            </div>
+
+            <!-- Message Thread Scroll Area -->
+            <div class="msg-feed-area" id="msg-feed-area" role="log" aria-live="polite">
+              <!-- Rendered dynamically by messages_view.js -->
+            </div>
+
+            <!-- Message Composer -->
+            <footer class="msg-composer">
+              <!-- Spark Plan Storage Notice Banner -->
+              <div class="msg-spark-notice hidden" id="msg-spark-notice" role="alert">
+                <span class="msg-spark-notice-icon">ℹ️</span>
+                <span class="msg-spark-notice-text">Penyimpanan media awan memerlukan Firebase Storage. Pesan teks tetap berfungsi penuh &amp; tersimpan realtime di Cloud Firestore ✨</span>
+                <button type="button" class="msg-spark-notice-close" id="btn-spark-notice-close" title="Tutup">✕</button>
+              </div>
+
+              <!-- Pending Attachment Preview Bar -->
+              <div class="msg-attachment-preview hidden" id="msg-attachment-preview">
+                <div class="msg-preview-content" id="msg-preview-content">
+                  <!-- Dynamically populated: thumbnail, file info, or audio preview -->
+                </div>
+                <button type="button" class="msg-preview-remove" id="btn-msg-preview-remove" title="Batalkan Lampiran">✕</button>
+              </div>
+
+              <!-- Voice Recording Live Bar -->
+              <div class="msg-recording-bar hidden" id="msg-recording-bar">
+                <div class="msg-rec-status">
+                  <span class="msg-rec-dot"></span>
+                  <span class="msg-rec-text">Merekam Pesan Suara...</span>
+                  <span class="msg-rec-timer" id="msg-record-timer">0:00</span>
+                </div>
+                <div class="msg-rec-wave" aria-hidden="true">
+                  <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="msg-rec-actions">
+                  <button type="button" class="msg-rec-btn-cancel" id="btn-record-cancel" title="Batal Rekam">
+                    ✕ Batal
+                  </button>
+                  <button type="button" class="msg-rec-btn-send" id="btn-record-send" title="Kirim Pesan Suara">
+                    ➤ Kirim
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick Emoji Bar -->
+              <div class="msg-quick-emojis" aria-label="Pintasan Emoji">
+                <button type="button" class="msg-emoji-btn" data-emoji="💖" title="Hati">💖</button>
+                <button type="button" class="msg-emoji-btn" data-emoji="✨" title="Kilau">✨</button>
+                <button type="button" class="msg-emoji-btn" data-emoji="🌸" title="Bunga">🌸</button>
+                <button type="button" class="msg-emoji-btn" data-emoji="🌙" title="Bulan">🌙</button>
+                <button type="button" class="msg-emoji-btn" data-emoji="★" title="Bintang">★</button>
+                <button type="button" class="msg-emoji-btn" data-emoji="💌" title="Surat">💌</button>
+                <button type="button" class="msg-emoji-btn" data-emoji="☕" title="Kopi">☕</button>
+              </div>
+
+              <!-- Input Row with Attachment Menu and Send Button -->
+              <div class="msg-input-row" id="msg-normal-input-row">
+                <!-- Attachment Menu Container -->
+                <div class="msg-attach-wrapper">
+                  <button type="button" class="msg-attach-btn" id="btn-msg-attach" title="Lampirkan File / Media" aria-haspopup="true" aria-expanded="false">
+                    <span>＋</span>
+                  </button>
+                  <!-- Popover Menu -->
+                  <div class="msg-attach-menu hidden" id="msg-attach-menu" role="menu">
+                    <button type="button" class="msg-attach-item" id="btn-attach-image" role="menuitem">
+                      <span class="msg-attach-item-icon">📷</span>
+                      <span>Foto & Gambar</span>
+                    </button>
+                    <button type="button" class="msg-attach-item" id="btn-attach-video" role="menuitem">
+                      <span class="msg-attach-item-icon">🎥</span>
+                      <span>Video</span>
+                    </button>
+                    <button type="button" class="msg-attach-item" id="btn-attach-doc" role="menuitem">
+                      <span class="msg-attach-item-icon">📁</span>
+                      <span>Dokumen</span>
+                    </button>
+                    <button type="button" class="msg-attach-item" id="btn-attach-audio" role="menuitem">
+                      <span class="msg-attach-item-icon">🎵</span>
+                      <span>Audio & Musik</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Textarea for message / caption -->
+                <textarea
+                  class="msg-textarea"
+                  id="msg-input-text"
+                  placeholder="Tulis pesan manis untuk sahabatmu..."
+                  rows="1"
+                  maxlength="2000"
+                  aria-label="Isi pesan"
+                ></textarea>
+
+                <!-- Voice Note Mic Button -->
+                <button type="button" class="msg-mic-btn" id="btn-msg-mic" title="Rekam Pesan Suara (Voice Note)">
+                  <span>🎙️</span>
+                </button>
+
+                <!-- Clear Send Button with Icon and Text Label -->
+                <button type="button" class="msg-send-btn" id="btn-msg-send" title="Kirim Pesan" aria-label="Kirim Pesan" disabled>
+                  <span class="msg-send-icon">➤</span>
+                  <span class="msg-send-text">Kirim</span>
+                </button>
+              </div>
+
+              <!-- Dedicated Hidden File Inputs (completely isolated from layout, never rendered as visible buttons) -->
+              <div class="msg-file-inputs-container" style="display:none !important; visibility:hidden !important; position:absolute; width:0; height:0;" aria-hidden="true">
+                <input type="file" id="file-input-image" accept="image/jpeg,image/png,image/webp,image/gif" class="msg-file-input-hidden" style="display:none !important;" />
+                <input type="file" id="file-input-video" accept="video/mp4,video/webm,video/quicktime,video/ogg" class="msg-file-input-hidden" style="display:none !important;" />
+                <input type="file" id="file-input-doc" accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.txt,.csv,.zip" class="msg-file-input-hidden" style="display:none !important;" />
+                <input type="file" id="file-input-audio" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/m4a,audio/aac,audio/*" class="msg-file-input-hidden" style="display:none !important;" />
+              </div>
+
+              <!-- Footer with Char Counter and Hint -->
+              <div class="msg-composer-footer">
+                <span>Tekan Enter untuk kirim, Shift+Enter untuk baris baru</span>
+                <span id="msg-char-counter">0 / 2000</span>
+              </div>
+            </footer>
+          </main>
+        </div>
+
+        <!-- Lightbox Modal for Full Image View -->
+        <div class="msg-lightbox hidden" id="msg-media-lightbox" role="dialog" aria-modal="true" aria-label="Lihat Gambar Penuh">
+          <button type="button" class="msg-lightbox-close" id="btn-msg-lightbox-close" aria-label="Tutup">✕</button>
+          <img src="" alt="Pratinjau Gambar Penuh" class="msg-lightbox-img" id="msg-lightbox-img" />
+          <div class="msg-lightbox-caption" id="msg-lightbox-caption"></div>
+        </div>
+      </div>
+    </section>
+
     </div>
+
+    
+    <!-- ===============================================================
+         FASE 7: GOING SEVENTEEN ZONE (GAMES)
+         Interactive Arcade for Nyanya ★, Lala ☼, and Lele 🌙
+         =============================================================== -->
+    <section class="view-section view-games" id="view-games" aria-label="Going Seventeen Zone" aria-hidden="true">
+      <div class="games-layout-wrapper">
+        <!-- Top Bar -->
+        <header class="games-header-bar">
+          <div class="games-header-left">
+            <button type="button" class="btn-games-back" id="btn-games-return-home" title="Kembali ke Universe">
+              🏠 Kembali
+            </button>
+            <div class="games-title-group">
+              <h1>🎮 Going Seventeen Zone</h1>
+              <p>Arena permainan kosmik privat tiga sahabat ★ ☼ ☾</p>
+            </div>
+          </div>
+          <div class="games-header-player" id="games-header-player">
+            <img src="/assets/avatar_nyanya_hd.png" alt="Avatar Pemain" class="games-player-avatar" id="games-current-user-avatar" loading="lazy" decoding="async">
+            <div class="games-player-info">
+              <span class="games-player-name" id="games-current-user-name">Nyanya ★</span>
+              <span class="games-player-role" id="games-current-user-role">The Moonlit Shadow Witch</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Navigation Tabs: Hub vs Missions vs History -->
+        <nav class="games-nav-tabs" aria-label="Navigasi Permainan">
+          <button type="button" class="games-tab-btn active" data-tab="hub" id="tab-games-hub">
+            <span>🎮</span> Hub Permainan
+          </button>
+          <button type="button" class="games-tab-btn" data-tab="missions" id="tab-games-missions">
+            <span>🏆</span> Bestie Missions
+          </button>
+          <button type="button" class="games-tab-btn" data-tab="history" id="tab-games-history">
+            <span>📜</span> Riwayat & Skor
+          </button>
+        </nav>
+
+        <!-- 1. HUB SECTION (4 Games Cards) -->
+        <section class="games-hub-section" id="games-hub-section">
+          <div class="games-hub-grid">
+            <!-- Game 1: How Well Do You Know Me? -->
+            <div class="game-hub-card" id="card-game-know-me">
+              <div>
+                <div class="game-card-top">
+                  <div class="game-card-icon">✨</div>
+                  <span class="game-card-badge">🧠 Kuis Sahabat</span>
+                </div>
+                <div class="game-card-body">
+                  <h3>How Well Do You Know Me?</h3>
+                  <div class="game-card-subtitle">Kuis Pengetahuan Sahabat Kosmik</div>
+                  <p class="game-card-desc">Uji seberapa dalam kamu mengenal kebiasaan, tempat favorit, dan rahasia kecil Nyanya, Lala, dan Lele!</p>
+                </div>
+              </div>
+              <button type="button" class="btn-game-play" data-game="know_me" id="btn-play-know-me">
+                <span>Mulai Kuis ✦</span>
+              </button>
+            </div>
+
+            <!-- Game 2: This or That -->
+            <div class="game-hub-card" id="card-game-this-or-that">
+              <div>
+                <div class="game-card-top">
+                  <div class="game-card-icon">🌓</div>
+                  <span class="game-card-badge">⚖️ Pilihan Cepat</span>
+                </div>
+                <div class="game-card-body">
+                  <h3>This or That: Kosmik Edition</h3>
+                  <div class="game-card-subtitle">Uji Kecocokan Karakter</div>
+                  <p class="game-card-desc">5 ronde pilihan dilematis cepat untuk mengukur aura kepribadian kosmik dan persentase kecocokanmu bertiga.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-game-play" data-game="this_or_that" id="btn-play-this-or-that">
+                <span>Pilih Cepat ✦</span>
+              </button>
+            </div>
+
+            <!-- Game 3: Who Said That?! -->
+            <div class="game-hub-card" id="card-game-who-said-it">
+              <div>
+                <div class="game-card-top">
+                  <div class="game-card-icon">🔮</div>
+                  <span class="game-card-badge">💬 Tebak Kutipan</span>
+                </div>
+                <div class="game-card-body">
+                  <h3>Who Said That?!</h3>
+                  <div class="game-card-subtitle">Tebak Siapa Pemilik Kutipan</div>
+                  <p class="game-card-desc">Tebak siapa yang mengucapkan kalimat khas di balik observatorium, kedai teh, dan paviliun seni kristal!</p>
+                </div>
+              </div>
+              <button type="button" class="btn-game-play" data-game="who_said_it" id="btn-play-who-said-it">
+                <span>Tebak Kutipan ✦</span>
+              </button>
+            </div>
+
+            <!-- Game 4: Bestie Mission -->
+            <div class="game-hub-card" id="card-game-bestie-mission">
+              <div>
+                <div class="game-card-top">
+                  <div class="game-card-icon">🪐</div>
+                  <span class="game-card-badge">🏆 Misi Harian</span>
+                </div>
+                <div class="game-card-body">
+                  <h3>Bestie Mission: Tiga Sahabat</h3>
+                  <div class="game-card-subtitle">Misi Persahabatan Harian</div>
+                  <p class="game-card-desc">Selesaikan 4 misi persahabatan harian di Our Little Universe untuk meraih lencana kehormatan Trio Cosmic!</p>
+                </div>
+              </div>
+              <button type="button" class="btn-game-play" data-game="bestie_mission" id="btn-play-bestie-mission">
+                <span>Lihat Misi ✦</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. GAME ARENA (Active Gameplay) -->
+        <section class="game-arena-container" id="games-arena-section" aria-live="polite">
+          <div class="arena-top-header">
+            <div class="arena-game-label">
+              <button type="button" class="btn-games-back" id="btn-arena-exit" style="padding:0.3rem 0.6rem; font-size:0.75rem;">
+                ✕ Keluar
+              </button>
+              <h2 class="arena-game-title" id="arena-game-title">Nama Permainan</h2>
+            </div>
+            <div class="arena-progress-wrap">
+              <span class="arena-round-indicator" id="arena-round-indicator">Ronde 1 dari 5</span>
+              <div class="arena-progress-bar">
+                <div class="arena-progress-fill" id="arena-progress-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Question Area -->
+          <div class="arena-question-box" id="arena-question-box"></div>
+
+          <!-- Dynamic Options Grid -->
+          <div class="arena-options-grid" id="arena-options-grid"></div>
+
+          <!-- Feedback & Explanation Card -->
+          <div class="arena-feedback-card" id="arena-feedback-card"></div>
+
+          <!-- Result View -->
+          <div class="arena-result-view" id="arena-result-view"></div>
+        </section>
+
+        <!-- 3. BESTIE MISSIONS SECTION -->
+        <section class="games-missions-section" id="games-missions-section" style="display:none;">
+          <div class="games-history-card">
+            <div class="history-card-header">
+              <h3><span>🏆</span> Daftar Misi Persahabatan Harian</h3>
+              <span class="game-card-badge" id="missions-progress-count">0 / 4 Selesai</span>
+            </div>
+            <div class="missions-card-list" id="games-missions-list"></div>
+          </div>
+        </section>
+
+        <!-- 4. RECENT HISTORY / LEADERBOARD SECTION -->
+        <section class="games-history-section" id="games-history-section">
+          <div class="games-history-card">
+            <div class="history-card-header">
+              <h3><span>📜</span> Riwayat Permainan & Skor Terkini</h3>
+              <span style="font-size:0.75rem; color:#94a3b8;">Sinkronisasi Otomatis Cloud</span>
+            </div>
+            <div class="games-history-list" id="games-history-list"></div>
+          </div>
+        </section>
+      </div>
+    </section>
 
     <!-- Notification Toast / Portal Modal -->
     <div class="universe-toast" id="universe-toast" role="alert" aria-live="polite">
@@ -2080,7 +4713,7 @@
     </div>
 
   </div>
-
+
   <script type="module" src="/main.js"></script>
 </body>
 

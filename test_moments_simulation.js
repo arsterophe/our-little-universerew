@@ -3,8 +3,6 @@
  */
 
 import {
-  INITIAL_STORIES,
-  INITIAL_MOMENTS,
   CHARACTERS_MOMENTS,
   getStories,
   getStoriesByCharacter,
@@ -20,7 +18,8 @@ import {
   saveStoryToArchive,
   toggleLikeMoment,
   toggleArchiveMoment,
-  addMoment
+  addMoment,
+  clearAllMomentsStore
 } from './moments.js';
 
 let passed = 0;
@@ -36,22 +35,51 @@ function assert(condition, message) {
   }
 }
 
+// Setup initial test data
+await clearAllMomentsStore();
+const samplePhoto = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+addMoment({
+  photoUrl: samplePhoto,
+  caption: 'Momen senja Nyanya di KIDULT ✦',
+  type: 'both',
+  author: 'nyanya'
+});
+
+addMoment({
+  photoUrl: samplePhoto,
+  caption: 'Mawar mekar di taman TO YOU Lala ☀️',
+  type: 'both',
+  author: 'lala'
+});
+
+addMoment({
+  photoUrl: samplePhoto,
+  caption: 'Arsip foto lama kristal SHADOW Lele ☾',
+  type: 'feed',
+  author: 'lele',
+  isArchived: true
+});
+
+setActiveUserCharacter('lele'); // Lele has not viewed Nyanya's story yet
+
 console.log('--- TEST 1: Initial Stories & 24h Expiration Logic ---');
-const activeStories = getStories();
+const activeStories = getStories(Date.now(), 'lele');
 assert(activeStories.length >= 2, `Active stories loaded: ${activeStories.length}`);
-assert(hasActiveStories('nyanya') === true, 'Nyanya has active story');
-assert(hasActiveStories('lala') === true, 'Lala has active story');
-assert(hasActiveStories('lele') === false, 'Lele has NO story today (verifies visual indicator requirement)');
-assert(hasUnseenStories('nyanya') === true, 'Nyanya has unseen story initially');
+assert(hasActiveStories('nyanya', Date.now(), 'lele') === true, 'Nyanya has active story');
+assert(hasActiveStories('lala', Date.now(), 'lele') === true, 'Lala has active story');
+assert(hasActiveStories('lele', Date.now(), 'lele') === false, 'Lele has NO story today (verifies visual indicator requirement)');
+assert(hasUnseenStories('nyanya', Date.now(), 'lele') === true, 'Lele has unseen story from Nyanya initially');
 
 console.log('\n--- TEST 2: Story Viewed & Archive Actions ---');
 const nyanyaStory = activeStories.find(s => s.author === 'nyanya');
 assert(Boolean(nyanyaStory), 'Nyanya story found');
-markStoryAsViewed(nyanyaStory.id);
-assert(hasUnseenStories('nyanya') === false, 'After viewing, Nyanya has no unseen stories');
+markStoryAsViewed(nyanyaStory.id, 'lele');
+assert(hasUnseenStories('nyanya', Date.now(), 'lele') === false, 'After viewing, Lele has no unseen stories from Nyanya');
 
-const arcSuccess = saveStoryToArchive(nyanyaStory.id);
-assert(arcSuccess === true, 'Story successfully saved to archive');
+setActiveUserCharacter('nyanya'); // Switch to Nyanya to archive Nyanya's story
+const arcSuccess = saveStoryToArchive(nyanyaStory.id, 'nyanya');
+assert(Boolean(arcSuccess), 'Story successfully saved to archive');
 const archivedMoments = getArchiveMoments();
 assert(archivedMoments.some(m => m.photoUrl === nyanyaStory.photoUrl), 'Archived story is present in archive moments');
 
@@ -72,11 +100,11 @@ const archiveFeed = getMomentsFeed('archive');
 assert(archiveFeed.every(m => m.isArchived === true), 'Archive filter returns only archived moments');
 
 console.log('\n--- TEST 4: Like & Archive Toggles ---');
-const testMoment = allMoments[0];
+const testMoment = nyanyaFeed[0];
 const initialLikes = testMoment.likes;
 const initialLikedByMe = testMoment.likedByMe;
 
-const likedMoment = toggleLikeMoment(testMoment.id);
+const likedMoment = toggleLikeMoment(testMoment.id, 'nyanya');
 assert(likedMoment.likedByMe === !initialLikedByMe, 'Like toggle flips likedByMe status');
 assert(
   initialLikedByMe ? likedMoment.likes === initialLikes - 1 : likedMoment.likes === initialLikes + 1,
@@ -84,12 +112,12 @@ assert(
 );
 
 // Toggle back
-const unlikedMoment = toggleLikeMoment(testMoment.id);
+const unlikedMoment = toggleLikeMoment(testMoment.id, 'nyanya');
 assert(unlikedMoment.likedByMe === initialLikedByMe, 'Like toggle back restores original state');
 assert(unlikedMoment.likes === initialLikes, 'Like count restored');
 
 const initialArchivedStatus = testMoment.isArchived;
-const toggledArc = toggleArchiveMoment(testMoment.id);
+const toggledArc = toggleArchiveMoment(testMoment.id, 'nyanya');
 assert(toggledArc === !initialArchivedStatus, 'Archive status toggled successfully');
 
 console.log('\n--- TEST 5: Uploading New Moment & Story ---');
@@ -102,7 +130,7 @@ const storyCreated = addMoment({
   type: 'story',
   author: 'lele'
 });
-assert(storyCreated === true, 'New story uploaded successfully');
+assert(Boolean(storyCreated), 'New story uploaded successfully');
 assert(hasActiveStories('lele') === true, 'Lele now has an active story!');
 assert(hasUnseenStories('lele') === true, 'Lele has unseen story now');
 
@@ -113,7 +141,7 @@ const feedCreated = addMoment({
   type: 'feed',
   author: 'lala'
 });
-assert(feedCreated === true, 'New scrapbook moment uploaded successfully');
+assert(Boolean(feedCreated), 'New scrapbook moment uploaded successfully');
 const updatedLalaFeed = getMomentsFeed('lala');
 assert(updatedLalaFeed.some(m => m.caption.includes('kenangan scrapbook')), 'New moment visible in feed');
 
@@ -124,7 +152,7 @@ const bothCreated = addMoment({
   type: 'both',
   author: 'nyanya'
 });
-assert(bothCreated === true, 'Moment added to both stories and feed');
+assert(Boolean(bothCreated), 'Moment added to both stories and feed');
 
 console.log('\n--- TEST 6: Character Metadata ---');
 assert(CHARACTERS_MOMENTS.nyanya.name === 'Nyanya', 'Nyanya config is present');
@@ -139,4 +167,5 @@ if (failed > 0) {
   process.exit(1);
 } else {
   console.log('All Our Little Moments simulation tests PASSED successfully! ✦');
+  process.exit(0);
 }

@@ -1,0 +1,129 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUniverseMember() {
+      return isAuthenticated() &&
+             ('email' in request.auth.token) &&
+             request.auth.token.email is string &&
+             ('email_verified' in request.auth.token) &&
+             request.auth.token.email_verified == true &&
+             (
+               request.auth.token.email == 'nyanya@ourlittleuniverse.com' ||
+               request.auth.token.email == 'lala@ourlittleuniverse.com' ||
+               request.auth.token.email == 'lele@ourlittleuniverse.com'
+             );
+    }
+
+    function isAllowedConversation(convId) {
+      return (request.auth.token.email == 'nyanya@ourlittleuniverse.com' && convId in ['lala_nyanya', 'lele_nyanya', 'all_friends']) ||
+             (request.auth.token.email == 'lala@ourlittleuniverse.com' && convId in ['lala_nyanya', 'lala_lele', 'all_friends']) ||
+             (request.auth.token.email == 'lele@ourlittleuniverse.com' && convId in ['lala_lele', 'lele_nyanya', 'all_friends']);
+    }
+
+    function isOwner(uid) {
+      return isUniverseMember() && request.auth.uid == uid;
+    }
+
+    function isValidMedia() {
+      // Max 25 MB
+      return request.resource.size <= 25 * 1024 * 1024 &&
+             (
+               // Supported Images
+               request.resource.contentType in [
+                 'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'
+               ]
+               ||
+               // Supported Videos
+               request.resource.contentType in [
+                 'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'
+               ]
+             );
+    }
+
+    function isValidMessageMedia() {
+      // Max 50 MB
+      return request.resource.size <= 50 * 1024 * 1024 &&
+             (
+               // Images
+               request.resource.contentType in [
+                 'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'
+               ] ||
+               // Videos
+               request.resource.contentType in [
+                 'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'
+               ] ||
+               // Audios & Voice Notes
+               request.resource.contentType in [
+                 'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/webm',
+                 'audio/ogg', 'audio/m4a', 'audio/mp4', 'audio/aac'
+               ] ||
+               // Documents
+               request.resource.contentType in [
+                 'application/pdf',
+                 'application/msword',
+                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                 'application/vnd.ms-excel',
+                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                 'application/vnd.ms-powerpoint',
+                 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                 'text/plain',
+                 'text/csv',
+                 'application/zip',
+                 'application/x-zip-compressed',
+                 'application/json'
+               ]
+             );
+    }
+
+    // 1. Private Moments: Strictly accessible only by the owner
+    match /moments/private/{uid}/{fileName} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && isValidMedia();
+      allow update: if isOwner(uid) && isValidMedia();
+      allow delete: if isOwner(uid);
+    }
+
+    // 2. Shared Moments: Viewable ONLY by verified universe friends; writable & deletable ONLY by owner
+    match /moments/shared/{uid}/{fileName} {
+      allow read: if isUniverseMember();
+      allow create: if isOwner(uid) && isValidMedia();
+      allow update: if isOwner(uid) && isValidMedia();
+      allow delete: if isOwner(uid);
+    }
+
+    // 3. Photobooth Strips: Private (strictly owner) & Shared (universe friends)
+    match /photobooth/private/{uid}/{fileName} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && isValidMedia();
+      allow update: if isOwner(uid) && isValidMedia();
+      allow delete: if isOwner(uid);
+    }
+
+    match /photobooth/shared/{uid}/{fileName} {
+      allow read: if isUniverseMember();
+      allow create: if isOwner(uid) && isValidMedia();
+      allow update: if isOwner(uid) && isValidMedia();
+      allow delete: if isOwner(uid);
+    }
+
+    // 4. Chat Messages Attachments: Scoped by conversation & senderUid
+    // Readable only by verified participants of the conversation; writable by the sender
+    match /messages/{conversationId}/{senderUid}/{fileName} {
+      allow read: if isUniverseMember() && isAllowedConversation(conversationId);
+      allow create: if isOwner(senderUid) && isAllowedConversation(conversationId) && isValidMessageMedia();
+      allow update: if isOwner(senderUid) && isAllowedConversation(conversationId) && isValidMessageMedia();
+      allow delete: if isOwner(senderUid) && isAllowedConversation(conversationId);
+    }
+
+    // Default deny for everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
