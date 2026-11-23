@@ -84,7 +84,7 @@ assert(html.includes('data-universe="yawn" data-char="akhira"') && html.includes
 console.log('\n================================================================');
 console.log('2. IDENTITAS KANONIKAL & PEMETAAN AKUN ABIL — PINWHEEL ☁️');
 console.log('================================================================');
-assert(CANONICAL_CHARACTERS.abil?.name === 'Abil', 'CANONICAL_CHARACTERS.abil bernama Abil');
+assert(CANONICAL_CHARACTERS.abil?.name === 'Syma', 'CANONICAL_CHARACTERS.abil bernama Syma');
 assert(CANONICAL_CHARACTERS.abil?.universe === 'PINWHEEL', 'CANONICAL_CHARACTERS.abil ber-universe PINWHEEL');
 assert(CANONICAL_CHARACTERS.abil?.symbol === '☁️', 'Simbol PINWHEEL adalah ☁️');
 assert(UNIVERSE_MAPPINGS.abil === 'PINWHEEL', 'UNIVERSE_MAPPINGS.abil === PINWHEEL');

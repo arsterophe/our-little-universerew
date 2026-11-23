@@ -84,14 +84,26 @@ body.theme-lele {
   --active-card-bg: var(--lele-card-bg);
 }
 
+body.theme-royan {
+  --active-accent: #c084fc;
+  --active-glow: rgba(192, 132, 252, 0.65);
+  --active-border: rgba(216, 180, 254, 0.7);
+  --active-btn-grad: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+  --active-btn-shadow: 0 4px 20px rgba(168, 85, 247, 0.45);
+  --active-card-bg: linear-gradient(180deg, rgba(35, 18, 55, 0.78) 0%, rgba(18, 9, 30, 0.88) 100%);
+}
+
 /* --- BASE STYLES & RESET --- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
@@ -211,7 +223,8 @@ body.theme-lele .nebula-character {
   z-index: 0;
 }
 
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
   .universe-panorama-bg {
     background-image: url('/assets/bg_universe_hd_2x.jpg');
   }
@@ -253,8 +266,16 @@ body.theme-lele .nebula-character {
 }
 
 @keyframes loaderStarPulse {
-  0% { transform: scale(0.85) rotate(-10deg); opacity: 0.6; }
-  100% { transform: scale(1.25) rotate(10deg); opacity: 1; filter: drop-shadow(0 0 25px rgba(244, 114, 182, 0.9)); }
+  0% {
+    transform: scale(0.85) rotate(-10deg);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1.25) rotate(10deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 25px rgba(244, 114, 182, 0.9));
+  }
 }
 
 .loader-text {
@@ -267,8 +288,13 @@ body.theme-lele .nebula-character {
 }
 
 @keyframes bgSubtleBreathing {
-  0% { transform: scale(1.02) translateY(0); }
-  100% { transform: scale(1.045) translateY(-8px); }
+  0% {
+    transform: scale(1.02) translateY(0);
+  }
+
+  100% {
+    transform: scale(1.045) translateY(-8px);
+  }
 }
 
 body.theme-nyanya .universe-panorama-bg {
@@ -308,13 +334,23 @@ body.theme-lele .universe-panorama-bg {
 }
 
 @keyframes cloudDriftBack {
-  0% { transform: translateX(-25px); }
-  100% { transform: translateX(25px); }
+  0% {
+    transform: translateX(-25px);
+  }
+
+  100% {
+    transform: translateX(25px);
+  }
 }
 
 @keyframes cloudDriftFront {
-  0% { transform: translateX(30px); }
-  100% { transform: translateX(-30px); }
+  0% {
+    transform: translateX(30px);
+  }
+
+  100% {
+    transform: translateX(-30px);
+  }
 }
 
 .glow-vignette {
@@ -348,6 +384,13 @@ body.theme-lele .universe-panorama-bg {
   display: flex;
   opacity: 1;
   transform: scale(1);
+}
+
+.view-section:not(.active),
+.view-fairy-atelier:not(.active) {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* ==========================================================================
@@ -411,8 +454,15 @@ body.theme-lele .universe-panorama-bg {
 }
 
 @keyframes starPulse {
-  0% { opacity: 0.3; transform: scale(0.8); }
-  100% { opacity: 1; transform: scale(1.3); }
+  0% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
 }
 
 .universe-title {
@@ -422,7 +472,8 @@ body.theme-lele .universe-panorama-bg {
   letter-spacing: 0.22em;
   color: #ffffff;
   text-shadow: 0 0 15px rgba(230, 215, 255, 0.8), 0 0 30px rgba(192, 132, 252, 0.5);
-  margin-left: 0.22em; /* optical alignment */
+  margin-left: 0.22em;
+  /* optical alignment */
 }
 
 .universe-subtitle {
@@ -444,8 +495,15 @@ body.theme-lele .universe-panorama-bg {
 }
 
 @keyframes twinkleStar {
-  0% { transform: scale(0.85); opacity: 0.6; }
-  100% { transform: scale(1.15); opacity: 1; }
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
 }
 
 /* Top Right Moon Orb */
@@ -494,7 +552,7 @@ body.theme-lele .universe-panorama-bg {
   justify-content: center;
   align-items: center;
   gap: 2.2rem;
-  max-width: 980px;
+  max-width: 1220px;
   width: 100%;
 }
 
@@ -548,6 +606,10 @@ body.theme-lele .universe-panorama-bg {
   background: radial-gradient(circle at 50% 40%, rgba(147, 197, 253, 0.5) 0%, rgba(148, 163, 184, 0.25) 60%, transparent 100%);
 }
 
+.card-royan .card-ambient-aura {
+  background: radial-gradient(circle at 50% 40%, rgba(192, 132, 252, 0.55) 0%, rgba(147, 51, 234, 0.25) 60%, transparent 100%);
+}
+
 /* Card Arched Frame */
 .card-arch-frame {
   position: relative;
@@ -587,6 +649,12 @@ body.theme-lele .universe-panorama-bg {
   background: linear-gradient(180deg, rgba(22, 30, 52, 0.78) 0%, rgba(10, 14, 28, 0.88) 100%);
   border: 1.5px solid rgba(191, 219, 254, 0.65);
   box-shadow: 0 0 25px rgba(147, 197, 253, 0.32), 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+.card-royan .card-arch-frame {
+  background: linear-gradient(180deg, rgba(35, 18, 55, 0.78) 0%, rgba(18, 9, 30, 0.88) 100%);
+  border: 1.5px solid rgba(216, 180, 254, 0.65);
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.35), 0 15px 35px rgba(0, 0, 0, 0.6);
 }
 
 /* Card Ornament Top */
@@ -659,9 +727,17 @@ body.theme-lele .universe-panorama-bg {
   transition: color var(--transition-fast), text-shadow var(--transition-fast);
 }
 
-.card-nyanya .char-name { text-shadow: 0 0 16px rgba(192, 132, 252, 0.8); }
-.card-lala .char-name { text-shadow: 0 0 16px rgba(251, 191, 168, 0.8); }
-.card-lele .char-name { text-shadow: 0 0 16px rgba(165, 180, 252, 0.8); }
+.card-nyanya .char-name {
+  text-shadow: 0 0 16px rgba(192, 132, 252, 0.8);
+}
+
+.card-lala .char-name {
+  text-shadow: 0 0 16px rgba(251, 191, 168, 0.8);
+}
+
+.card-lele .char-name {
+  text-shadow: 0 0 16px rgba(165, 180, 252, 0.8);
+}
 
 .char-role {
   font-size: 0.78rem;
@@ -671,13 +747,37 @@ body.theme-lele .universe-panorama-bg {
   opacity: 0.9;
 }
 
-.card-nyanya .char-role { color: #d8b4fe; }
-.card-lala .char-role { color: #fed7aa; }
-.card-lele .char-role { color: #c7d2fe; }
-.card-abil .char-role { color: #bae6fd; }
-.card-akhira .char-role { color: #e9d5ff; }
-.card-ela .char-role { color: #fbcfe8; }
-.card-ruben .char-role { color: #cbd5e1; }
+.card-nyanya .char-role {
+  color: #d8b4fe;
+}
+
+.card-lala .char-role {
+  color: #fed7aa;
+}
+
+.card-lele .char-role {
+  color: #c7d2fe;
+}
+
+.card-abil .char-role {
+  color: #bae6fd;
+}
+
+.card-akhira .char-role {
+  color: #e9d5ff;
+}
+
+.card-ela .char-role {
+  color: #fbcfe8;
+}
+
+.card-ruben .char-role {
+  color: #cbd5e1;
+}
+
+.card-royan .char-role {
+  color: #e9d5ff;
+}
 
 /* Hover Effects on Cards */
 .character-card:hover {
@@ -718,6 +818,11 @@ body.theme-lele .universe-panorama-bg {
   box-shadow: 0 0 35px rgba(147, 197, 253, 0.6), 0 20px 45px rgba(0, 0, 0, 0.75);
 }
 
+.card-royan:hover .card-arch-frame {
+  border-color: #f3e8ff;
+  box-shadow: 0 0 35px rgba(192, 132, 252, 0.6), 0 20px 45px rgba(0, 0, 0, 0.75);
+}
+
 /* Selection Footer Hint */
 .selection-footer {
   text-align: center;
@@ -741,9 +846,77 @@ body.theme-lele .universe-panorama-bg {
    ========================================================================== */
 .view-login {
   flex-direction: column;
-  padding: 1.8rem 3.5rem 2.5rem;
+  padding: 1.5rem 2.5rem 2rem;
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
+  box-sizing: border-box;
+}
+
+/* Guard against scroll & gameplay elements bleed on login & selection */
+body:has(#view-login.active) {
+  overflow-x: hidden;
+}
+
+@media (min-height: 720px) {
+  body:has(#view-login.active) {
+    overflow-y: hidden;
+  }
+}
+
+body:has(#view-login.active) .kidult-hud-topleft,
+body:has(#view-login.active) .kidult-hud-topright,
+body:has(#view-login.active) .kidult-location-panel,
+body:has(#view-login.active) .kidult-decor-dock,
+body:has(#view-login.active) .universe-decor-dock,
+body:has(#view-login.active) .pinwheel-modal,
+body:has(#view-login.active) .pinwheel-subview,
+body:has(#view-login.active) .catch-modal,
+body:has(#view-login.active) .levelup-reward,
+body:has(#view-login.active) [class*="modal"]:not(.login-modal),
+body:has(#view-login.active) #pinwheel-fishing-modal,
+body:has(#view-login.active) .view-azure-palace,
+body:has(#view-selection.active) .view-azure-palace,
+body:has(#view-login.active) .view-silent-lotus,
+body:has(#view-selection.active) .view-silent-lotus,
+body:has(#view-login.active) .view-dragon-den,
+body:has(#view-selection.active) .view-dragon-den,
+body:has(#view-login.active) .view-pinwheel-haven,
+body:has(#view-selection.active) .view-pinwheel-haven,
+body:has(#view-login.active) .view-moonpetal-manor,
+body:has(#view-selection.active) .view-moonpetal-manor,
+body:has(#view-login.active) .view-fairy-atelier,
+body:has(#view-selection.active) .view-fairy-atelier,
+body:has(#view-login.active) .view-bloom-cottage,
+body:has(#view-selection.active) .view-bloom-cottage,
+body:has(#view-login.active) .view-toyou-gazebo,
+body:has(#view-selection.active) .view-toyou-gazebo,
+body:has(#view-login.active) .toyou-behind-overlay,
+body:has(#view-selection.active) .toyou-behind-overlay,
+body:has(#view-login.active) .pinwheel-behind-overlay,
+body:has(#view-selection.active) .pinwheel-behind-overlay,
+body:has(#view-login.active) .ash-behind-overlay,
+body:has(#view-selection.active) .ash-behind-overlay,
+body:has(#view-login.active) .usagain-behind-overlay,
+body:has(#view-selection.active) .usagain-behind-overlay,
+body:has(#view-login.active) .yawn-behind-overlay,
+body:has(#view-selection.active) .yawn-behind-overlay,
+body:has(#view-login.active) .kidult-behind-overlay,
+body:has(#view-selection.active) .kidult-behind-overlay,
+body:has(#view-login.active) .shadow-behind-overlay,
+body:has(#view-selection.active) .shadow-behind-overlay,
+body:has(#view-selection.active) .kidult-hud-topleft,
+body:has(#view-selection.active) .kidult-hud-topright,
+body:has(#view-selection.active) .kidult-location-panel,
+body:has(#view-selection.active) .kidult-decor-dock,
+body:has(#view-selection.active) .universe-decor-dock,
+body:has(#view-selection.active) .pinwheel-modal,
+body:has(#view-selection.active) .pinwheel-subview,
+body:has(#view-selection.active) .catch-modal,
+body:has(#view-selection.active) .levelup-reward,
+body:has(#view-selection.active) [class*="modal"]:not(.login-modal),
+body:has(#view-selection.active) #pinwheel-fishing-modal {
+  display: none !important;
 }
 
 /* Top Nav with Back Button */
@@ -838,8 +1011,15 @@ body.theme-lele .universe-panorama-bg {
 }
 
 @keyframes haloPulse {
-  0% { transform: scale(0.92); opacity: 0.7; }
-  100% { transform: scale(1.1); opacity: 0.95; }
+  0% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1.1);
+    opacity: 0.95;
+  }
 }
 
 .character-portrait-wrapper {
@@ -860,8 +1040,13 @@ body.theme-lele .universe-panorama-bg {
 }
 
 @keyframes portraitFloat {
-  0% { transform: translateY(0px); }
-  100% { transform: translateY(-8px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  100% {
+    transform: translateY(-8px);
+  }
 }
 
 .login-char-img {
@@ -888,14 +1073,44 @@ body.theme-lele .universe-panorama-bg {
   animation: floatSparkle 4s ease-in-out infinite;
 }
 
-.magic-dot.m1 { top: 15%; left: 8%; animation-delay: 0s; }
-.magic-dot.m2 { top: 35%; right: 5%; animation-delay: 1.2s; font-size: 1.4rem; }
-.magic-dot.m3 { bottom: 20%; left: 12%; animation-delay: 2.1s; }
-.magic-dot.m4 { top: 60%; right: 10%; animation-delay: 0.8s; font-size: 1.2rem; }
+.magic-dot.m1 {
+  top: 15%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.magic-dot.m2 {
+  top: 35%;
+  right: 5%;
+  animation-delay: 1.2s;
+  font-size: 1.4rem;
+}
+
+.magic-dot.m3 {
+  bottom: 20%;
+  left: 12%;
+  animation-delay: 2.1s;
+}
+
+.magic-dot.m4 {
+  top: 60%;
+  right: 10%;
+  animation-delay: 0.8s;
+  font-size: 1.2rem;
+}
 
 @keyframes floatSparkle {
-  0%, 100% { transform: translateY(0) scale(0.9); opacity: 0.4; }
-  50% { transform: translateY(-12px) scale(1.2); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateY(0) scale(0.9);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translateY(-12px) scale(1.2);
+    opacity: 1;
+  }
 }
 
 /* Glassmorphism Login Card (Right) */
@@ -1154,7 +1369,9 @@ body.theme-lele .universe-panorama-bg {
 }
 
 @keyframes spinnerRotate {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .btn-star-icon {
@@ -1164,8 +1381,13 @@ body.theme-lele .universe-panorama-bg {
 }
 
 @keyframes starSpin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Secondary Switch Action */
@@ -1274,7 +1496,8 @@ body.theme-lele .universe-panorama-bg {
   }
 
   .header-quote {
-    display: none; /* Keep header clean on mobile */
+    display: none;
+    /* Keep header clean on mobile */
   }
 
   .header-right-orb {
@@ -1645,4 +1868,3 @@ body.theme-lele .universe-panorama-bg {
     grid-template-columns: 1fr;
   }
 }
-

@@ -544,8 +544,15 @@ export function initStoriesView(callbacks = {}) {
     if (fromViewId) previousViewId = fromViewId;
     activeTab = 'library';
     
-    // Hide other full views
-    ['view-selection', 'view-login', 'view-private-universe', 'view-orbit', 'view-moments', 'view-photobooth', 'view-kidult-world', 'view-toyou-world', 'view-shadow-world', 'view-story-workspace', 'view-story-reading'].forEach((id) => {
+    // Hide other full views across all 8 universes
+    const viewsToHide = [
+      'view-selection', 'view-login', 'view-private-universe', 'view-orbit', 'view-moments',
+      'view-photobooth', 'view-kidult-world', 'view-toyou-world', 'view-shadow-world',
+      'view-pinwheel-world', 'view-yawn-world', 'view-usagain-world', 'view-ash-world',
+      'view-hot-world', 'view-story-workspace', 'view-story-reading', 'view-messages',
+      'view-games', 'view-star-messages', 'view-kotak-pos'
+    ];
+    viewsToHide.forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.classList.remove('active');
@@ -567,30 +574,25 @@ export function initStoriesView(callbacks = {}) {
       viewOurStories.setAttribute('aria-hidden', 'true');
     }
 
-    const viewKidultWorld = document.getElementById('view-kidult-world');
-    const viewToYouWorld = document.getElementById('view-toyou-world');
-    const viewShadowWorld = document.getElementById('view-shadow-world');
-    const viewPrivateUniverse = document.getElementById('view-private-universe');
-
-    if (previousViewId === 'view-kidult-world' && viewKidultWorld) {
-      viewKidultWorld.classList.add('active');
-      viewKidultWorld.setAttribute('aria-hidden', 'false');
-    } else if (previousViewId === 'view-toyou-world' && viewToYouWorld) {
-      viewToYouWorld.classList.add('active');
-      viewToYouWorld.setAttribute('aria-hidden', 'false');
-    } else if (previousViewId === 'view-shadow-world' && viewShadowWorld) {
-      viewShadowWorld.classList.add('active');
-      viewShadowWorld.setAttribute('aria-hidden', 'false');
-    } else {
-      if (viewPrivateUniverse) {
-        viewPrivateUniverse.classList.add('active');
-        viewPrivateUniverse.setAttribute('aria-hidden', 'false');
+    if (previousViewId && previousViewId !== 'view-our-stories') {
+      const prevEl = document.getElementById(previousViewId);
+      if (prevEl) {
+        prevEl.classList.add('active');
+        prevEl.setAttribute('aria-hidden', 'false');
+        if (onShowToast) onShowToast('🌌 Kembali ke Universe ✦');
+        return;
       }
-      const navButtons = document.querySelectorAll('.univ-nav-btn');
-      navButtons.forEach(b => b.classList.remove('active'));
-      const btnUniv = document.getElementById('nav-btn-universes');
-      if (btnUniv) btnUniv.classList.add('active');
     }
+
+    const viewPrivateUniverse = document.getElementById('view-private-universe');
+    if (viewPrivateUniverse) {
+      viewPrivateUniverse.classList.add('active');
+      viewPrivateUniverse.setAttribute('aria-hidden', 'false');
+    }
+    const navButtons = document.querySelectorAll('.univ-nav-btn');
+    navButtons.forEach((b) => b.classList.remove('active'));
+    const btnUniv = document.getElementById('nav-btn-universes');
+    if (btnUniv) btnUniv.classList.add('active');
 
     if (onShowToast) onShowToast('🌌 Kembali ke Universe ✦');
   }
@@ -828,7 +830,7 @@ export function initStoriesView(callbacks = {}) {
     workspaceMode = mode;
     editingStoryId = storyId;
 
-    ['view-selection', 'view-login', 'view-private-universe', 'view-orbit', 'view-moments', 'view-photobooth', 'view-kidult-world', 'view-toyou-world', 'view-shadow-world', 'view-our-stories', 'view-story-reading'].forEach((id) => {
+    ['view-selection', 'view-login', 'view-private-universe', 'view-orbit', 'view-moments', 'view-photobooth', 'view-kidult-world', 'view-toyou-world', 'view-shadow-world', 'view-pinwheel-world', 'view-yawn-world', 'view-usagain-world', 'view-ash-world', 'view-hot-world', 'view-our-stories', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.classList.remove('active');
@@ -1158,7 +1160,7 @@ export function initStoriesView(callbacks = {}) {
     readingStoryId = story.id;
     activeTab = 'reading';
 
-    ['view-selection', 'view-login', 'view-private-universe', 'view-orbit', 'view-moments', 'view-photobooth', 'view-kidult-world', 'view-toyou-world', 'view-shadow-world', 'view-our-stories', 'view-story-workspace'].forEach((id) => {
+    ['view-selection', 'view-login', 'view-private-universe', 'view-orbit', 'view-moments', 'view-photobooth', 'view-kidult-world', 'view-toyou-world', 'view-shadow-world', 'view-pinwheel-world', 'view-yawn-world', 'view-usagain-world', 'view-ash-world', 'view-hot-world', 'view-our-stories', 'view-story-workspace', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.classList.remove('active');

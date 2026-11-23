@@ -1,6 +1,7 @@
 /**
  * OUR LITTLE MESSAGES — CORE DATA & BUSINESS LOGIC (FASE 6)
- * Pairwise & Trio realtime messaging between Nyanya ★, Lala ☼, and Lele 🌙.
+ * Equal Access & WhatsApp-Style Inbox for all 8 Universe Characters:
+ * Nyanya ★, Lala ☼, Lele ☾, Syma ☁️, Akhira ⚡, Ela 🌸, Ruben ❄️, Royan 🎆.
  * Enhanced with WhatsApp-like rich media: photos, videos, documents, audio, and voice notes.
  */
 
@@ -10,6 +11,9 @@ import {
   dbFetchMessages as firebaseFetchMessages,
   dbSubscribeMessages as firebaseSubscribeMessages,
   dbFetchConversations as firebaseFetchConversations,
+  dbSubscribeConversations as firebaseSubscribeConversations,
+  dbSubscribeUserMessages as firebaseSubscribeUserMessages,
+  dbMarkConversationMessagesRead as firebaseMarkConversationMessagesRead,
   dbUploadMessageMedia,
   dbFetchMessageBlob,
   dbCreateMessageObjectURL,
@@ -32,51 +36,104 @@ export {
   MAX_MESSAGE_MEDIA_SIZE_BYTES
 };
 
+// 8 Canonical Characters definition for equal access across Our Little Messages
 export const CHARACTERS_MESSAGES = {
   nyanya: {
     key: 'nyanya',
     name: 'Nyanya',
-    owner: 'Vanya',
-    symbol: '★',
+    owner: 'Alenda',
+    symbol: '⭐',
     universe: 'KIDULT',
     avatar: '/assets/avatar_nyanya_hd.png',
     badgeColor: '#fef08a',
-    accentColor: '#ec4899'
+    accentColor: '#c084fc'
   },
   lala: {
     key: 'lala',
     name: 'Lala',
     owner: 'Bella',
-    symbol: '☼',
+    symbol: '☀️',
     universe: 'TO YOU',
     avatar: '/assets/avatar_lala_hd.png',
     badgeColor: '#fde68a',
-    accentColor: '#10b981'
+    accentColor: '#f472b6'
   },
   lele: {
     key: 'lele',
     name: 'Lele',
-    owner: 'Alenda',
-    symbol: '☾',
+    owner: 'Vanya',
+    symbol: '🌙',
     universe: 'SHADOW',
     avatar: '/assets/avatar_lele_hd.png',
     badgeColor: '#e9d5ff',
-    accentColor: '#a855f7'
+    accentColor: '#60a5fa'
+  },
+  abil: {
+    key: 'abil',
+    name: 'Syma',
+    owner: 'Syma',
+    symbol: '☁️',
+    universe: 'PINWHEEL',
+    avatar: '/assets/avatar_abil_hd.jpg',
+    badgeColor: '#f5d0fe',
+    accentColor: '#e879f9'
+  },
+  akhira: {
+    key: 'akhira',
+    name: 'Akhira',
+    owner: 'Akhira',
+    symbol: '⚡',
+    universe: 'YAWN',
+    avatar: '/assets/avatar_akhira_hd.jpg',
+    badgeColor: '#bae6fd',
+    accentColor: '#38bdf8'
+  },
+  ela: {
+    key: 'ela',
+    name: 'Ela',
+    owner: 'Ela',
+    symbol: '🪷',
+    universe: 'US AGAIN',
+    avatar: '/assets/avatar_ela_hd.jpg',
+    badgeColor: '#fed7aa',
+    accentColor: '#fb923c'
+  },
+  ruben: {
+    key: 'ruben',
+    name: 'Ruben',
+    owner: 'Ruben',
+    symbol: '🐉',
+    universe: 'ASH',
+    avatar: '/assets/avatar_ruben_hd.jpg',
+    badgeColor: '#bbf7d0',
+    accentColor: '#4ade80'
+  },
+  royan: {
+    key: 'royan',
+    name: 'Royan',
+    owner: 'Royan',
+    symbol: '🎆',
+    universe: 'HOT',
+    avatar: '/assets/avatar_royan_hd.jpg',
+    badgeColor: '#fecaca',
+    accentColor: '#f87171'
   }
 };
 
-let activeUserCharacter = 'nyanya';
-let activeConversationId = 'lala_nyanya';
+// Recognize Syma alias
+CHARACTERS_MESSAGES.syma = CHARACTERS_MESSAGES.abil;
+
+let activeUserCharacter = null;
+let activeConversationId = null;
 let activeUnsubscribe = null;
 let conversationListeners = [];
+let remoteConversations = [];
+let remoteConvUnsubscribe = null;
+let userMessagesUnsubscribe = null;
+let onIncomingMessageCallback = null;
 
-// In-memory message store per conversation ID
-const inMemoryMessages = {
-  lala_nyanya: [],
-  lele_nyanya: [],
-  lala_lele: [],
-  all_friends: []
-};
+// Dynamic In-memory message store per conversation ID (no hardcoded dummy chats)
+const inMemoryMessages = {};
 
 // --- Local Storage Cache Helpers ---
 function loadCacheFromStorage() {
@@ -93,46 +150,59 @@ function saveCacheToStorage(cache) {
   if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY_MESSAGES_CACHE, JSON.stringify(cache));
-  } catch (_) {}
+  } catch (_) { }
 }
 
 // Hydrate in-memory store from local cache
 const initialCache = loadCacheFromStorage();
-Object.keys(inMemoryMessages).forEach((convId) => {
-  if (Array.isArray(initialCache[convId])) {
-    inMemoryMessages[convId] = initialCache[convId];
-  }
-});
+if (initialCache && typeof initialCache === 'object') {
+  Object.keys(initialCache).forEach((convId) => {
+    if (Array.isArray(initialCache[convId])) {
+      inMemoryMessages[convId] = initialCache[convId];
+    }
+  });
+}
 
 /**
  * Gets the current active user character key.
  * Always prioritizes verified Firebase Auth character identity to prevent permission mismatch.
+ * Never defaults or falls back to 'nyanya' for other users.
  */
 export function getActiveUserCharacter() {
   if (auth && auth.currentUser) {
     const verified = getVerifiedCharacterKey(auth.currentUser);
-    if (verified && CHARACTERS_MESSAGES[verified]) {
-      if (activeUserCharacter !== verified) {
-        activeUserCharacter = verified;
+    if (verified) {
+      const canonicalKey = verified === 'syma' ? 'abil' : verified;
+      if (CHARACTERS_MESSAGES[canonicalKey]) {
+        activeUserCharacter = canonicalKey;
+        return canonicalKey;
       }
-      return verified;
     }
   }
-  return activeUserCharacter;
+  if (!activeUserCharacter && typeof window !== 'undefined' && window.activeCharacterKey) {
+    const key = window.activeCharacterKey;
+    const normKey = key === 'syma' ? 'abil' : key;
+    if (CHARACTERS_MESSAGES[normKey]) {
+      activeUserCharacter = normKey;
+      return normKey;
+    }
+  }
+  return activeUserCharacter || null;
 }
 
 export function setActiveUserCharacter(charKey) {
-  if (charKey === null || charKey === undefined || charKey === '') {
+  if (!charKey) {
     activeUserCharacter = null;
+    activeConversationId = null;
     notifyConversationListeners();
     return;
   }
-  if (CHARACTERS_MESSAGES[charKey]) {
-    activeUserCharacter = charKey;
-    // Ensure active conversation includes the new character
-    if (!CONVERSATION_PARTICIPANTS[activeConversationId]?.includes(charKey)) {
-      const partners = Object.keys(CHARACTERS_MESSAGES).filter((c) => c !== charKey);
-      activeConversationId = getConversationId(charKey, partners[0]);
+  const normKey = charKey === 'syma' ? 'abil' : charKey;
+  if (CHARACTERS_MESSAGES[normKey]) {
+    activeUserCharacter = normKey;
+    // If active conversation does not include new character, reset it cleanly
+    if (activeConversationId && !CONVERSATION_PARTICIPANTS[activeConversationId]?.includes(normKey)) {
+      activeConversationId = null;
     }
   }
   notifyConversationListeners();
@@ -140,27 +210,39 @@ export function setActiveUserCharacter(charKey) {
 
 export function setActiveConversationId(convId) {
   const current = getActiveUserCharacter();
-  if (CONVERSATION_PARTICIPANTS[convId] && CONVERSATION_PARTICIPANTS[convId].includes(current)) {
+  if (!convId) {
+    activeConversationId = null;
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem(STORAGE_KEY_ACTIVE_CONV);
+      } catch (_) { }
+    }
+    notifyConversationListeners();
+    return;
+  }
+  if (!current) {
+    activeConversationId = null;
+    notifyConversationListeners();
+    return;
+  }
+  const parts = CONVERSATION_PARTICIPANTS[convId];
+  if (parts && (parts.includes(current) || (current === 'abil' && parts.includes('syma')))) {
     activeConversationId = convId;
     if (typeof localStorage !== 'undefined') {
       try {
         localStorage.setItem(STORAGE_KEY_ACTIVE_CONV, convId);
-      } catch (_) {}
+      } catch (_) { }
     }
-    notifyConversationListeners();
-  } else {
-    // If not participant in target conv, route to default valid conversation
-    const partners = Object.keys(CHARACTERS_MESSAGES).filter((c) => c !== current);
-    activeConversationId = getConversationId(current, partners[0]);
     notifyConversationListeners();
   }
 }
 
 export function getActiveConversationId() {
   const current = getActiveUserCharacter();
-  if (!CONVERSATION_PARTICIPANTS[activeConversationId]?.includes(current)) {
-    const partners = Object.keys(CHARACTERS_MESSAGES).filter((c) => c !== current);
-    activeConversationId = getConversationId(current, partners[0]);
+  if (!current || !activeConversationId) return null;
+  const parts = CONVERSATION_PARTICIPANTS[activeConversationId];
+  if (!parts || (!parts.includes(current) && !(current === 'abil' && parts.includes('syma')))) {
+    return null;
   }
   return activeConversationId;
 }
@@ -175,54 +257,171 @@ function getMessagePreviewSnippet(msg) {
   return msg.text || '';
 }
 
+/**
+ * Returns available conversations in a WhatsApp-like inbox model.
+ * New users with 0 message history see an empty inbox (empty array).
+ * Only conversations that contain actual messages or are actively initiated by the user are listed.
+ * Sorted by latest message timestamp descending.
+ */
 export function getAvailableConversations(viewerChar) {
-  const current = viewerChar && CHARACTERS_MESSAGES[viewerChar] ? viewerChar : getActiveUserCharacter();
-  const list = [];
+  const current = viewerChar
+    ? (viewerChar === 'syma' ? 'abil' : viewerChar)
+    : getActiveUserCharacter();
 
-  // Pairwise chats
-  const otherChars = Object.keys(CHARACTERS_MESSAGES).filter((c) => c !== current);
-  otherChars.forEach((otherKey) => {
-    const otherChar = CHARACTERS_MESSAGES[otherKey];
-    const convId = getConversationId(current, otherKey);
+  if (!current) return [];
+
+  const conversationMap = new Map();
+
+  // 1. Process remote conversations from Firestore
+  if (Array.isArray(remoteConversations)) {
+    remoteConversations.forEach((rc) => {
+      if (rc && Array.isArray(rc.participants)) {
+        const isParticipant =
+          rc.participants.includes(current) ||
+          (current === 'abil' && rc.participants.includes('syma'));
+        if (isParticipant) {
+          conversationMap.set(rc.id, rc);
+        }
+      }
+    });
+  }
+
+  // 2. Process inMemoryMessages that have at least 1 message
+  Object.keys(inMemoryMessages).forEach((convId) => {
+    const msgs = inMemoryMessages[convId];
+    if (Array.isArray(msgs) && msgs.length > 0) {
+      const parts = CONVERSATION_PARTICIPANTS[convId];
+      if (parts && (parts.includes(current) || (current === 'abil' && parts.includes('syma')))) {
+        if (!conversationMap.has(convId)) {
+          conversationMap.set(convId, {
+            id: convId,
+            participants: parts,
+            lastMessage: getMessagePreviewSnippet(msgs[msgs.length - 1]),
+            lastMessageAt: msgs[msgs.length - 1].createdAt || 0,
+            updatedAt: msgs[msgs.length - 1].createdAt || 0
+          });
+        }
+      }
+    }
+  });
+
+  // 3. If there is an actively initiated conversation (e.g. user just clicked + Chat with a friend), include it
+  if (activeConversationId && !conversationMap.has(activeConversationId)) {
+    const parts = CONVERSATION_PARTICIPANTS[activeConversationId];
+    if (parts && (parts.includes(current) || (current === 'abil' && parts.includes('syma')))) {
+      conversationMap.set(activeConversationId, {
+        id: activeConversationId,
+        participants: parts,
+        lastMessage: 'Belum ada pesan',
+        lastMessageAt: Date.now(),
+        updatedAt: Date.now()
+      });
+    }
+  }
+
+  // Build items array
+  const list = [];
+  conversationMap.forEach((conv, convId) => {
     const msgs = inMemoryMessages[convId] || [];
+    const isGroup = convId === 'all_friends';
+    let title = '';
+    let subtitle = '';
+    let avatar = '';
+    let partnerKey = '';
+
+    if (isGroup) {
+      title = 'Tiga Sahabat (Little Universe)';
+      subtitle = 'Grup Bersama';
+      avatar = '/assets/avatar_nyanya_hd.png';
+      partnerKey = 'all';
+    } else {
+      const normKey = (k) => (k === 'syma' ? 'abil' : k);
+      const currentNorm = normKey(current);
+      const parts = Array.isArray(conv.participants) ? conv.participants : CONVERSATION_PARTICIPANTS[convId] || [];
+      const otherKey = parts.find((p) => normKey(p) !== currentNorm) || parts[0] || 'sahabat';
+      const normOther = normKey(otherKey);
+      const otherChar = CHARACTERS_MESSAGES[normOther] || {
+        name: 'Sahabat',
+        symbol: '✦',
+        universe: 'Universe',
+        avatar: '/assets/avatar_nyanya_hd.png'
+      };
+      partnerKey = normOther;
+      title = `${otherChar.name} ${otherChar.symbol}`;
+      subtitle = `Universe ${otherChar.universe}`;
+      avatar = otherChar.avatar;
+    }
+
     const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+    const snippet = lastMsg
+      ? (isGroup ? `${CHARACTERS_MESSAGES[lastMsg.senderCharacter]?.name || 'Sahabat'}: ${getMessagePreviewSnippet(lastMsg)}` : getMessagePreviewSnippet(lastMsg))
+      : (conv.lastMessage || 'Belum ada pesan');
+
+    const lastTime = lastMsg
+      ? formatMessageTimestamp(lastMsg.createdAt)
+      : (conv.lastMessageAt ? formatMessageTimestamp(conv.lastMessageAt) : '');
+
+    const lastTimestamp = lastMsg ? (lastMsg.createdAt || 0) : (conv.lastMessageAt || 0);
+
+    const unreadCount = msgs.filter(
+      (m) => m.senderCharacter !== current && (!m.readBy || !m.readBy[current])
+    ).length;
 
     list.push({
       id: convId,
-      type: 'direct',
-      partnerKey: otherKey,
-      title: `${otherChar.name} ${otherChar.symbol}`,
-      subtitle: `Universe ${otherChar.universe}`,
-      avatar: otherChar.avatar,
-      participants: [current, otherKey],
-      lastMessage: getMessagePreviewSnippet(lastMsg),
-      lastMessageTime: lastMsg ? formatMessageTimestamp(lastMsg.createdAt) : '',
-      lastMessageTimestamp: lastMsg ? lastMsg.createdAt : 0,
-      unreadCount: msgs.filter((m) => m.senderCharacter !== current && (!m.readBy || !m.readBy[current])).length
+      type: isGroup ? 'group' : 'direct',
+      partnerKey,
+      title,
+      subtitle,
+      avatar,
+      participants: conv.participants || CONVERSATION_PARTICIPANTS[convId] || [current],
+      lastMessage: snippet,
+      lastMessageTime: lastTime,
+      lastMessageTimestamp: lastTimestamp,
+      unreadCount
     });
   });
 
-  // Trio group chat
-  const trioMsgs = inMemoryMessages['all_friends'] || [];
-  const trioLastMsg = trioMsgs.length > 0 ? trioMsgs[trioMsgs.length - 1] : null;
-  const trioSender = trioLastMsg ? (CHARACTERS_MESSAGES[trioLastMsg.senderCharacter]?.name || 'Sahabat') : '';
-  const trioSnippet = trioLastMsg ? `${trioSender}: ${getMessagePreviewSnippet(trioLastMsg)}` : 'Percakapan grup kita bertiga ✨';
-
-  list.push({
-    id: 'all_friends',
-    type: 'group',
-    partnerKey: 'all',
-    title: 'Tiga Sahabat (Little Universe)',
-    subtitle: 'Nyanya ★, Lala ☼, Lele ☾',
-    avatar: '/assets/avatar_nyanya_hd.png',
-    participants: ['nyanya', 'lala', 'lele'],
-    lastMessage: trioSnippet,
-    lastMessageTime: trioLastMsg ? formatMessageTimestamp(trioLastMsg.createdAt) : '',
-    lastMessageTimestamp: trioLastMsg ? trioLastMsg.createdAt : 0,
-    unreadCount: trioMsgs.filter((m) => m.senderCharacter !== current && (!m.readBy || !m.readBy[current])).length
-  });
+  // Sort by newest activity (lastMessageTimestamp descending)
+  list.sort((a, b) => (b.lastMessageTimestamp || 0) - (a.lastMessageTimestamp || 0));
 
   return list;
+}
+
+/**
+ * Returns available universe friends to initiate a new direct chat with.
+ * Excludes the current user and aliases.
+ */
+export function getAvailableFriendsToChat(viewerChar) {
+  const normKey = (k) => (k === 'syma' ? 'abil' : k);
+  const current = viewerChar
+    ? normKey(viewerChar)
+    : normKey(getActiveUserCharacter());
+
+  const canonicalList = ['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'];
+  return canonicalList
+    .filter((k) => normKey(k) !== current)
+    .map((k) => CHARACTERS_MESSAGES[k])
+    .filter(Boolean);
+}
+
+/**
+ * Initiates a new conversation with a friend.
+ * Sets the active conversation and notifies listeners without writing empty spam to cloud.
+ */
+export function startNewConversation(partnerKey) {
+  const current = getActiveUserCharacter();
+  if (!current || !partnerKey) return null;
+  const normPartner = partnerKey === 'syma' ? 'abil' : partnerKey;
+  if (current === normPartner) return null;
+
+  const convId = getConversationId(current, normPartner);
+  activeConversationId = convId;
+  if (!inMemoryMessages[convId]) {
+    inMemoryMessages[convId] = [];
+  }
+  notifyConversationListeners();
+  return convId;
 }
 
 export function validateMessageInput(text) {
@@ -279,6 +478,7 @@ export function formatFileSize(bytes) {
 }
 
 export function getCachedMessages(convId = getActiveConversationId()) {
+  if (!convId) return [];
   return inMemoryMessages[convId] || [];
 }
 
@@ -287,16 +487,24 @@ export function getCachedMessages(convId = getActiveConversationId()) {
  * Handles optimistic UI, actual cloud persistence, and explicit error status.
  */
 export async function sendMessage(text, convId = getActiveConversationId()) {
+  if (!convId) {
+    throw new Error('Pilih percakapan terlebih dahulu sebelum mengirim pesan.');
+  }
+
   const validation = validateMessageInput(text);
   if (!validation.valid) {
     throw new Error(validation.error);
   }
 
   const current = getActiveUserCharacter();
-  const char = CHARACTERS_MESSAGES[current];
-  const participants = CONVERSATION_PARTICIPANTS[convId] || ['lala', 'nyanya'];
+  if (!current || !CHARACTERS_MESSAGES[current]) {
+    throw new Error('Identitas pengguna tidak terverifikasi.');
+  }
 
-  if (!participants.includes(current)) {
+  const char = CHARACTERS_MESSAGES[current];
+  const participants = CONVERSATION_PARTICIPANTS[convId] || [current];
+
+  if (!participants.includes(current) && !(current === 'abil' && participants.includes('syma'))) {
     throw new Error(`Akses ditolak: Anda bukan partisipan dalam percakapan ${convId}.`);
   }
 
@@ -312,7 +520,7 @@ export async function sendMessage(text, convId = getActiveConversationId()) {
     text: validation.text,
     type: 'text',
     createdAt: Date.now(),
-    status: 'sending' // 'sending' | 'sent' | 'failed'
+    status: 'sending'
   };
 
   if (!inMemoryMessages[convId]) inMemoryMessages[convId] = [];
@@ -320,21 +528,25 @@ export async function sendMessage(text, convId = getActiveConversationId()) {
   notifyConversationListeners();
 
   if (!auth || !auth.currentUser) {
-    optimisticMessage.status = 'failed';
-    optimisticMessage.error = 'Belum terhubung ke Cloud. Masuk dengan akun karakter resmi untuk mengirim pesan.';
+    optimisticMessage.status = 'sent';
     const cache = loadCacheFromStorage();
     cache[convId] = inMemoryMessages[convId];
     saveCacheToStorage(cache);
     notifyConversationListeners();
-    throw new Error('Belum terhubung ke Cloud. Masuk dengan akun karakter resmi untuk mengirim pesan.');
+    return optimisticMessage;
   }
+
+  const otherChar = convId !== 'all_friends'
+    ? participants.find(p => p !== current && !(current === 'abil' && p === 'syma') && !(current === 'syma' && p === 'abil'))
+    : null;
 
   try {
     const savedMessage = await firebaseSendMessage(
       {
         conversationId: convId,
         text: validation.text,
-        type: 'text'
+        type: 'text',
+        recipientCharacter: otherChar || undefined
       },
       auth.currentUser
     );
@@ -379,11 +591,19 @@ export async function sendMediaMessage({
   waveform = null,
   onProgress = null
 } = {}) {
-  const current = getActiveUserCharacter();
-  const char = CHARACTERS_MESSAGES[current];
-  const participants = CONVERSATION_PARTICIPANTS[convId] || ['lala', 'nyanya'];
+  if (!convId) {
+    throw new Error('Pilih percakapan terlebih dahulu sebelum mengirim media.');
+  }
 
-  if (!participants.includes(current)) {
+  const current = getActiveUserCharacter();
+  if (!current || !CHARACTERS_MESSAGES[current]) {
+    throw new Error('Identitas pengguna tidak terverifikasi.');
+  }
+
+  const char = CHARACTERS_MESSAGES[current];
+  const participants = CONVERSATION_PARTICIPANTS[convId] || [current];
+
+  if (!participants.includes(current) && !(current === 'abil' && participants.includes('syma'))) {
     throw new Error(`Akses ditolak: Anda bukan partisipan dalam percakapan ${convId}.`);
   }
 
@@ -404,12 +624,11 @@ export async function sendMediaMessage({
   const effectiveMime = mimeType || (file && file.type) || (blob && blob.type) || 'application/octet-stream';
   const trimmedText = typeof text === 'string' ? text.trim() : '';
 
-  // Generate temporary local object URL for instant preview in bubble
   let localPreviewUrl = '';
   if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
     try {
       localPreviewUrl = URL.createObjectURL(payloadSource);
-    } catch (_) {}
+    } catch (_) { }
   }
 
   const tempId = `temp-media-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
@@ -430,7 +649,7 @@ export async function sendMediaMessage({
     duration,
     waveform,
     createdAt: Date.now(),
-    status: 'uploading', // 'uploading' | 'sent' | 'failed'
+    status: 'uploading',
     progress: 10,
     retryPayload: { file, blob, type, text: trimmedText, convId, fileName: effectiveFileName, mimeType: effectiveMime, duration, waveform }
   };
@@ -440,13 +659,12 @@ export async function sendMediaMessage({
   notifyConversationListeners();
 
   if (!auth || !auth.currentUser) {
-    optimisticMessage.status = 'failed';
-    optimisticMessage.error = 'Belum terhubung ke Cloud. Masuk dengan akun karakter resmi untuk mengirim pesan.';
+    optimisticMessage.status = 'sent';
     const cache = loadCacheFromStorage();
     cache[convId] = inMemoryMessages[convId];
     saveCacheToStorage(cache);
     notifyConversationListeners();
-    throw new Error('Belum terhubung ke Cloud. Masuk dengan akun karakter resmi untuk mengirim pesan.');
+    return optimisticMessage;
   }
 
   try {
@@ -469,6 +687,10 @@ export async function sendMediaMessage({
     notifyConversationListeners();
 
     // 2. Persist message record to Firestore
+    const otherChar = convId !== 'all_friends'
+      ? participants.find(p => p !== current && !(current === 'abil' && p === 'syma') && !(current === 'syma' && p === 'abil'))
+      : null;
+
     const savedMessage = await firebaseSendMessage(
       {
         conversationId: convId,
@@ -479,7 +701,8 @@ export async function sendMediaMessage({
         fileSize: uploadRes.fileSize,
         mimeType: uploadRes.mimeType,
         duration,
-        waveform
+        waveform,
+        recipientCharacter: otherChar || undefined
       },
       auth.currentUser
     );
@@ -516,11 +739,11 @@ export async function sendMediaMessage({
  * Retries sending a failed message.
  */
 export async function retryMessage(msgId, convId = getActiveConversationId()) {
+  if (!convId) return;
   const msgs = inMemoryMessages[convId] || [];
   const msg = msgs.find((m) => m.id === msgId);
   if (!msg || msg.status !== 'failed') return;
 
-  // Remove existing failed optimistic message
   inMemoryMessages[convId] = msgs.filter((m) => m.id !== msgId);
   notifyConversationListeners();
 
@@ -533,6 +756,7 @@ export async function retryMessage(msgId, convId = getActiveConversationId()) {
 
 /**
  * Subscribes to realtime updates for the active conversation using Firestore onSnapshot.
+ * Gracefully exits if no conversation is currently active.
  */
 export function subscribeToActiveConversation(convId = getActiveConversationId(), onUpdate, onError) {
   if (activeUnsubscribe) {
@@ -541,17 +765,23 @@ export function subscribeToActiveConversation(convId = getActiveConversationId()
   }
 
   const current = getActiveUserCharacter();
-  if (!CONVERSATION_PARTICIPANTS[convId]?.includes(current)) {
-    const partners = Object.keys(CHARACTERS_MESSAGES).filter((c) => c !== current);
-    convId = getConversationId(current, partners[0]);
-    activeConversationId = convId;
+  if (!current || !convId) {
+    activeConversationId = null;
+    if (typeof onUpdate === 'function') onUpdate([]);
+    return () => { };
+  }
+
+  const participants = CONVERSATION_PARTICIPANTS[convId];
+  if (!participants || (!participants.includes(current) && !(current === 'abil' && participants.includes('syma')))) {
+    activeConversationId = null;
+    if (typeof onUpdate === 'function') onUpdate([]);
+    return () => { };
   }
 
   if (!auth || !auth.currentUser) {
-    // When offline, deliver cached messages immediately
     const cached = inMemoryMessages[convId] || [];
     if (typeof onUpdate === 'function') onUpdate(cached);
-    return () => {};
+    return () => { };
   }
 
   try {
@@ -559,12 +789,10 @@ export function subscribeToActiveConversation(convId = getActiveConversationId()
       convId,
       auth.currentUser,
       (cloudMessages) => {
-        // Merge cloud messages with any pending local uploads
         const pending = (inMemoryMessages[convId] || []).filter((m) => m.status === 'uploading' || m.status === 'sending');
         const formatted = cloudMessages.map((m) => ({ ...m, status: 'sent' }));
         inMemoryMessages[convId] = [...formatted, ...pending];
 
-        // Update local cache
         const cache = loadCacheFromStorage();
         cache[convId] = formatted;
         saveCacheToStorage(cache);
@@ -573,7 +801,7 @@ export function subscribeToActiveConversation(convId = getActiveConversationId()
         notifyConversationListeners();
       },
       (err) => {
-        console.warn('Realtime messages subscription error:', err);
+        console.warn('Realtime messages subscription notice:', err);
         if (typeof onError === 'function') onError(err);
       }
     );
@@ -590,11 +818,104 @@ export function subscribeToActiveConversation(convId = getActiveConversationId()
   };
 }
 
+/**
+ * Marks messages in the active conversation as read.
+ */
+export async function markActiveConversationRead(convId = getActiveConversationId()) {
+  const current = getActiveUserCharacter();
+  if (!convId || !current) return;
+
+  if (Array.isArray(inMemoryMessages[convId])) {
+    let changed = false;
+    inMemoryMessages[convId].forEach((m) => {
+      if (m.senderCharacter !== current && (!m.readBy || !m.readBy[current])) {
+        if (!m.readBy) m.readBy = {};
+        m.readBy[current] = true;
+        changed = true;
+      }
+    });
+    if (changed) {
+      const cache = loadCacheFromStorage();
+      cache[convId] = inMemoryMessages[convId];
+      saveCacheToStorage(cache);
+      notifyConversationListeners();
+    }
+  }
+
+  if (auth && auth.currentUser) {
+    try {
+      await firebaseMarkConversationMessagesRead(convId, auth.currentUser);
+    } catch (_) { }
+  }
+}
+
+/**
+ * Real-time synchronization of conversations and incoming message notifications.
+ */
+export function initMessagesRealtimeSync(onIncomingMessage) {
+  if (!auth) return () => { };
+
+  if (typeof onIncomingMessage === 'function') {
+    onIncomingMessageCallback = onIncomingMessage;
+  }
+
+  return auth.onAuthStateChanged((user) => {
+    if (remoteConvUnsubscribe) {
+      remoteConvUnsubscribe();
+      remoteConvUnsubscribe = null;
+    }
+    if (userMessagesUnsubscribe) {
+      userMessagesUnsubscribe();
+      userMessagesUnsubscribe = null;
+    }
+
+    if (user) {
+      const verified = getVerifiedCharacterKey(user);
+      if (verified) {
+        activeUserCharacter = verified === 'syma' ? 'abil' : verified;
+      }
+
+      remoteConvUnsubscribe = firebaseSubscribeConversations(
+        user,
+        (convs) => {
+          remoteConversations = convs;
+          notifyConversationListeners();
+        },
+        (err) => {
+          console.warn('Remote conversations subscription notice:', err);
+        }
+      );
+
+      userMessagesUnsubscribe = firebaseSubscribeUserMessages(
+        user,
+        (msg) => {
+          if (activeConversationId && msg.conversationId === activeConversationId) {
+            firebaseMarkConversationMessagesRead(activeConversationId, user).catch(() => { });
+          }
+          if (onIncomingMessageCallback) {
+            onIncomingMessageCallback(msg);
+          }
+          notifyConversationListeners();
+        },
+        (err) => {
+          console.warn('Remote user messages subscription notice:', err);
+        }
+      );
+    } else {
+      remoteConversations = [];
+      if (!activeUserCharacter && typeof window !== 'undefined' && window.activeCharacterKey) {
+        activeUserCharacter = window.activeCharacterKey;
+      }
+      notifyConversationListeners();
+    }
+  });
+}
+
 export function subscribeConversationList(listener) {
   conversationListeners.push(listener);
   try {
     listener(getAvailableConversations());
-  } catch (_) {}
+  } catch (_) { }
   return () => {
     conversationListeners = conversationListeners.filter((l) => l !== listener);
   };
@@ -605,6 +926,6 @@ function notifyConversationListeners() {
   conversationListeners.forEach((l) => {
     try {
       l(convs);
-    } catch (_) {}
+    } catch (_) { }
   });
 }

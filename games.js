@@ -1,7 +1,7 @@
 /**
- * OUR LITTLE UNIVERSE — GAMES CORE MODULE (FASE 7)
- * Going Seventeen Zone: 4 Interactive Games for Nyanya ★, Lala ☼, and Lele 🌙.
- */
+* OUR LITTLE UNIVERSE — GAMES CORE MODULE (FASE 7)
+* Going Seventeen Zone: 4 Interactive Games for Nyanya ★, Lala ☼, and Lele 🌙.
+*/
 
 import {
   auth,
@@ -297,7 +297,7 @@ function saveGamesCacheToStorage(records) {
   if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY_GAMES_CACHE, JSON.stringify(records));
-  } catch (_) {}
+  } catch (_) { }
 }
 
 function loadMissionsCacheFromStorage() {
@@ -314,7 +314,7 @@ function saveMissionsCacheToStorage(progress) {
   if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY_MISSIONS_CACHE, JSON.stringify(progress));
-  } catch (_) {}
+  } catch (_) { }
 }
 
 // Hydrate caches
@@ -344,7 +344,7 @@ export function subscribeGameChanges(listener) {
       gameListeners = gameListeners.filter(l => l !== listener);
     };
   }
-  return () => {};
+  return () => { };
 }
 
 function notifyGameListeners() {

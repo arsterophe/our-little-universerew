@@ -30,8 +30,8 @@ const indexHtml = fs.readFileSync(path.resolve('./index.html'), 'utf-8');
 
 // Check KIDULT
 assert(
-  indexHtml.includes('id="btn-kidult-return-univ"') && indexHtml.includes('id="btn-kidult-back-bottom"'),
-  'KIDULT memiliki tombol navigasi di HUD atas dan di bawah'
+  indexHtml.includes('id="btn-kidult-return-univ"') && !indexHtml.includes('id="btn-kidult-back-bottom"'),
+  'KIDULT memiliki tombol navigasi di HUD atas dan tombol duplikat di bawah sudah dihapus'
 );
 assert(
   indexHtml.includes('kidult-return-pill') && indexHtml.includes('Pergi ke Universe'),
@@ -40,11 +40,11 @@ assert(
 
 // Check TO YOU
 assert(
-  indexHtml.includes('id="btn-toyou-top-return"') && indexHtml.includes('id="btn-toyou-back"'),
-  'TO YOU memiliki tombol navigasi di HUD atas dan di bawah'
+  indexHtml.includes('id="btn-toyou-top-return"') && !indexHtml.includes('id="btn-toyou-back"'),
+  'TO YOU memiliki tombol navigasi di HUD atas dan tombol duplikat di bawah sudah dihapus'
 );
 assert(
-  indexHtml.includes('toyou-return-pill') && indexHtml.includes('toyou-back-btn'),
+  indexHtml.includes('toyou-return-pill') && indexHtml.includes('Pergi ke Universe'),
   'TO YOU memiliki tombol dengan label "Pergi ke Universe" dan ikon 🌌'
 );
 
@@ -100,7 +100,7 @@ function createMockEl(id, className = '') {
     },
     click() {
       if (this.listeners['click']) {
-        this.listeners['click'].forEach(fn => fn({ preventDefault: () => {}, stopPropagation: () => {} }));
+        this.listeners['click'].forEach(fn => fn({ preventDefault: () => { }, stopPropagation: () => { } }));
       }
     },
     querySelector(sel) {
@@ -168,7 +168,7 @@ global.document = {
     return [];
   },
   createElement: (tag) => createMockEl('elem-' + Math.random(), tag),
-  addEventListener: () => {}
+  addEventListener: () => { }
 };
 
 global.window = {
@@ -176,15 +176,15 @@ global.window = {
   innerHeight: 800,
   matchMedia: () => ({ matches: false }),
   requestAnimationFrame: (cb) => setTimeout(cb, 1),
-  addEventListener: () => {},
-  removeEventListener: () => {}
+  addEventListener: () => { },
+  removeEventListener: () => { }
 };
 
 // Initialize Controller
 let lastToast = '';
 const controller = initUniversesView({
   onShowToast: (msg) => { lastToast = msg; },
-  onTriggerSparkle: () => {}
+  onTriggerSparkle: () => { }
 });
 
 console.log('\n--- UJI ALUR PENGGUNA 1: LOGIN NYANYA ---');
@@ -251,7 +251,7 @@ assert(cardShadow.classList.contains('is-my-universe'), 'Badge MY UNIVERSE pada 
 assert(userGreetingEl.textContent === 'Hello, Lele', 'Identitas login Lele tetap bertahan');
 
 console.log('\n================================================================');
-console.log(`HASIL AKHIR: ${passed}/${total} PENGUJIAN BERHASIL (${Math.round((passed/total)*100)}%)`);
+console.log(`HASIL AKHIR: ${passed}/${total} PENGUJIAN BERHASIL (${Math.round((passed / total) * 100)}%)`);
 console.log('================================================================');
 
 if (passed === total) {

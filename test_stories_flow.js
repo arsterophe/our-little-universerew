@@ -108,19 +108,26 @@ assert(publishNyanyaRes.success === true, 'Karya Nyanya berhasil dipublikasikan'
 assert(getPublishedStories().length === 1, 'Nyanya melihat 1 karya published miliknya sendiri');
 
 console.log('\n================================================================');
-console.log('3. TEST: ISOLASI DATA — KARYA NYANYA TIDAK BOCOR KE LALA & LELE');
+console.log('3. TEST: PRIVASI DRAFT — DRAFT NYANYA TIDAK BOCOR KE LALA & LELE');
 console.log('================================================================');
+// Unpublish sementara untuk menguji isolasi draft murni
+unpublishStory(nyanyaDraftRes.story.id, 'nyanya');
+
 setActiveUserCharacter('lala');
 assert(getActiveUserUid() === CHARACTERS_STORIES.lala.uid, 'UID aktif cocok dengan UID Lala');
-assert(getPublishedStories().length === 0, 'Our Stories Lala kosong (cerita Nyanya TIDAK muncul di akun Lala)');
+assert(getPublishedStories().length === 0, 'Our Stories Lala kosong saat karya Nyanya berstatus draft');
 assert(getAuthorStories('lala').length === 0, 'Karya Saya Lala kosong');
-assert(getStoryById(nyanyaDraftRes.story.id, 'lala') === null, 'Lala DITOLAK membaca cerita milik Nyanya');
+assert(getStoryById(nyanyaDraftRes.story.id, 'lala') === null, 'Lala DITOLAK membaca draft milik Nyanya');
 
 setActiveUserCharacter('lele');
 assert(getActiveUserUid() === CHARACTERS_STORIES.lele.uid, 'UID aktif cocok dengan UID Lele');
-assert(getPublishedStories().length === 0, 'Our Stories Lele kosong (cerita Nyanya TIDAK muncul di akun Lele)');
+assert(getPublishedStories().length === 0, 'Our Stories Lele kosong saat karya Nyanya berstatus draft');
 assert(getAuthorStories('lele').length === 0, 'Karya Saya Lele kosong');
-assert(getStoryById(nyanyaDraftRes.story.id, 'lele') === null, 'Lele DITOLAK membaca cerita milik Nyanya');
+assert(getStoryById(nyanyaDraftRes.story.id, 'lele') === null, 'Lele DITOLAK membaca draft milik Nyanya');
+
+// Publikasikan kembali karya Nyanya
+setActiveUserCharacter('nyanya');
+publishStory(nyanyaDraftRes.story.id, 'nyanya');
 
 console.log('\n================================================================');
 console.log('4. TEST: LALA MEMBUAT & MEMUBLIKASIKAN CERITA DI TO YOU');
@@ -140,7 +147,7 @@ const lalaNovelRes = createStory({
 assert(lalaNovelRes.success === true, 'Lala berhasil membuat dan memublikasikan novel');
 assert(lalaNovelRes.story.authorUid === CHARACTERS_STORIES.lala.uid, 'authorUid karya Lala tercatat dengan UID Lala');
 assert(lalaNovelRes.story.universeName === 'TO YOU', 'Universe karya Lala tercatat TO YOU');
-assert(getPublishedStories().length === 1 && getPublishedStories()[0].id === lalaNovelRes.story.id, 'Our Stories Lala hanya menampilkan karya milik Lala');
+assert(getAuthorStories('lala').length === 1 && getAuthorStories('lala')[0].id === lalaNovelRes.story.id, 'Karya Saya Lala hanya menampilkan karya milik Lala');
 
 console.log('\n================================================================');
 console.log('5. TEST: LELE MEMBUAT DUA CERITA ("Seandainya" & CERPEN SHADOW)');
@@ -172,21 +179,21 @@ assert(leleStory1Res.success === true && leleStory2Res.success === true, 'Lele b
 assert(leleStory1Res.story.authorUid === CHARACTERS_STORIES.lele.uid, 'Cerita "Seandainya" terikat ke UID Lele');
 assert(leleStory1Res.story.authorName === 'Lele' && leleStory1Res.story.universeName === 'SHADOW', 'Metadata penulis cerita Lele tercatat "Lele" / "SHADOW"');
 
-const lelePublished = getPublishedStories();
-assert(lelePublished.length === 2, 'Our Stories Lele menampilkan tepat 2 cerita milik Lele');
-assert(lelePublished.every((s) => isStoryOwnedBy(s, 'lele')), 'Seluruh cerita di Our Stories Lele benar-benar dimiliki oleh UID Lele');
+const lelePublished = getPublishedStories({ universe: 'shadow' });
+assert(lelePublished.length === 2, 'Filter universe SHADOW menampilkan tepat 2 cerita milik Lele');
+assert(lelePublished.every((s) => isStoryOwnedBy(s, 'lele')), 'Seluruh cerita di universe SHADOW benar-benar dimiliki oleh UID Lele');
 assert(getAuthorStories('lele').length === 2, 'Karya Saya Lele menampilkan 2 cerita milik Lele');
 
-// Pastikan Nyanya & Lala TIDAK melihat kedua cerita Lele
+// Pastikan di Our Stories publik, semua cerita Published dapat dibaca
 setActiveUserCharacter('nyanya');
 const nyanyaPublished = getPublishedStories();
-assert(nyanyaPublished.length === 1 && nyanyaPublished[0].title === 'Catatan Senja di Atap Menara Lavender', 'Our Stories Nyanya hanya berisi cerita Nyanya');
-assert(nyanyaPublished.some((s) => s.title === 'Seandainya') === false, 'Cerita "Seandainya" milik Lele TIDAK muncul di akun Nyanya');
+assert(nyanyaPublished.length === 4, 'Our Stories publik memuat seluruh karya published');
+assert(getStoryById(leleStory1Res.story.id, 'nyanya') !== null, 'Nyanya DAPAT membaca cerita published "Seandainya" milik Lele');
 
 setActiveUserCharacter('lala');
 const lalaPublished = getPublishedStories();
-assert(lalaPublished.length === 1 && lalaPublished[0].title === 'Matahari di Ujung Hutan Peri', 'Our Stories Lala hanya berisi cerita Lala');
-assert(lalaPublished.some((s) => s.title === 'Seandainya') === false, 'Cerita "Seandainya" milik Lele TIDAK muncul di akun Lala');
+assert(lalaPublished.length === 4, 'Our Stories publik memuat seluruh karya published untuk Lala');
+assert(getStoryById(leleStory1Res.story.id, 'lala') !== null, 'Lala DAPAT membaca cerita published "Seandainya" milik Lele');
 
 console.log('\n================================================================');
 console.log('6. TEST: HYDRATION DATA FIRESTORE (TANPA FALLBACK NYANYA)');
@@ -225,7 +232,7 @@ const filterShadow = getPublishedStories({ universe: 'shadow' });
 assert(filterShadow.length === 2, 'Filter universe SHADOW mengembalikan kedua karya Lele');
 
 const filterKidultOnLele = getPublishedStories({ universe: 'kidult' });
-assert(filterKidultOnLele.length === 0, 'Filter KIDULT di akun Lele kosong karena cerita Nyanya terisolasi');
+assert(filterKidultOnLele.length === 1 && filterKidultOnLele[0].authorId === 'nyanya', 'Filter KIDULT di Our Stories menampilkan karya published Nyanya');
 
 console.log('\n================================================================');
 console.log('8. TEST: OTORISASI & KEAMANAN AKSES');
@@ -257,7 +264,7 @@ assert(nyanyaEditsOwn.success === true && nyanyaEditsOwn.story.title.includes('E
 
 const unpublishRes = unpublishStory(nyanyaDraftRes.story.id, 'nyanya');
 assert(unpublishRes.success === true && unpublishRes.story.status === 'draft', 'Nyanya DIIZINKAN unpublish karyanya sendiri');
-assert(getPublishedStories().length === 0, 'Karya yang di-unpublish hilang dari daftar published Nyanya');
+assert(getPublishedStories().some((s) => s.id === nyanyaDraftRes.story.id) === false, 'Karya yang di-unpublish hilang dari daftar published');
 
 // Publish kembali agar siap diuji saat logout -> re-login
 publishStory(nyanyaDraftRes.story.id, 'nyanya');
@@ -270,20 +277,20 @@ assert(getActiveUserCharacter() === null, 'Logout membersihkan karakter aktif me
 assert(getPublishedStories().length === 0, 'Setelah logout, daftar cerita kosong dan tidak bocor');
 assert(getAuthorStories('lele').length === 0, 'Saat logout, Karya Saya juga terkunci kosong');
 
-// Login ulang sebagai Lele -> hanya cerita Lele yang muncul
+// Login ulang sebagai Lele -> Karya Saya Lele memuat 2 cerita
 setActiveUserCharacter('lele');
-const leleAfterRelogin = getPublishedStories();
-assert(leleAfterRelogin.length === 2 && leleAfterRelogin.every((s) => s.authorId === 'lele'), 'Login ulang sebagai Lele memuat tepat 2 cerita milik Lele');
+const leleAfterRelogin = getAuthorStories('lele');
+assert(leleAfterRelogin.length === 2 && leleAfterRelogin.every((s) => s.authorId === 'lele'), 'Login ulang sebagai Lele memuat tepat 2 cerita milik Lele di Karya Saya');
 
-// Login ulang sebagai Lala -> hanya cerita Lala yang muncul
+// Login ulang sebagai Lala -> Karya Saya Lala memuat 1 cerita
 setActiveUserCharacter('lala');
-const lalaAfterRelogin = getPublishedStories();
-assert(lalaAfterRelogin.length === 1 && lalaAfterRelogin[0].authorId === 'lala', 'Login ulang sebagai Lala memuat tepat 1 cerita milik Lala');
+const lalaAfterRelogin = getAuthorStories('lala');
+assert(lalaAfterRelogin.length === 1 && lalaAfterRelogin[0].authorId === 'lala', 'Login ulang sebagai Lala memuat tepat 1 cerita milik Lala di Karya Saya');
 
-// Login ulang sebagai Nyanya -> hanya cerita Nyanya yang muncul
+// Login ulang sebagai Nyanya -> Karya Saya Nyanya memuat 1 cerita
 setActiveUserCharacter('nyanya');
-const nyanyaAfterRelogin = getPublishedStories();
-assert(nyanyaAfterRelogin.length === 1 && nyanyaAfterRelogin[0].authorId === 'nyanya', 'Login ulang sebagai Nyanya memuat tepat 1 cerita milik Nyanya');
+const nyanyaAfterRelogin = getAuthorStories('nyanya');
+assert(nyanyaAfterRelogin.length === 1 && nyanyaAfterRelogin[0].authorId === 'nyanya', 'Login ulang sebagai Nyanya memuat tepat 1 cerita milik Nyanya di Karya Saya');
 
 console.log('\n================================================================');
 console.log('10. TEST: BOOKMARK, READING HISTORY, & READING PROGRESS TERISOLASI');
@@ -292,9 +299,12 @@ setActiveUserCharacter('lele');
 const leleBookmarkRes = toggleBookmark(leleStory1Res.story.id, 'lele');
 assert(leleBookmarkRes.isBookmarked === true && isStoryBookmarked(leleStory1Res.story.id, 'lele') === true, 'Lele dapat membookmark ceritanya sendiri');
 
-// Bookmark terhadap cerita akun lain tidak diizinkan bocor
+// Lala membookmark cerita published milik Lele (tersimpan di profil Lala sendiri, tidak mencampuri Lele)
+setActiveUserCharacter('lala');
 const lalaCrossBookmark = toggleBookmark(leleStory1Res.story.id, 'lala');
-assert(lalaCrossBookmark.isBookmarked === false, 'Aktor lain ditolak/tidak dapat mengakses bookmark cerita Lele');
+assert(lalaCrossBookmark.isBookmarked === true, 'Lala dapat membookmark karya published Lele');
+assert(isStoryBookmarked(leleStory1Res.story.id, 'lala') === true, 'Bookmark tersimpan di akun Lala');
+assert(isStoryBookmarked(leleStory2Res.story.id, 'lala') === false, 'Cerita lain Lele yang tidak dibookmark Lala tetap false');
 
 saveReadingProgress(leleStory1Res.story.id, 65, 0.65, 'lele');
 const leleProgress = getReadingProgress(leleStory1Res.story.id, 'lele');

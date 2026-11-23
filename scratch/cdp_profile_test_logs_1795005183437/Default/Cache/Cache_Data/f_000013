@@ -1,0 +1,872 @@
+/* ==========================================================================
+   ENCHANTED BLOOM COTTAGE — LALA'S 2D FAIRY HOME SIMULATION (TO YOU)
+   Concept: Pastel pink, lavender, cream & soft peach 2D Living Home
+   ========================================================================== */
+
+:root {
+  --bc-pink-50: #fdf2f8;
+  --bc-pink-100: #fce7f3;
+  --bc-pink-200: #fbcfe8;
+  --bc-pink-400: #f472b6;
+  --bc-pink-500: #ec4899;
+  --bc-lavender-50: #faf5ff;
+  --bc-lavender-100: #f3e8ff;
+  --bc-lavender-200: #e9d5ff;
+  --bc-lavender-400: #c084fc;
+  --bc-lavender-600: #9333ea;
+  --bc-peach-50: #fff7ed;
+  --bc-peach-100: #ffedd5;
+  --bc-peach-200: #fed7aa;
+  --bc-peach-400: #fb923c;
+  --bc-cream-50: #fffbeb;
+  --bc-cream-100: #fef9c3;
+  --bc-gold-400: #facc15;
+  --bc-gold-500: #eab308;
+  --bc-emerald-400: #34d399;
+  --bc-text-dark: #4a2840;
+  --bc-glass-bg: rgba(255, 245, 250, 0.88);
+  --bc-glass-border: rgba(244, 114, 182, 0.38);
+  --bc-glass-shadow: 0 12px 32px rgba(90, 36, 72, 0.18);
+}
+
+/* Fullscreen View Section */
+.view-bloom-cottage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: none;
+  background: #fdf2f8;
+  user-select: none;
+  z-index: 20;
+}
+
+.view-bloom-cottage.active {
+  display: block;
+}
+
+/* 2D Exploration Stage */
+.bloom-cottage-stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #fce7f3;
+}
+
+/* Background Artwork Layer */
+.bloom-room-bg-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.45s ease;
+}
+
+.bloom-room-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  filter: contrast(1.02) saturate(1.05);
+}
+
+/* Dynamic Atmosphere Lighting Overlay */
+.bloom-atmo-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: background 0.6s ease;
+}
+
+.view-bloom-cottage.atmo-day .bloom-atmo-overlay {
+  background: radial-gradient(ellipse at 50% 30%, rgba(254, 240, 138, 0.12) 0%, transparent 70%),
+              linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 40%, rgba(251, 207, 232, 0.12) 100%);
+}
+
+.view-bloom-cottage.atmo-golden .bloom-atmo-overlay {
+  background: radial-gradient(ellipse at 40% 35%, rgba(251, 146, 60, 0.22) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(249, 115, 22, 0.16) 0%, transparent 50%, rgba(234, 88, 12, 0.18) 100%);
+}
+
+.view-bloom-cottage.atmo-twilight .bloom-atmo-overlay {
+  background: radial-gradient(ellipse at 50% 35%, rgba(192, 132, 252, 0.24) 0%, transparent 68%),
+              linear-gradient(180deg, rgba(147, 51, 234, 0.2) 0%, transparent 45%, rgba(107, 33, 168, 0.28) 100%);
+}
+
+.view-bloom-cottage.atmo-night .bloom-atmo-overlay {
+  background: radial-gradient(ellipse at 50% 30%, rgba(56, 189, 248, 0.15) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(30, 27, 75, 0.38) 50%, rgba(15, 23, 42, 0.6) 100%);
+}
+
+/* Drifting Fairy Sparkles & Petals */
+.bloom-particles-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.bloom-sparkle {
+  position: absolute;
+  color: #fef08a;
+  text-shadow: 0 0 8px rgba(254, 240, 138, 0.85);
+  animation: bloomSparkleFloat 7s infinite ease-in-out;
+  opacity: 0.7;
+}
+
+.bloom-sparkle.sp1 { left: 15%; top: 22%; font-size: 1.1rem; animation-delay: 0s; }
+.bloom-sparkle.sp2 { left: 38%; top: 45%; font-size: 0.9rem; animation-delay: 2.2s; }
+.bloom-sparkle.sp3 { left: 72%; top: 28%; font-size: 1.3rem; animation-delay: 4.1s; }
+.bloom-sparkle.sp4 { left: 85%; top: 60%; font-size: 0.8rem; animation-delay: 1.5s; }
+.bloom-sparkle.sp5 { left: 52%; top: 78%; font-size: 1.0rem; animation-delay: 3.5s; }
+
+@keyframes bloomSparkleFloat {
+  0%, 100% { transform: translateY(0) scale(0.85); opacity: 0.35; }
+  50% { transform: translateY(-16px) scale(1.2); opacity: 0.95; }
+}
+
+/* Interactive Hotspots Layer */
+.bloom-hotspots-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+}
+
+.bloom-hotspot-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  z-index: 6;
+  outline: none;
+}
+
+.bloom-hotspot-beacon {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 215, 226, 0.92) 100%);
+  border: 1.8px solid rgba(244, 114, 182, 0.8);
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.32), 0 0 12px rgba(254, 240, 138, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.bloom-hotspot-item:hover .bloom-hotspot-beacon,
+.bloom-hotspot-item:focus-visible .bloom-hotspot-beacon {
+  transform: scale(1.15) translateY(-2px);
+  border-color: #facc15;
+  box-shadow: 0 8px 24px rgba(234, 179, 8, 0.55), 0 0 20px rgba(244, 114, 182, 0.8);
+}
+
+.bloom-beacon-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(244, 114, 182, 0.6);
+  animation: beaconPulseAnim 2.4s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+@keyframes beaconPulseAnim {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.bloom-hotspot-badge {
+  margin-top: 6px;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(74, 40, 64, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(254, 240, 138, 0.7);
+  color: #fffbeb;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.bloom-hotspot-item:hover .bloom-hotspot-badge {
+  transform: scale(1.05);
+  background: rgba(147, 51, 234, 0.92);
+  border-color: #fef08a;
+}
+
+/* Player Avatar Character */
+.bloom-player-avatar {
+  position: absolute;
+  transform: translate(-50%, -75%);
+  z-index: 10;
+  width: 72px;
+  height: 84px;
+  pointer-events: none;
+  transition: transform 0.08s linear;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.bloom-avatar-body {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.4) 0%, rgba(244, 114, 182, 0.25) 70%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bloom-avatar-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fef08a;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.45);
+}
+
+/* Animated Fairy Wings */
+.bloom-fairy-wing {
+  position: absolute;
+  top: 6px;
+  width: 22px;
+  height: 32px;
+  border-radius: 50% 50% 20% 80%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(244, 114, 182, 0.45) 80%, rgba(192, 132, 252, 0.3) 100%);
+  border: 1px solid rgba(254, 240, 138, 0.7);
+  box-shadow: 0 0 10px rgba(254, 240, 138, 0.6);
+  transform-origin: center bottom;
+  animation: wingFlutter 0.7s infinite alternate ease-in-out;
+}
+
+.bloom-fairy-wing.wing-left {
+  left: -8px;
+  transform: rotate(-25deg);
+}
+
+.bloom-fairy-wing.wing-right {
+  right: -8px;
+  transform: rotate(25deg) scaleX(-1);
+}
+
+@keyframes wingFlutter {
+  0% { transform: rotate(-22deg) scaleX(1); }
+  100% { transform: rotate(-45deg) scaleX(0.72); }
+}
+
+/* Walking & Status Animations */
+.bloom-player-avatar.is-walking {
+  animation: avatarWalkBounce 0.35s infinite alternate ease-in-out;
+}
+
+.bloom-player-avatar.facing-left .bloom-avatar-body {
+  transform: scaleX(-1);
+}
+
+@keyframes avatarWalkBounce {
+  0% { transform: translate(-50%, -75%) translateY(0); }
+  100% { transform: translate(-50%, -75%) translateY(-5px); }
+}
+
+.bloom-player-avatar.is-sitting {
+  transform: translate(-50%, -65%) scale(0.92);
+}
+
+.bloom-player-shadow {
+  width: 44px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(74, 40, 64, 0.35) 0%, transparent 70%);
+  margin-top: -4px;
+}
+
+/* Floating Interaction Prompt Tooltip */
+.bloom-interaction-prompt {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  top: -12px;
+  left: 50%;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 0.32rem 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.95) 0%, rgba(168, 85, 247, 0.95) 100%);
+  border: 1.5px solid #fef08a;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.45), 0 0 14px rgba(254, 240, 138, 0.6);
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 12;
+  animation: promptBob 1.6s infinite ease-in-out;
+}
+
+.bloom-interaction-prompt.show {
+  display: inline-flex;
+}
+
+@keyframes promptBob {
+  0%, 100% { transform: translate(-50%, -100%) translateY(0); }
+  50% { transform: translate(-50%, -100%) translateY(-4px); }
+}
+
+/* ==========================================================================
+   NAVIGATION HUDS
+   ========================================================================== */
+
+/* Top-Left HUD: Return Orb & Title */
+.bloom-hud-topleft {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bloom-back-orb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 245, 250, 0.94) 0%, rgba(254, 215, 226, 0.94) 100%);
+  border: 1.5px solid rgba(244, 114, 182, 0.8);
+  box-shadow: 0 6px 18px rgba(90, 36, 72, 0.16);
+  color: #db2777;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.bloom-back-orb:hover {
+  transform: scale(1.08) translateY(-1px);
+  border-color: #facc15;
+  box-shadow: 0 8px 22px rgba(234, 179, 8, 0.4);
+}
+
+.bloom-title-badge {
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem 0.95rem;
+  border-radius: 16px;
+  background: var(--bc-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.2px solid var(--bc-glass-border);
+  box-shadow: var(--bc-glass-shadow);
+}
+
+.bloom-title-badge h2 {
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--bc-text-dark);
+  line-height: 1.15;
+}
+
+.bloom-title-badge span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #db2777;
+  letter-spacing: 0.04em;
+}
+
+/* Top-Right HUD: Room Navigation Tabs */
+.bloom-hud-topright {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.bloom-nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: var(--bc-glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.2px solid var(--bc-glass-border);
+  box-shadow: var(--bc-glass-shadow);
+}
+
+.bloom-room-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.36rem 0.78rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #6b21a8;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.bloom-room-btn:hover {
+  background: rgba(251, 207, 232, 0.45);
+  color: #9d174d;
+}
+
+.bloom-room-btn.active {
+  background: linear-gradient(135deg, #f472b6 0%, #c084fc 100%);
+  border-color: #fef08a;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(244, 114, 182, 0.35);
+}
+
+.bloom-hud-quick-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bloom-tool-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--bc-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.2px solid var(--bc-glass-border);
+  box-shadow: var(--bc-glass-shadow);
+  color: #831843;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bloom-tool-btn:hover {
+  transform: translateY(-2px);
+  border-color: #facc15;
+  box-shadow: 0 6px 16px rgba(234, 179, 8, 0.35);
+}
+
+/* Bottom Hint & Controls Indicator */
+.bloom-hud-controls-hint {
+  position: absolute;
+  bottom: 18px;
+  left: 20px;
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.32rem 0.85rem;
+  border-radius: 999px;
+  background: var(--bc-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--bc-glass-border);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #701a75;
+  box-shadow: var(--bc-glass-shadow);
+}
+
+.bloom-kbd-pill {
+  padding: 0.12rem 0.4rem;
+  border-radius: 4px;
+  background: rgba(251, 207, 232, 0.6);
+  border: 1px solid rgba(244, 114, 182, 0.5);
+  font-weight: 700;
+  font-size: 0.68rem;
+  color: #831843;
+}
+
+/* ==========================================================================
+   MOBILE TOUCH D-PAD CONTROLLER
+   ========================================================================== */
+.bloom-touch-controls {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .bloom-touch-controls {
+    display: flex;
+  }
+  .bloom-hud-controls-hint {
+    display: none;
+  }
+}
+
+.bloom-dpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 44px);
+  gap: 4px;
+}
+
+.bloom-dpad-btn {
+  background: var(--bc-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid var(--bc-glass-border);
+  border-radius: 12px;
+  color: #831843;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--bc-glass-shadow);
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.bloom-dpad-btn:active {
+  background: #f472b6;
+  color: #ffffff;
+  transform: scale(0.92);
+}
+
+.dpad-up { grid-column: 2; grid-row: 1; }
+.dpad-left { grid-column: 1; grid-row: 2; }
+.dpad-center { grid-column: 2; grid-row: 2; border-radius: 50%; font-size: 0.8rem; }
+.dpad-right { grid-column: 3; grid-row: 2; }
+.dpad-down { grid-column: 2; grid-row: 3; }
+
+.bloom-touch-action-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f472b6 0%, #c084fc 100%);
+  border: 2px solid #fef08a;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45), 0 0 14px rgba(254, 240, 138, 0.5);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bloom-touch-action-btn:active {
+  transform: scale(0.92);
+}
+
+/* ==========================================================================
+   ACTIVITY MODALS & PANELS
+   ========================================================================== */
+.bloom-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(46, 24, 40, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.bloom-modal-backdrop.active {
+  display: flex;
+  animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalFadeIn {
+  0% { opacity: 0; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.bloom-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  background: linear-gradient(160deg, #fffafc 0%, #fdf2f8 60%, #fae8ff 100%);
+  border: 2px solid rgba(244, 114, 182, 0.45);
+  box-shadow: 0 20px 48px rgba(74, 40, 64, 0.28), 0 0 24px rgba(254, 240, 138, 0.4);
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.bloom-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  border-bottom: 1.5px solid rgba(244, 114, 182, 0.25);
+  padding-bottom: 0.8rem;
+}
+
+.bloom-modal-header h3 {
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--bc-text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bloom-modal-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  background: rgba(255, 255, 255, 0.8);
+  color: #9d174d;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bloom-modal-close:hover {
+  background: #f472b6;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+/* Interactive Piano Keys */
+.bloom-piano-keyboard {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 1.2rem 0.5rem;
+  background: #4a2840;
+  border-radius: 16px;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.bloom-piano-key {
+  position: relative;
+  width: 48px;
+  height: 140px;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #fef9c3 100%);
+  border: 1px solid #d1d5db;
+  border-top: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #4b5563;
+  transition: transform 0.08s ease, background 0.08s ease;
+}
+
+.bloom-piano-key:active,
+.bloom-piano-key.playing {
+  transform: translateY(4px);
+  background: #fbcfe8;
+  color: #be185d;
+}
+
+/* Sleep Overlay */
+.bloom-sleep-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0f172a;
+  z-index: 60;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.bloom-sleep-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.bloom-sleep-moon {
+  font-size: 3.5rem;
+  animation: moonGlow 3s infinite alternate ease-in-out;
+}
+
+@keyframes moonGlow {
+  0% { transform: scale(0.95); filter: drop-shadow(0 0 10px #fef08a); }
+  100% { transform: scale(1.08); filter: drop-shadow(0 0 28px #facc15); }
+}
+
+.bloom-sleep-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  margin-top: 1rem;
+  font-style: italic;
+  color: #fdf2f8;
+}
+
+/* Recipe & Item Grid Cards */
+.bloom-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 0.8rem;
+}
+
+.bloom-item-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0.85rem;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1.2px solid rgba(244, 114, 182, 0.35);
+  box-shadow: 0 4px 12px rgba(90, 36, 72, 0.08);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.bloom-item-card:hover {
+  transform: translateY(-2px);
+  border-color: #f472b6;
+  box-shadow: 0 6px 18px rgba(244, 114, 182, 0.2);
+}
+
+.bloom-item-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bloom-item-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fdf2f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 1px solid rgba(244, 114, 182, 0.3);
+}
+
+.bloom-item-card-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--bc-text-dark);
+  margin: 0;
+}
+
+.bloom-item-card-desc {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.bloom-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f472b6 0%, #c084fc 100%);
+  border: 1.2px solid #fef08a;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(244, 114, 182, 0.35);
+}
+
+.bloom-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(244, 114, 182, 0.5);
+  border-color: #ffffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bloom-hud-topleft {
+    top: 10px;
+    left: 10px;
+    gap: 6px;
+  }
+  .bloom-back-orb {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+  }
+  .bloom-title-badge h2 {
+    font-size: 0.95rem;
+  }
+  .bloom-hud-topright {
+    top: 10px;
+    right: 10px;
+  }
+  .bloom-room-btn {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.68rem;
+  }
+}

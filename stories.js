@@ -47,7 +47,8 @@ export const COVER_THEMES = [
   { id: 'eclipse', label: 'Moonlit Eclipse', gradient: 'linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #4338ca 100%)', badge: '☾' },
   { id: 'emerald', label: 'Cosmic Emerald', gradient: 'linear-gradient(135deg, #064e3b 0%, #059669 50%, #34d399 100%)', badge: '🍃' },
   { id: 'twilight', label: 'Twilight Rose', gradient: 'linear-gradient(135deg, #831843 0%, #db2777 50%, #f472b6 100%)', badge: '🌸' },
-  { id: 'aurora', label: 'Nordic Aurora', gradient: 'linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #38bdf8 100%)', badge: '🌌' }
+  { id: 'aurora', label: 'Nordic Aurora', gradient: 'linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #38bdf8 100%)', badge: '🌌' },
+  { id: 'abyss', label: 'Quiet Abyss (YAWN)', gradient: 'linear-gradient(135deg, #030712 0%, #1e1b4b 40%, #0284c7 70%, #c084fc 100%)', badge: '⚡' }
 ];
 
 // Character mapping matching PRD & main auth
@@ -90,9 +91,9 @@ export const CHARACTERS_STORIES = {
   },
   abil: {
     id: 'abil',
-    uid: CHARACTER_AUTH_RULES.abil.expectedUid || 'uid-abil-pinwheel-cloud-2026',
-    ownerId: CHARACTER_AUTH_RULES.abil.expectedUid || 'uid-abil-pinwheel-cloud-2026',
-    name: 'Abil',
+    uid: CHARACTER_AUTH_RULES.abil.expectedUid,
+    ownerId: CHARACTER_AUTH_RULES.abil.expectedUid,
+    name: 'Syma',
     role: 'PINWHEEL ☁️',
     universeId: 'pinwheel',
     universeName: 'PINWHEEL',
@@ -102,8 +103,8 @@ export const CHARACTERS_STORIES = {
   },
   akhira: {
     id: 'akhira',
-    uid: CHARACTER_AUTH_RULES.akhira.expectedUid || 'uid-akhira-yawn-spark-2026',
-    ownerId: CHARACTER_AUTH_RULES.akhira.expectedUid || 'uid-akhira-yawn-spark-2026',
+    uid: CHARACTER_AUTH_RULES.akhira.expectedUid,
+    ownerId: CHARACTER_AUTH_RULES.akhira.expectedUid,
     name: 'Akhira',
     role: 'YAWN ⚡',
     universeId: 'yawn',
@@ -114,8 +115,8 @@ export const CHARACTERS_STORIES = {
   },
   ela: {
     id: 'ela',
-    uid: CHARACTER_AUTH_RULES.ela.expectedUid || 'uid-ela-us-again-blossom-2026',
-    ownerId: CHARACTER_AUTH_RULES.ela.expectedUid || 'uid-ela-us-again-blossom-2026',
+    uid: CHARACTER_AUTH_RULES.ela.expectedUid,
+    ownerId: CHARACTER_AUTH_RULES.ela.expectedUid,
     name: 'Ela',
     role: 'US AGAIN 🌸',
     universeId: 'us_again',
@@ -126,8 +127,8 @@ export const CHARACTERS_STORIES = {
   },
   ruben: {
     id: 'ruben',
-    uid: CHARACTER_AUTH_RULES.ruben.expectedUid || 'uid-ruben-ash-snow-2026',
-    ownerId: CHARACTER_AUTH_RULES.ruben.expectedUid || 'uid-ruben-ash-snow-2026',
+    uid: CHARACTER_AUTH_RULES.ruben.expectedUid,
+    ownerId: CHARACTER_AUTH_RULES.ruben.expectedUid,
     name: 'Ruben',
     role: 'ASH ❄️',
     universeId: 'ash',
@@ -135,12 +136,25 @@ export const CHARACTERS_STORIES = {
     symbol: '❄️',
     avatar: '/assets/avatar_ruben_hd.jpg',
     accentColor: '#94a3b8'
+  },
+  royan: {
+    id: 'royan',
+    uid: CHARACTER_AUTH_RULES.royan.expectedUid,
+    ownerId: CHARACTER_AUTH_RULES.royan.expectedUid,
+    name: 'Royan',
+    role: 'HOT 🎆',
+    universeId: 'hot',
+    universeName: 'HOT',
+    symbol: '🎆',
+    avatar: '/assets/avatar_royan_hd.jpg',
+    accentColor: '#c084fc'
   }
 };
 
 // Storage Keys
 const STORIES_STORAGE_KEY = 'olu_stories_store_v1';
 const STORIES_SCOPED_PREFIX = 'olu_stories_store_v2_';
+const STORIES_PUBLISHED_KEY = 'olu_stories_published_v2';
 const BOOKMARKS_STORAGE_KEY = 'olu_stories_bookmarks_v1';
 const READING_PROGRESS_KEY = 'olu_stories_reading_progress_v1';
 const READING_PREFS_KEY = 'olu_stories_reading_prefs_v1';
@@ -270,8 +284,71 @@ function readBookmarksAndProgressFromStorage() {
 }
 
 /**
+ * Collect all published stories across all local keys (shared published, scoped stores, legacy stores & backups).
+ * NEVER includes drafts or incomplete records.
+ */
+export function collectAllPublishedStoriesLocally() {
+  const storage = getStorageRef();
+  if (!storage) return [];
+  const pubMap = new Map();
+
+  const addIfPublished = (s) => {
+    const norm = normalizeStoryRecord(s);
+    if (norm && norm.id && norm.title && norm.status === 'published' && norm.authorUid) {
+      pubMap.set(norm.id, norm);
+    }
+  };
+
+  // 1. Existing shared published key
+  try {
+    const pubRaw = storage.getItem(STORIES_PUBLISHED_KEY);
+    if (pubRaw) {
+      const parsed = JSON.parse(pubRaw);
+      if (Array.isArray(parsed)) parsed.forEach(addIfPublished);
+    }
+  } catch (_) {}
+
+  // 2. All canonical character scoped stores (e.g. olu_stories_store_v2_<uid>)
+  Object.values(CHARACTERS_STORIES).forEach((cfg) => {
+    if (!cfg.uid) return;
+    try {
+      const scopedRaw = storage.getItem(`${STORIES_SCOPED_PREFIX}${cfg.uid}`);
+      if (scopedRaw) {
+        const parsed = JSON.parse(scopedRaw);
+        if (Array.isArray(parsed)) parsed.forEach(addIfPublished);
+      }
+    } catch (_) {}
+  });
+
+  // 3. Scan all keys in localStorage for legacy stores or backups containing published stories
+  try {
+    const len = storage.length || 0;
+    for (let i = 0; i < len; i++) {
+      const k = storage.key(i);
+      if (
+        k &&
+        (k === STORIES_STORAGE_KEY ||
+          k.startsWith('olu_stories_store_v1_backup_') ||
+          k.startsWith(STORIES_SCOPED_PREFIX))
+      ) {
+        try {
+          const raw = storage.getItem(k);
+          if (raw && raw.includes('published')) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) parsed.forEach(addIfPublished);
+          }
+        } catch (_) {}
+      }
+    }
+  } catch (_) {}
+
+  return Array.from(pubMap.values());
+}
+
+/**
  * Load store from localStorage safely.
- * In authenticated mode, isolates stories strictly by UID (`olu_stories_store_v2_<uid>`).
+ * In authenticated mode, loads all published stories from the shared library
+ * plus private works strictly isolated to the authenticated user's UID (`olu_stories_store_v2_<uid>`).
  */
 function loadFromStorage(uidScope = null, verifiedChar = null) {
   const storage = getStorageRef();
@@ -283,17 +360,42 @@ function loadFromStorage(uidScope = null, verifiedChar = null) {
 
   try {
     if (uidScope && verifiedChar) {
+      const map = new Map();
+
+      // 1. Load shared published works across all 8 characters (resilient multi-store scan)
+      const allPublished = collectAllPublishedStoriesLocally();
+      allPublished.forEach((s) => {
+        if (s && s.status === 'published') {
+          map.set(s.id, s);
+        }
+      });
+
+      // 2. Load user's own scoped works (including private drafts)
       const scopedRaw = storage.getItem(`${STORIES_SCOPED_PREFIX}${uidScope}`);
       if (scopedRaw) {
-        const parsed = JSON.parse(scopedRaw);
-        if (Array.isArray(parsed)) {
-          storiesStore = parsed
-            .map(normalizeStoryRecord)
-            .filter((s) => s && isStoryOwnedBy(s, verifiedChar, uidScope));
-          return;
-        }
+        try {
+          const parsedScoped = JSON.parse(scopedRaw);
+          if (Array.isArray(parsedScoped)) {
+            parsedScoped.forEach((s) => {
+              const norm = normalizeStoryRecord(s);
+              if (norm && isStoryOwnedBy(norm, verifiedChar, uidScope)) {
+                map.set(norm.id, norm);
+              }
+            });
+          }
+        } catch (_) {}
       }
-      storiesStore = [];
+
+      storiesStore = Array.from(map.values()).sort(
+        (a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0)
+      );
+
+      // Persist the consolidated published catalog
+      if (allPublished.length > 0) {
+        try {
+          storage.setItem(STORIES_PUBLISHED_KEY, JSON.stringify(allPublished));
+        } catch (_) {}
+      }
       return;
     }
 
@@ -328,7 +430,7 @@ function collectUnambiguousLegacyStoriesForUser(uidScope, verifiedChar) {
   const pushIfMatch = (item) => {
     const norm = normalizeStoryRecord(item);
     if (!norm || !norm.id || seenIds.has(norm.id)) return;
-    const idPrefixMatch = /^story-(nyanya|lala|lele)-/.exec(String(norm.id));
+    const idPrefixMatch = /^story-(nyanya|lala|lele|abil|akhira|ela|ruben|royan)-/.exec(String(norm.id));
     if (idPrefixMatch && idPrefixMatch[1] !== verifiedChar) return;
     if (isStoryOwnedBy(norm, verifiedChar, uidScope)) {
       seenIds.add(norm.id);
@@ -350,7 +452,6 @@ function collectUnambiguousLegacyStoriesForUser(uidScope, verifiedChar) {
       const parsedLegacy = JSON.parse(legacyRaw);
       if (Array.isArray(parsedLegacy)) {
         parsedLegacy.forEach((raw) => {
-          // Strict check: only migrate legacy items that explicitly belong to this verified UID/char
           if (!raw || !raw.id) return;
           if (raw.authorUid && raw.authorUid !== uidScope) return;
           const explicitChar = raw.authorChar || raw.authorId || raw.author;
@@ -361,16 +462,72 @@ function collectUnambiguousLegacyStoriesForUser(uidScope, verifiedChar) {
     }
   } catch (_) {}
 
+  // Also scan backups for unmigrated works of this specific author
+  try {
+    const len = storage.length || 0;
+    for (let i = 0; i < len; i++) {
+      const k = storage.key(i);
+      if (k && k.startsWith('olu_stories_store_v1_backup_')) {
+        try {
+          const raw = storage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              parsed.forEach((item) => {
+                if (!item || !item.id) return;
+                if (item.authorUid && item.authorUid !== uidScope) return;
+                const explicitChar = item.authorChar || item.authorId || item.author;
+                if (explicitChar === verifiedChar) {
+                  pushIfMatch(item);
+                }
+              });
+            }
+          }
+        } catch (_) {}
+      }
+    }
+  } catch (_) {}
+
   return results;
 }
 
 /**
  * Save stories to localStorage (UID-partitioned when UID is known)
+ * Also persists published stories to the shared library key without wiping other characters' published works.
  */
 function saveStoriesToStorage() {
   const storage = getStorageRef();
   if (!storage) return;
   try {
+    // 1. Maintain shared published stories pool:
+    // Gather all existing published stories so other characters' works are never wiped out
+    const pubMap = new Map();
+    const existingPublished = collectAllPublishedStoriesLocally();
+    existingPublished.forEach((s) => {
+      if (s && s.id && s.status === 'published') pubMap.set(s.id, s);
+    });
+
+    // Merge active user's published stories
+    const activePublished = storiesStore.filter((s) => s && s.status === 'published');
+    activePublished.forEach((s) => pubMap.set(s.id, s));
+
+    // Remove stories owned by the active user that transitioned back to draft
+    storiesStore.forEach((s) => {
+      if (
+        s &&
+        s.status === 'draft' &&
+        pubMap.has(s.id) &&
+        activeUserUid &&
+        activeUserCharacter &&
+        isStoryOwnedBy(s, activeUserCharacter, activeUserUid)
+      ) {
+        pubMap.delete(s.id);
+      }
+    });
+
+    storage.setItem(STORIES_PUBLISHED_KEY, JSON.stringify(Array.from(pubMap.values())));
+
+    // 2. Partition author's works (drafts & published) by UID
     if (activeUserUid && activeUserCharacter) {
       const scopedList = storiesStore.filter((s) =>
         isStoryOwnedBy(s, activeUserCharacter, activeUserUid)
@@ -462,11 +619,27 @@ export function initStoriesFirebaseSync() {
             const normalizedRemote = Array.isArray(remoteStories)
               ? remoteStories
                   .map(normalizeStoryRecord)
-                  .filter((s) => s && isStoryOwnedBy(s, verifiedChar, user.uid))
+                  .filter((s) => {
+                    if (!s) return false;
+                    // Published stories can be read by all 8 characters
+                    if (s.status === 'published') return true;
+                    // Drafts are strictly private to the author UID
+                    return isStoryOwnedBy(s, verifiedChar, user.uid);
+                  })
               : [];
 
             const map = new Map();
-            normalizedRemote.forEach((s) => map.set(s.id, s));
+
+            // First preserve all locally known published stories so they are never lost if cloud query is partial
+            const localPub = collectAllPublishedStoriesLocally();
+            localPub.forEach((s) => {
+              if (s && s.status === 'published') map.set(s.id, s);
+            });
+
+            // Layer remote stories (freshest cloud state for published stories and own private works)
+            normalizedRemote.forEach((s) => {
+              if (s && s.id) map.set(s.id, s);
+            });
 
             // Preserve only unsaved/pending local stories that strictly belong to the same UID
             storiesStore.forEach((s) => {
@@ -795,6 +968,17 @@ export function deleteStory(storyId, actor = null) {
   storiesStore.splice(index, 1);
   saveStoriesToStorage();
 
+  try {
+    const storage = getStorageRef();
+    if (storage) {
+      const rawPub = storage.getItem(STORIES_PUBLISHED_KEY);
+      if (rawPub) {
+        const parsed = JSON.parse(rawPub).filter((s) => s && s.id !== storyId);
+        storage.setItem(STORIES_PUBLISHED_KEY, JSON.stringify(parsed));
+      }
+    }
+  } catch (_) {}
+
   // Clean up bookmarks for this story for its owner
   if (Array.isArray(bookmarksStore[resolvedActor])) {
     bookmarksStore[resolvedActor] = bookmarksStore[resolvedActor].filter((id) => id !== storyId);
@@ -812,10 +996,8 @@ export function deleteStory(storyId, actor = null) {
 }
 
 /**
- * Get published stories for Our Stories strictly scoped to the logged-in owner.
- * - Cerita Nyanya hanya tampil di Our Stories Nyanya
- * - Cerita Lala hanya tampil di Our Stories Lala
- * - Cerita Lele hanya tampil di Our Stories Lele
+ * Get published stories for Our Stories (Public Reading Library)
+ * Published works are accessible by all 8 characters in Our Little Universe.
  */
 export function getPublishedStories(filters = {}) {
   const viewerChar = resolveEffectiveActor(filters.actor);
@@ -824,7 +1006,7 @@ export function getPublishedStories(filters = {}) {
 
   let list = storiesStore
     .map(normalizeStoryRecord)
-    .filter((s) => s && s.status === 'published' && isStoryOwnedBy(s, viewerChar, viewerUid));
+    .filter((s) => s && s.status === 'published');
 
   // Filter by category
   if (filters.category && filters.category !== 'all') {
@@ -898,8 +1080,9 @@ export function getAuthorStories(actor = null, statusFilter = 'all') {
 }
 
 /**
- * Get single story by ID with strict owner isolation.
- * Story detail, draft editing, and reading views belong exclusively to the story's owner.
+ * Get single story by ID:
+ * - Published works can be read by any of the 8 characters.
+ * - Draft works are STRICTLY restricted to the author/owner UID.
  */
 export function getStoryById(storyId, viewer = null) {
   const resolvedViewer = resolveEffectiveActor(viewer);
@@ -910,7 +1093,15 @@ export function getStoryById(storyId, viewer = null) {
   if (!raw) return null;
 
   const story = normalizeStoryRecord(raw);
-  if (story && isStoryOwnedBy(story, resolvedViewer, resolvedUid)) {
+  if (!story) return null;
+
+  // Published stories can be read by all 8 characters
+  if (story.status === 'published') {
+    return story;
+  }
+
+  // Draft stories are strictly accessible only by their owner
+  if (isStoryOwnedBy(story, resolvedViewer, resolvedUid)) {
     return story;
   }
 
@@ -1070,6 +1261,7 @@ export function resetStoriesStore() {
   const storage = getStorageRef();
   if (storage) {
     storage.removeItem(STORIES_STORAGE_KEY);
+    storage.removeItem(STORIES_PUBLISHED_KEY);
     Object.values(CHARACTERS_STORIES).forEach((cfg) => {
       if (cfg?.uid) storage.removeItem(`${STORIES_SCOPED_PREFIX}${cfg.uid}`);
     });

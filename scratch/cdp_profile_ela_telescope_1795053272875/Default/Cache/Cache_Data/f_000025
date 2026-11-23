@@ -1,0 +1,975 @@
+/**
+ * TO YOU GAZEBO — EVERGLOW MORNING GAZEBO STYLING
+ * Lala's Universe (Fairy Forest & Warm Morning Sunlight Aesthetic)
+ * =============================================================================
+ */
+
+:root {
+  --tg-pink-deep: #831843;
+  --tg-pink-main: #f472b6;
+  --tg-pink-soft: #fbcfe8;
+  --tg-pink-light: #fdf2f8;
+  --tg-gold-main: #f59e0b;
+  --tg-gold-soft: #fef08a;
+  --tg-mint-soft: #a7f3d0;
+  --tg-lavender-soft: #e9d5ff;
+  --tg-text-main: #1e293b;
+  --tg-card-border: rgba(244, 114, 182, 0.45);
+}
+
+.view-toyou-gazebo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: none;
+  background-color: #2e1065;
+  font-family: 'Quicksand', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  color: #1e293b;
+  user-select: none;
+  z-index: 105;
+}
+
+.view-toyou-gazebo.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background Scene Layer with User's Uploaded Gazebo Image */
+.tgazebo-scene-layer {
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/toyou_gazebo_bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: brightness(0.98) saturate(1.08);
+  transition: filter 0.6s ease;
+  z-index: 1;
+}
+
+/* Dynamic Atmosphere Lighting Overlay */
+.tgazebo-lighting-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: background 0.6s ease, opacity 0.6s ease;
+}
+
+.tgazebo-lighting-overlay.light-golden {
+  background: radial-gradient(circle at 50% 25%, rgba(254, 240, 138, 0.18) 0%, rgba(245, 158, 11, 0.08) 55%, rgba(46, 16, 101, 0.25) 100%);
+}
+
+.tgazebo-lighting-overlay.light-lavender {
+  background: radial-gradient(circle at 50% 30%, rgba(216, 180, 254, 0.22) 0%, rgba(168, 85, 247, 0.1) 60%, rgba(46, 16, 101, 0.35) 100%);
+}
+
+.tgazebo-lighting-overlay.light-firefly {
+  background: radial-gradient(circle at 50% 40%, rgba(167, 243, 208, 0.18) 0%, rgba(16, 185, 129, 0.08) 50%, rgba(46, 16, 101, 0.3) 100%);
+}
+
+.tgazebo-lighting-overlay.light-rosy {
+  background: radial-gradient(circle at 50% 30%, rgba(251, 207, 232, 0.22) 0%, rgba(244, 114, 182, 0.12) 60%, rgba(46, 16, 101, 0.3) 100%);
+}
+
+/* Floating Flower Petals Layer */
+.tgazebo-petals-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.tg-petal {
+  position: absolute;
+  color: #fbcfe8;
+  opacity: 0.8;
+  animation: tgPetalDrift 8s linear infinite;
+}
+
+@keyframes tgPetalDrift {
+  0% { transform: translateY(-20px) rotate(0deg) scale(0.8); opacity: 0; }
+  15% { opacity: 0.9; }
+  85% { opacity: 0.85; }
+  100% { transform: translateY(105vh) rotate(360deg) scale(1.1); opacity: 0; }
+}
+
+/* =============================================================================
+   1. TOP BAR HUD
+   ============================================================================= */
+.tgazebo-top-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(244, 114, 182, 0.3);
+  box-shadow: 0 4px 20px rgba(244, 114, 182, 0.1);
+}
+
+.tgazebo-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-tgazebo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  background: linear-gradient(135deg, #fdf2f8, #fef9c3);
+  color: #831843;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(131, 24, 67, 0.08);
+}
+
+.btn-tgazebo-back:hover {
+  transform: translateX(-2px);
+  background: linear-gradient(135deg, #fce7f3, #fef08a);
+  border-color: #f472b6;
+}
+
+.tgazebo-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tgazebo-sun-icon {
+  font-size: 1.5rem;
+  color: #f59e0b;
+}
+
+.tgazebo-title-texts h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #db2777, #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tgazebo-title-texts p {
+  margin: 0;
+  font-size: 0.76rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tgazebo-top-quote {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #831843;
+  font-style: italic;
+  font-weight: 600;
+  background: rgba(253, 242, 248, 0.8);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(244, 114, 182, 0.25);
+}
+
+.tgazebo-gardener-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #831843;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.tg-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f472b6;
+}
+
+/* Ambient Music Player Pill */
+.tgazebo-music-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.tgazebo-music-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.btn-tgazebo-music-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #f472b6, #ec4899);
+  color: #ffffff;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn-tgazebo-music-toggle:hover {
+  transform: scale(1.1);
+}
+
+.btn-tgazebo-music-mute {
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.tgazebo-vol-slider {
+  width: 60px;
+  accent-color: #f472b6;
+  cursor: pointer;
+}
+
+/* =============================================================================
+   2. FOUR CENTRAL ACTIVITY CARDS
+   ============================================================================= */
+.tgazebo-center-stage {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  pointer-events: none;
+}
+
+.tgazebo-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 210px);
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.tgazebo-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(244, 114, 182, 0.4);
+  border-radius: 18px;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(244, 114, 182, 0.12);
+}
+
+.tgazebo-card:hover {
+  transform: translateY(-6px);
+  border-color: #f472b6;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 32px rgba(244, 114, 182, 0.24);
+}
+
+.card-icon-halo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fdf2f8, #fef9c3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  box-shadow: 0 3px 10px rgba(244, 114, 182, 0.15);
+}
+
+.tgazebo-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #831843;
+}
+
+.tgazebo-card p {
+  margin: 0;
+  font-size: 0.74rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* =============================================================================
+   3. BOTTOM ACTION DOCK (POJOK KIRI BAWAH)
+   ============================================================================= */
+.tgazebo-bottom-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  pointer-events: none;
+}
+
+.tgazebo-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.btn-tgazebo-circle-action {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(244, 114, 182, 0.45);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: #831843;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(244, 114, 182, 0.18);
+  position: relative;
+}
+
+.btn-tgazebo-circle-action:hover {
+  transform: translateY(-3px) scale(1.08);
+  border-color: #f472b6;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(244, 114, 182, 0.3);
+}
+
+/* Tooltip on hover */
+.btn-tgazebo-circle-action::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(30, 41, 59, 0.88);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 20;
+}
+
+.btn-tgazebo-circle-action:hover::after {
+  opacity: 1;
+}
+
+/* =============================================================================
+   4. INTERIOR TOUCH HOTSPOTS (CAT, GUITAR, LANTERNS)
+   ============================================================================= */
+.tg-hotspot-cat {
+  position: absolute;
+  top: 60%;
+  left: 17%;
+  width: 140px;
+  height: 90px;
+  cursor: pointer;
+  z-index: 6;
+  border-radius: 50%;
+}
+
+.tg-hotspot-guitar {
+  position: absolute;
+  top: 54%;
+  left: 73%;
+  width: 90px;
+  height: 160px;
+  cursor: pointer;
+  z-index: 6;
+  border-radius: 20px;
+}
+
+.tg-hotspot-lanterns {
+  position: absolute;
+  top: 5%;
+  left: 45%;
+  width: 110px;
+  height: 110px;
+  cursor: pointer;
+  z-index: 6;
+  border-radius: 50%;
+}
+
+/* =============================================================================
+   5. GAZEBO MODAL DIALOG
+   ============================================================================= */
+.tgazebo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.tgazebo-modal-backdrop.open {
+  display: flex;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.tgazebo-modal-dialog {
+  background: #ffffff;
+  border: 1.5px solid rgba(244, 114, 182, 0.4);
+  border-radius: 22px;
+  width: 820px;
+  max-width: 95%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2);
+}
+
+.tgazebo-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #fdf2f8, #fef9c3);
+  border-bottom: 1px solid rgba(244, 114, 182, 0.25);
+}
+
+.tgazebo-modal-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tgazebo-modal-header-icon {
+  font-size: 1.8rem;
+}
+
+.tgazebo-modal-header-meta h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #831843;
+}
+
+.tgazebo-modal-header-meta p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.btn-tgazebo-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.btn-tgazebo-modal-close:hover {
+  color: #e11d48;
+}
+
+.tgazebo-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* =============================================================================
+   6. TEA TIME MODAL LAYOUT
+   ============================================================================= */
+.tgazebo-tea-layout {
+  display: flex;
+  gap: 20px;
+}
+
+.tgazebo-tea-selection-col {
+  flex: 1.2;
+}
+
+.tgazebo-tea-display-col {
+  flex: 0.8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fdf2f8;
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+}
+
+.tg-section-heading {
+  margin: 0 0 10px 0;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: #831843;
+}
+
+.tg-tea-grid,
+.tg-treat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tg-tea-card,
+.tg-treat-card {
+  background: #ffffff;
+  border: 1px solid rgba(244, 114, 182, 0.25);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tg-tea-card:hover,
+.tg-treat-card:hover {
+  transform: translateY(-2px);
+  border-color: #f472b6;
+  box-shadow: 0 4px 12px rgba(244, 114, 182, 0.15);
+}
+
+.tg-tea-card.selected,
+.tg-treat-card.selected {
+  border-color: #db2777;
+  background: #fff1f2;
+  box-shadow: 0 0 0 2px #f472b6;
+}
+
+.tg-tea-icon,
+.tg-treat-icon {
+  font-size: 1.6rem;
+}
+
+.tg-tea-meta h4,
+.tg-treat-meta h4 {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tg-tea-aroma,
+.tg-treat-meta p {
+  margin: 2px 0 0 0;
+  font-size: 0.72rem;
+  color: #64748b;
+  line-height: 1.25;
+}
+
+.tg-tea-pot-stage {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #f472b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.tg-tea-pot-icon {
+  font-size: 3.2rem;
+}
+
+.tg-active-tea-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.tg-tea-full-desc {
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.35;
+  margin: 0 0 10px 0;
+}
+
+.tg-tea-effect-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  font-size: 0.74rem;
+  color: #db2777;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.btn-tg-brew-tea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #f472b6, #ec4899);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+}
+
+.btn-tg-brew-tea:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f43f5e, #db2777);
+}
+
+/* =============================================================================
+   7. LIBRARY & STORIES
+   ============================================================================= */
+.tg-library-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  font-size: 0.88rem;
+  color: #475569;
+}
+
+.tg-stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.tg-story-card {
+  background: #fffdf8;
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tg-story-card h4 {
+  margin: 6px 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tg-story-author {
+  font-size: 0.76rem;
+  color: #db2777;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+
+.tg-story-snippet {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.35;
+  flex: 1;
+  margin: 0 0 10px 0;
+}
+
+.btn-tg-read-story {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #f472b6, #fb7185);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+}
+
+.tg-reader-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tg-reader-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tg-reader-parchment {
+  background: #fffdf8;
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  border-radius: 14px;
+  padding: 24px;
+  line-height: 1.6;
+  min-height: 280px;
+}
+
+.tg-reader-title {
+  margin: 0 0 4px 0;
+  font-size: 1.3rem;
+  color: #831843;
+}
+
+.tg-reader-meta {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.tg-reader-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* =============================================================================
+   8. JURNAL KENANGAN
+   ============================================================================= */
+.tg-journal-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.tg-journal-entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tg-journal-item {
+  background: #fffdf8;
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.tg-journal-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.tg-mood-pill {
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: #fdf2f8;
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #831843;
+}
+
+.tg-journal-item h4 {
+  margin: 0 0 6px 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tg-journal-snippet {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin: 0 0 10px 0;
+}
+
+.tg-journal-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-tg-view-journal {
+  background: transparent;
+  border: none;
+  color: #db2777;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-tg-delete-journal {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.btn-tg-delete-journal:hover {
+  opacity: 1;
+}
+
+/* =============================================================================
+   9. QUIET MOMENT AMBIENT
+   ============================================================================= */
+.tg-ambient-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.tg-ambient-card {
+  background: #fffdf8;
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tg-ambient-card:hover {
+  transform: translateY(-2px);
+  border-color: #f472b6;
+}
+
+.tg-ambient-card.active {
+  border-color: #db2777;
+  background: #fdf2f8;
+  box-shadow: 0 0 0 2px #f472b6;
+}
+
+.tg-ambient-icon {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.tg-ambient-card h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.tg-ambient-card p {
+  margin: 0 0 10px 0;
+  font-size: 0.72rem;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.tg-ambient-state-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #db2777;
+}
+
+/* Common Buttons & Inputs */
+.btn-tg-primary {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #f472b6, #ec4899);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-tg-secondary {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  background: #ffffff;
+  color: #831843;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tg-input-text,
+.tg-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  background: #fffdf8;
+  font-size: 0.88rem;
+  box-sizing: border-box;
+}
+
+.tg-input-text:focus,
+.tg-textarea:focus {
+  outline: none;
+  border-color: #f472b6;
+  box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2);
+}
+
+/* =============================================================================
+   10. RESPONSIVE BREAKPOINTS
+   ============================================================================= */
+@media (max-width: 900px) {
+  .tgazebo-top-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 16px;
+  }
+  .tgazebo-top-quote {
+    display: none;
+  }
+  .tgazebo-cards-grid {
+    grid-template-columns: repeat(2, 160px);
+    gap: 12px;
+  }
+  .tgazebo-tea-layout {
+    flex-direction: column;
+  }
+  .tg-hotspot-cat {
+    width: 100px;
+    height: 70px;
+  }
+  .tg-hotspot-guitar {
+    width: 70px;
+    height: 120px;
+  }
+}

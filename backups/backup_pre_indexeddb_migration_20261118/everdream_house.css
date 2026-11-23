@@ -1,0 +1,1117 @@
+/* =============================================================================
+   THE EVERDREAM HOUSE — NYANYA ⭐ (UNIVERSE KIDULT)
+   Style: European Storybook Victorian Cottage & Whimsical Fairytale
+   Color Palette: Ivory Cream, Dusty Pink, Soft Lavender, Champagne Gold, Warm Beige
+   Tagline: "Where Childhood Dreams Never Fade."
+   ============================================================================= */
+
+:root {
+  --ed-ivory: #fdfbf7;
+  --ed-ivory-warm: #f7f3ea;
+  --ed-dusty-pink: #f2cbd0;
+  --ed-dusty-rose: #d98293;
+  --ed-soft-lavender: #e6ddf5;
+  --ed-lavender-glow: #c8b6e2;
+  --ed-lavender-deep: #8c6bb1;
+  --ed-champagne-gold: #f7e7ce;
+  --ed-gold-glow: #e5c07b;
+  --ed-gold-accent: #d4af37;
+  --ed-warm-beige: #f5ebe0;
+  --ed-warm-wood: #6d4c41;
+  --ed-cozy-dark: #23192d;
+  --ed-cozy-overlay: rgba(35, 25, 45, 0.72);
+  --ed-card-border: rgba(229, 192, 123, 0.35);
+  --ed-glow-shadow: 0 0 24px rgba(229, 192, 123, 0.28);
+}
+
+/* Full View Container */
+.view-everdream-house {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: none;
+  background-color: var(--ed-cozy-dark);
+  font-family: 'Quicksand', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  color: var(--ed-ivory);
+  user-select: none;
+  z-index: 100;
+}
+
+.view-everdream-house.active {
+  display: block;
+}
+
+/* Atmospheric Overlays */
+.everdream-atmo-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: background 1.2s ease, opacity 1s ease;
+}
+
+/* 1. Golden Twilight (Default) */
+.view-everdream-house.atmo-twilight .everdream-atmo-layer {
+  background: 
+    radial-gradient(ellipse at 50% 20%, rgba(247, 231, 206, 0.18) 0%, rgba(217, 130, 147, 0.14) 45%, rgba(35, 25, 45, 0.35) 100%),
+    linear-gradient(180deg, rgba(230, 221, 245, 0.08) 0%, rgba(242, 203, 208, 0.12) 50%, rgba(20, 12, 28, 0.4) 100%);
+}
+
+/* 2. Rosy Sunset */
+.view-everdream-house.atmo-rosy .everdream-atmo-layer {
+  background: 
+    radial-gradient(ellipse at 60% 30%, rgba(242, 203, 208, 0.28) 0%, rgba(140, 107, 177, 0.2) 60%, rgba(25, 14, 38, 0.5) 100%);
+}
+
+/* 3. Warm Morning */
+.view-everdream-house.atmo-morning .everdream-atmo-layer {
+  background: 
+    radial-gradient(ellipse at 30% 15%, rgba(247, 231, 206, 0.35) 0%, rgba(245, 235, 224, 0.15) 50%, rgba(20, 15, 30, 0.2) 100%);
+}
+
+/* 4. Starry Night */
+.view-everdream-house.atmo-starry .everdream-atmo-layer {
+  background: 
+    radial-gradient(ellipse at 50% 10%, rgba(200, 182, 226, 0.2) 0%, rgba(16, 12, 32, 0.6) 70%, rgba(8, 5, 18, 0.85) 100%);
+}
+
+/* Stardust & Particle Layer */
+.everdream-particles-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.ed-stardust {
+  position: absolute;
+  color: var(--ed-gold-glow);
+  font-size: 0.9rem;
+  opacity: 0.75;
+  animation: edStardustFloat 8s ease-in-out infinite alternate;
+}
+
+@keyframes edStardustFloat {
+  0% { transform: translateY(0) scale(0.9) rotate(0deg); opacity: 0.3; }
+  50% { opacity: 0.85; }
+  100% { transform: translateY(-35px) scale(1.15) rotate(15deg); opacity: 0.4; }
+}
+
+/* Header & Top Navigation Bar */
+.everdream-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: linear-gradient(180deg, rgba(28, 18, 38, 0.92) 0%, rgba(28, 18, 38, 0.6) 75%, transparent 100%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(229, 192, 123, 0.25);
+  z-index: 20;
+}
+
+.everdream-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-everdream-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(242, 203, 208, 0.15);
+  border: 1px solid rgba(242, 203, 208, 0.35);
+  color: var(--ed-ivory);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-everdream-back:hover {
+  background: rgba(242, 203, 208, 0.3);
+  border-color: var(--ed-dusty-pink);
+  transform: translateX(-2px);
+  box-shadow: 0 0 12px rgba(242, 203, 208, 0.4);
+}
+
+.everdream-title-group h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--ed-champagne-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-shadow: 0 0 10px rgba(229, 192, 123, 0.5);
+}
+
+.everdream-title-group p {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--ed-dusty-pink);
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+/* Controls: Atmosphere & Music */
+.everdream-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.everdream-atmo-picker {
+  display: flex;
+  background: rgba(18, 12, 28, 0.75);
+  border: 1px solid var(--ed-card-border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.btn-ed-atmo {
+  background: transparent;
+  border: none;
+  color: #c4b5d4;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-ed-atmo:hover {
+  color: var(--ed-ivory);
+}
+
+.btn-ed-atmo.active {
+  background: linear-gradient(135deg, rgba(217, 130, 147, 0.75), rgba(140, 107, 177, 0.75));
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(217, 130, 147, 0.45);
+}
+
+.btn-ed-audio-toggle {
+  background: rgba(247, 231, 206, 0.15);
+  border: 1px solid var(--ed-card-border);
+  color: var(--ed-champagne-gold);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.btn-ed-audio-toggle:hover {
+  background: rgba(247, 231, 206, 0.28);
+  box-shadow: 0 0 10px rgba(229, 192, 123, 0.4);
+}
+
+/* Room Navigation Dock */
+.everdream-room-dock {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(25, 16, 36, 0.88);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--ed-card-border);
+  border-radius: 999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 16px rgba(229, 192, 123, 0.2);
+  z-index: 25;
+}
+
+.btn-ed-room-nav {
+  background: transparent;
+  border: none;
+  color: #d1c4e0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  white-space: nowrap;
+}
+
+.btn-ed-room-nav:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ed-ivory);
+  transform: translateY(-2px);
+}
+
+.btn-ed-room-nav.active {
+  background: linear-gradient(135deg, rgba(242, 203, 208, 0.4), rgba(200, 182, 226, 0.4));
+  border: 1px solid var(--ed-gold-glow);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(229, 192, 123, 0.45);
+  transform: translateY(-2px);
+}
+
+/* Main Center Stage & Room Containers */
+.everdream-center-stage {
+  position: absolute;
+  inset: 0;
+  padding-top: 68px;
+  padding-bottom: 74px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.everdream-room-container {
+  position: absolute;
+  inset: 68px 0 74px 0;
+  display: none;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.everdream-room-container.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* Room Info Banner */
+.everdream-room-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 28px;
+  background: linear-gradient(90deg, rgba(28, 18, 38, 0.85) 0%, rgba(42, 26, 56, 0.65) 60%, transparent 100%);
+  border-bottom: 1px solid rgba(242, 203, 208, 0.2);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.room-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.room-banner-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 8px rgba(229, 192, 123, 0.6));
+}
+
+.room-banner-left h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--ed-champagne-gold);
+  font-weight: 700;
+}
+
+.room-banner-left p {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: var(--ed-dusty-pink);
+  max-width: 650px;
+  line-height: 1.35;
+}
+
+.room-banner-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-banner-action {
+  background: linear-gradient(135deg, rgba(217, 130, 147, 0.4), rgba(140, 107, 177, 0.4));
+  border: 1px solid var(--ed-gold-glow);
+  color: var(--ed-ivory);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-banner-action:hover {
+  background: linear-gradient(135deg, rgba(217, 130, 147, 0.65), rgba(140, 107, 177, 0.65));
+  box-shadow: 0 0 14px rgba(229, 192, 123, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Scenery Canvas */
+.everdream-scenery-canvas {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 1. ROOM EXTERIOR: Storybook Victorian Cottage */
+.exterior-scenery {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.exterior-interactive-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Cottage Exterior Visual Architecture Elements */
+.cottage-facade-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+/* High Victorian Gable Roof & Windows Glow */
+.cottage-window-glow {
+  position: absolute;
+  background: radial-gradient(circle, rgba(255, 236, 179, 0.95) 0%, rgba(247, 195, 106, 0.75) 50%, rgba(217, 130, 147, 0.2) 100%);
+  border-radius: 50% 50% 10% 10%;
+  box-shadow: 0 0 28px rgba(255, 215, 128, 0.8), 0 0 60px rgba(247, 195, 106, 0.4);
+  animation: edWindowPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes edWindowPulse {
+  0% { opacity: 0.85; filter: brightness(1); }
+  100% { opacity: 1; filter: brightness(1.2); }
+}
+
+.win-dormer-left { top: 22%; left: 38%; width: 50px; height: 75px; }
+.win-dormer-right { top: 22%; left: 58%; width: 50px; height: 75px; }
+.win-bay-ground { top: 52%; left: 28%; width: 110px; height: 110px; border-radius: 20px; }
+.win-bedroom-balcony { top: 40%; left: 63%; width: 65px; height: 95px; }
+
+/* Chimney & Smoke */
+.cottage-chimney-smoke {
+  position: absolute;
+  top: 8%;
+  left: 64%;
+  pointer-events: none;
+}
+
+.smoke-puff {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, rgba(245, 235, 224, 0.6) 0%, rgba(230, 221, 245, 0.2) 60%, transparent 100%);
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: edSmokeCurl 5s ease-out infinite;
+}
+
+.smoke-puff.p1 { animation-delay: 0s; }
+.smoke-puff.p2 { animation-delay: 1.6s; left: 10px; }
+.smoke-puff.p3 { animation-delay: 3.2s; left: -8px; }
+
+@keyframes edSmokeCurl {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0.65; }
+  50% { transform: translate(15px, -45px) scale(1.4); opacity: 0.45; }
+  100% { transform: translate(32px, -95px) scale(2.2); opacity: 0; }
+}
+
+/* Cottage Front Door Portal */
+.cottage-front-door-zone {
+  position: absolute;
+  bottom: 22%;
+  left: 48%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 190px;
+  border-radius: 70px 70px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 14px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+.door-glow-frame {
+  position: absolute;
+  inset: -6px;
+  border-radius: 76px 76px 0 0;
+  border: 2px dashed rgba(229, 192, 123, 0.65);
+  box-shadow: 0 0 20px rgba(229, 192, 123, 0.45);
+  animation: edDoorGlowPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes edDoorGlowPulse {
+  0% { opacity: 0.5; transform: scale(0.99); }
+  100% { opacity: 0.9; transform: scale(1.02); }
+}
+
+.btn-cottage-door {
+  background: linear-gradient(135deg, var(--ed-gold-glow), var(--ed-dusty-rose));
+  border: 1px solid #ffffff;
+  color: #2b1836;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  z-index: 5;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+}
+
+.cottage-front-door-zone:hover .btn-cottage-door {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(247, 231, 206, 0.8);
+}
+
+/* Cobblestone Path & Garden Lanterns */
+.garden-lantern {
+  position: absolute;
+  width: 22px;
+  height: 38px;
+  background: radial-gradient(circle, #fff3d1 0%, #ffc04d 50%, rgba(217, 130, 147, 0) 80%);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(255, 192, 77, 0.8);
+  animation: edLanternFlicker 3s ease-in-out infinite alternate;
+}
+
+@keyframes edLanternFlicker {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+.lantern-left { bottom: 20%; left: 24%; }
+.lantern-right { bottom: 18%; left: 74%; }
+
+/* Surrounding Integration Hubs (Greenhouse, Gazebo, Picnic, River) */
+.exterior-hubs-bar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  background: rgba(28, 18, 38, 0.78);
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(229, 192, 123, 0.3);
+  backdrop-filter: blur(10px);
+  z-index: 12;
+}
+
+.btn-exterior-hub {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(242, 203, 208, 0.25);
+  color: var(--ed-ivory);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-exterior-hub:hover {
+  background: rgba(242, 203, 208, 0.25);
+  border-color: var(--ed-dusty-pink);
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(242, 203, 208, 0.4);
+}
+
+/* Fluttering Butterflies & Swaying Flowers */
+.ed-butterfly {
+  position: absolute;
+  font-size: 1.2rem;
+  pointer-events: none;
+  animation: edButterflyFlutter 7s ease-in-out infinite alternate;
+}
+
+.bf1 { top: 60%; left: 20%; animation-delay: 0s; }
+.bf2 { top: 68%; left: 80%; animation-delay: 2.5s; font-size: 1.4rem; }
+
+@keyframes edButterflyFlutter {
+  0% { transform: translate(0, 0) rotate(0deg) scale(0.9); }
+  25% { transform: translate(15px, -20px) rotate(10deg) scale(1.1); }
+  50% { transform: translate(-10px, -40px) rotate(-8deg) scale(0.95); }
+  75% { transform: translate(25px, -25px) rotate(12deg) scale(1.05); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(0.9); }
+}
+
+/* =============================================================================
+   INTERIOR ROOMS VISUAL ARCHITECTURE
+   ============================================================================= */
+
+/* Room Backdrop Layout Grid */
+.interior-scenery-grid {
+  position: relative;
+  width: 94%;
+  max-width: 1200px;
+  height: 90%;
+  margin: auto;
+  background: 
+    radial-gradient(ellipse at 50% 25%, rgba(247, 231, 206, 0.15) 0%, rgba(35, 25, 45, 0.85) 75%),
+    linear-gradient(180deg, rgba(42, 26, 56, 0.8) 0%, rgba(24, 15, 36, 0.95) 100%);
+  border: 1px solid var(--ed-card-border);
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(229, 192, 123, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Interactive Furniture Layout Row */
+.furniture-station-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+/* Interactive Station Card */
+.station-card {
+  position: relative;
+  background: rgba(36, 24, 48, 0.75);
+  border: 1px solid rgba(229, 192, 123, 0.28);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.station-card:hover {
+  border-color: var(--ed-gold-glow);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 18px rgba(229, 192, 123, 0.25);
+}
+
+.station-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.station-icon {
+  font-size: 2rem;
+  background: rgba(242, 203, 208, 0.18);
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(242, 203, 208, 0.35);
+  filter: drop-shadow(0 0 8px rgba(242, 203, 208, 0.4));
+}
+
+.station-title h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--ed-champagne-gold);
+}
+
+.station-title p {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--ed-dusty-pink);
+}
+
+.station-body {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: #dfd5ec;
+  flex: 1;
+}
+
+.station-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-station-action {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(217, 130, 147, 0.35), rgba(140, 107, 177, 0.35));
+  border: 1px solid var(--ed-gold-glow);
+  color: var(--ed-ivory);
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-station-action:hover {
+  background: linear-gradient(135deg, rgba(217, 130, 147, 0.65), rgba(140, 107, 177, 0.65));
+  box-shadow: 0 0 14px rgba(229, 192, 123, 0.45);
+}
+
+/* Fireplace Flame Animation */
+.fireplace-visual-box {
+  width: 100%;
+  height: 90px;
+  background: radial-gradient(circle at 50% 85%, #ff8c00 0%, #b22222 45%, #2a1a38 85%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-shadow: inset 0 -10px 20px rgba(255, 140, 0, 0.5);
+}
+
+.fireplace-flames {
+  font-size: 2.4rem;
+  animation: edFireplaceFlicker 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes edFireplaceFlicker {
+  0% { transform: scale(0.92) rotate(-2deg); filter: brightness(0.9); }
+  50% { transform: scale(1.05) rotate(2deg); filter: brightness(1.2); }
+  100% { transform: scale(0.98) rotate(0deg); filter: brightness(1.1); }
+}
+
+.fireplace-off {
+  background: #1c1324;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.fireplace-off .fireplace-flames {
+  display: none;
+}
+
+/* Star Lamp Glow Visual */
+.starlamp-visual {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.5rem;
+  color: var(--ed-champagne-gold);
+}
+
+.starlamp-glow-active {
+  text-shadow: 0 0 14px #ffeb3b, 0 0 30px #ffa000;
+  animation: edStarPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes edStarPulse {
+  0% { opacity: 0.85; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1.1); }
+}
+
+/* =============================================================================
+   NYANYA PRESENCE & SPEECH DOCK
+   ============================================================================= */
+.everdream-nyanya-dock {
+  position: absolute;
+  bottom: 84px;
+  left: 28px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 22;
+  pointer-events: none;
+}
+
+.nyanya-avatar-frame {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--ed-gold-glow);
+  box-shadow: 0 0 16px rgba(229, 192, 123, 0.6);
+  background: rgba(35, 25, 45, 0.85);
+  overflow: hidden;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.nyanya-avatar-frame:hover {
+  transform: scale(1.08);
+}
+
+.nyanya-avatar-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nyanya-speech-bubble {
+  background: rgba(28, 18, 38, 0.88);
+  border: 1px solid var(--ed-card-border);
+  padding: 10px 16px;
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  max-width: 380px;
+  font-size: 0.84rem;
+  color: var(--ed-ivory-warm);
+  line-height: 1.4;
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+  animation: edBubbleIn 0.35s ease;
+}
+
+@keyframes edBubbleIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================================================
+   MODAL DIALOGS (PETI KENANGAN, BOOKSHELF, JOURNAL, KITCHEN, SLEEP OVERLAY)
+   ============================================================================= */
+
+.everdream-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 12, 28, 0.8);
+  backdrop-filter: blur(14px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.everdream-modal-overlay.open {
+  display: flex;
+}
+
+.everdream-modal-card {
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  background: linear-gradient(135deg, rgba(38, 25, 52, 0.95) 0%, rgba(22, 14, 34, 0.98) 100%);
+  border: 1px solid var(--ed-gold-glow);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(229, 192, 123, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: edModalPop 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes edModalPop {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(229, 192, 123, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.modal-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-icon {
+  font-size: 1.8rem;
+}
+
+.modal-header-title h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--ed-champagne-gold);
+}
+
+.modal-header-title p {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--ed-dusty-pink);
+}
+
+.btn-modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: var(--ed-ivory);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-close:hover {
+  background: rgba(217, 130, 147, 0.4);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Peti Kenangan Cards in Modal */
+.memory-chest-item {
+  background: rgba(30, 20, 42, 0.7);
+  border: 1px solid rgba(242, 203, 208, 0.25);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.memory-chest-item:hover {
+  border-color: var(--ed-gold-glow);
+  box-shadow: 0 0 16px rgba(229, 192, 123, 0.25);
+}
+
+.memory-chest-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.memory-chest-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ed-champagne-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.memory-chest-date {
+  font-size: 0.75rem;
+  color: var(--ed-dusty-pink);
+}
+
+.memory-chest-excerpt {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: #eeddf8;
+  font-style: italic;
+}
+
+.memory-chest-gift {
+  font-size: 0.78rem;
+  background: rgba(247, 231, 206, 0.12);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--ed-gold-glow);
+  color: var(--ed-champagne-gold);
+}
+
+/* Journal Writing Form in Modal */
+.journal-compose-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.journal-compose-box textarea {
+  width: 100%;
+  height: 110px;
+  background: rgba(22, 14, 32, 0.85);
+  border: 1px solid var(--ed-card-border);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--ed-ivory);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.journal-compose-box textarea:focus {
+  outline: none;
+  border-color: var(--ed-gold-glow);
+  box-shadow: 0 0 12px rgba(229, 192, 123, 0.4);
+}
+
+/* Sleep & Dream Lullaby Overlay */
+.everdream-sleep-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(30, 20, 45, 0.96) 0%, rgba(12, 8, 20, 0.98) 100%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 250;
+  color: var(--ed-ivory);
+  text-align: center;
+  padding: 20px;
+  animation: edFadeIn 1s ease;
+}
+
+.everdream-sleep-overlay.open {
+  display: flex;
+}
+
+@keyframes edFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sleep-moon-icon {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  animation: edMoonFloat 3s ease-in-out infinite alternate;
+}
+
+@keyframes edMoonFloat {
+  0% { transform: translateY(0) scale(0.95); filter: drop-shadow(0 0 10px rgba(229, 192, 123, 0.5)); }
+  100% { transform: translateY(-10px) scale(1.05); filter: drop-shadow(0 0 25px rgba(229, 192, 123, 0.8)); }
+}
+
+.sleep-title {
+  font-size: 1.8rem;
+  color: var(--ed-champagne-gold);
+  margin: 0 0 8px;
+}
+
+.sleep-quote {
+  font-size: 0.95rem;
+  color: var(--ed-dusty-pink);
+  font-style: italic;
+  max-width: 480px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.btn-sleep-wakeup {
+  background: linear-gradient(135deg, var(--ed-gold-glow), var(--ed-dusty-rose));
+  border: none;
+  color: #241432;
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(229, 192, 123, 0.5);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-sleep-wakeup:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 24px rgba(229, 192, 123, 0.8);
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   ============================================================================= */
+@media (max-width: 768px) {
+  .everdream-top-bar {
+    height: 60px;
+    padding: 0 14px;
+  }
+
+  .everdream-title-group h2 {
+    font-size: 1rem;
+  }
+
+  .everdream-title-group p {
+    display: none;
+  }
+
+  .btn-ed-atmo span.atmo-name {
+    display: none;
+  }
+
+  .everdream-room-dock {
+    bottom: 12px;
+    padding: 4px 6px;
+    max-width: 96vw;
+    overflow-x: auto;
+  }
+
+  .btn-ed-room-nav {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+
+  .everdream-room-banner {
+    padding: 10px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .furniture-station-row {
+    grid-template-columns: 1fr;
+  }
+
+  .exterior-hubs-bar {
+    bottom: 74px;
+    max-width: 94vw;
+    overflow-x: auto;
+  }
+
+  .everdream-nyanya-dock {
+    bottom: 70px;
+    left: 14px;
+  }
+
+  .nyanya-speech-bubble {
+    max-width: 260px;
+    font-size: 0.78rem;
+  }
+}

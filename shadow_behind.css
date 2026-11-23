@@ -1,0 +1,1196 @@
+/* =============================================================================
+   OUR LITTLE UNIVERSE — BEHIND THE SHADOW (LELE)
+   Grand Redesign Stylesheet
+   Benchmark: BEHIND THE ASH (Ruben) & BEHIND THE YAWN (Akhira)
+   Palette: Midnight Navy, Deep Indigo, Royal Violet, Amethyst Purple,
+            Moonlight Silver, Soft Lavender, Crystal Glow
+   ============================================================================= */
+
+/* --------------------------------------------------------------------------
+   0. LAUNCH BUTTON PILL (UNIVERSE GOTO PILL)
+   -------------------------------------------------------------------------- */
+.univ-goto-btn.shadow-behind-pill,
+.shadow-behind-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(30, 20, 56, 0.92), rgba(15, 11, 28, 0.95));
+  border: 1px solid rgba(196, 181, 253, 0.45);
+  border-radius: 999px;
+  color: #f1f5f9;
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 16px rgba(168, 85, 247, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.univ-goto-btn.shadow-behind-pill:hover,
+.shadow-behind-pill:hover {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.95), rgba(30, 20, 56, 0.98));
+  border-color: #c084fc;
+  box-shadow: 0 6px 24px rgba(168, 85, 247, 0.55), 0 0 25px rgba(192, 132, 252, 0.5);
+  transform: translateY(-2px) scale(1.02);
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   1. FULLSCREEN OVERLAY DIALOG & ATMOSPHERIC PARTICLES
+   -------------------------------------------------------------------------- */
+.shadow-behind-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 15%, #181134 0%, #0d0922 60%, #050410 100%);
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shadow-behind-overlay.active {
+  display: flex !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  opacity: 1;
+  flex-direction: column;
+}
+
+body:has(#view-selection.active) .shadow-behind-overlay,
+body:has(#view-login.active) .shadow-behind-overlay {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Floating Celestial Ambient Particles */
+.shadow-behind-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.shadow-behind-particles .particle {
+  position: absolute;
+  color: rgba(196, 181, 253, 0.45);
+  font-size: 1.2rem;
+  animation: floatShadowParticle 10s ease-in-out infinite alternate;
+  user-select: none;
+}
+
+.shadow-behind-particles .p1 { top: 10%; left: 7%; animation-duration: 9s; font-size: 1.5rem; color: rgba(224, 231, 255, 0.6); }
+.shadow-behind-particles .p2 { top: 22%; right: 10%; animation-duration: 12s; font-size: 1.1rem; color: rgba(168, 85, 247, 0.5); }
+.shadow-behind-particles .p3 { bottom: 16%; left: 12%; animation-duration: 11s; font-size: 1.7rem; color: rgba(129, 140, 248, 0.45); }
+.shadow-behind-particles .p4 { bottom: 24%; right: 15%; animation-duration: 8s; font-size: 1.2rem; color: rgba(147, 197, 253, 0.55); }
+.shadow-behind-particles .p5 { top: 48%; left: 4%; animation-duration: 13s; font-size: 1.4rem; color: rgba(238, 242, 255, 0.5); }
+.shadow-behind-particles .p6 { top: 58%; right: 6%; animation-duration: 10s; font-size: 1.3rem; color: rgba(192, 132, 252, 0.4); }
+
+@keyframes floatShadowParticle {
+  0% { transform: translateY(0) scale(0.9) rotate(0deg); opacity: 0.25; }
+  50% { transform: translateY(-24px) scale(1.1) rotate(15deg); opacity: 0.7; }
+  100% { transform: translateY(-45px) scale(1) rotate(-10deg); opacity: 0.3; }
+}
+
+/* --------------------------------------------------------------------------
+   2. MAIN OVERLAY CONTAINER & TOP HEADER
+   -------------------------------------------------------------------------- */
+.shadow-behind-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Header Bar */
+.shadow-behind-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(15, 11, 28, 0.82);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(196, 181, 253, 0.22);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.shadow-behind-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  background: rgba(46, 26, 76, 0.7);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.shadow-behind-back-btn:hover {
+  background: rgba(88, 28, 135, 0.85);
+  border-color: #c4b5fd;
+  color: #ffffff;
+  transform: translateX(-3px);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.45);
+}
+
+.shadow-behind-title-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.shadow-badge-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 10px rgba(196, 181, 253, 0.7));
+  animation: shadowIconPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes shadowIconPulse {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(6deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.shadow-badge-tag {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c4b5fd;
+  font-weight: 700;
+}
+
+.shadow-badge-title {
+  margin: 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 40%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shadow-badge-subtitle {
+  margin: 2px 0 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+}
+
+.shadow-behind-close-btn {
+  background: transparent;
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  color: #cbd5e1;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.shadow-behind-close-btn:hover {
+  background: rgba(220, 38, 38, 0.25);
+  border-color: #f87171;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+/* --------------------------------------------------------------------------
+   3. PROGRESS TRACK & 4-CHAPTER STEPPER NAVIGATION
+   -------------------------------------------------------------------------- */
+.shadow-behind-progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.shadow-behind-progress-bar {
+  height: 100%;
+  width: 25%;
+  background: linear-gradient(90deg, #7c3aed, #a855f7, #60a5fa);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shadow-behind-nav {
+  display: flex;
+  align-items: stretch;
+  background: rgba(13, 9, 24, 0.92);
+  border-bottom: 1px solid rgba(196, 181, 253, 0.16);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.shadow-behind-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.shadow-behind-tab-btn {
+  flex: 0 0 auto;
+  min-width: max-content;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.shadow-behind-tab-btn .tab-num {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #a78bfa;
+}
+
+.shadow-behind-tab-btn .tab-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  white-space: nowrap;
+}
+
+.shadow-behind-tab-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+  color: #ffffff;
+}
+
+.shadow-behind-tab-btn.active {
+  background: rgba(139, 92, 246, 0.16);
+  border-bottom-color: #c084fc;
+  box-shadow: inset 0 -4px 14px rgba(192, 132, 252, 0.22);
+}
+
+.shadow-behind-tab-btn.active .tab-label {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   4. BOOK DECK & CHAPTER PANELS
+   -------------------------------------------------------------------------- */
+.shadow-behind-book-deck {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+}
+
+.shadow-behind-chapter-panel {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 36px 36px 50px;
+  box-sizing: border-box;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.shadow-behind-chapter-panel.active {
+  display: block;
+  opacity: 1;
+  animation: shadowChapterPanelIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes shadowChapterPanelIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Chapter Headers */
+.shadow-behind-page-header {
+  text-align: center;
+  max-width: 840px;
+  margin: 0 auto 34px;
+}
+
+.shadow-chapter-kicker,
+.shadow-chapter-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.22);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  color: #c4b5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.shadow-chapter-main-title {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 10px;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(196, 181, 253, 0.4);
+}
+
+.shadow-chapter-sub-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.12rem;
+  font-style: italic;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   5. TWO-COLUMN LAYOUT (CHAPTER I & CHAPTER II)
+   -------------------------------------------------------------------------- */
+.shadow-chapter-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 36px;
+  max-width: 1020px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.shadow-text-column {
+  font-size: 1.04rem;
+  line-height: 1.85;
+  color: #e2e8f0;
+}
+
+.shadow-journal-p {
+  margin: 0 0 20px;
+  text-align: justify;
+}
+
+.shadow-journal-p.drop-cap::first-letter {
+  font-family: 'Cinzel', serif, Georgia;
+  float: left;
+  font-size: 3.2rem;
+  line-height: 0.85;
+  padding-top: 4px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+  color: #c084fc;
+  font-weight: 700;
+  text-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
+}
+
+.shadow-section-title {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 28px 0 12px;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(196, 181, 253, 0.2);
+  padding-bottom: 6px;
+  text-shadow: 0 0 10px rgba(196, 181, 253, 0.4);
+}
+
+.shadow-story-list {
+  margin: 0 0 22px 20px;
+  padding: 0;
+  list-style-type: none;
+}
+
+.shadow-story-list li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+
+.shadow-story-list li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  color: #c084fc;
+  font-size: 0.85rem;
+}
+
+.shadow-story-list li strong {
+  color: #ffffff;
+}
+
+.shadow-journal-highlight {
+  margin: 28px 0;
+  padding: 18px 24px;
+  border-left: 3px solid #c084fc;
+  background: rgba(124, 58, 237, 0.14);
+  border-radius: 0 14px 14px 0;
+  font-style: italic;
+  font-size: 1.08rem;
+  color: #f1f5f9;
+  line-height: 1.65;
+}
+
+.shadow-journal-quote {
+  margin: 0 0 24px;
+  padding: 18px 24px;
+  background: rgba(24, 16, 46, 0.75);
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  border-radius: 14px;
+  font-size: 1.02rem;
+  color: #e2e8f0;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.65;
+}
+
+.shadow-journal-quote p {
+  margin: 0;
+}
+
+.shadow-callout-box {
+  margin: 28px 0;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, rgba(32, 20, 64, 0.85) 0%, rgba(18, 12, 36, 0.92) 100%);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+}
+
+.shadow-callout-title {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 10px;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 10px rgba(196, 181, 253, 0.5);
+}
+
+.shadow-callout-box p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+}
+
+/* --------------------------------------------------------------------------
+   6. SIDE PROFILE CARD (OFFICIAL HD PORTRAIT OF LELE)
+   -------------------------------------------------------------------------- */
+.shadow-char-profile-card {
+  background: rgba(18, 14, 38, 0.88);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.shadow-portrait-frame {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  aspect-ratio: 3 / 3.8;
+  max-height: 290px;
+}
+
+.shadow-portrait-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center 15%;
+  transition: transform 0.4s ease;
+}
+
+.shadow-portrait-frame:hover .shadow-portrait-img {
+  transform: scale(1.04);
+}
+
+.shadow-dual-wings-badge,
+.shadow-profile-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(14, 10, 28, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid #c084fc;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.shadow-profile-meta {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.shadow-profile-name {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 12px rgba(196, 181, 253, 0.6);
+}
+
+.shadow-profile-role {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  margin: 4px 0 0;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.shadow-profile-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  margin: 6px 0 0;
+}
+
+.shadow-specs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(196, 181, 253, 0.15);
+  border-bottom: 1px solid rgba(196, 181, 253, 0.15);
+  margin-bottom: 14px;
+}
+
+.shadow-spec-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  padding-bottom: 4px;
+}
+
+.shadow-spec-row .spec-label {
+  color: #94a3b8;
+}
+
+.shadow-spec-row .spec-val {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.shadow-profile-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.shadow-trait-tag {
+  background: rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+/* Chapter II Symbols List */
+.shadow-symbols-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shadow-symbol-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(196, 181, 253, 0.12);
+}
+
+.shadow-symbol-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.shadow-sym-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(196, 181, 253, 0.5));
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.shadow-sym-title {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 2px;
+}
+
+.shadow-sym-desc {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   7. CHAPTER III: PARCHMENT LETTER (AUTHOR'S SACRED LETTER)
+   -------------------------------------------------------------------------- */
+.shadow-parchment-letter {
+  max-width: 820px;
+  margin: 0 auto;
+  position: relative;
+  background: rgba(22, 14, 40, 0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  border-radius: 24px;
+  padding: 44px 40px;
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.7),
+    0 0 35px rgba(168, 85, 247, 0.2),
+    inset 0 0 20px rgba(196, 181, 253, 0.06);
+}
+
+.shadow-parchment-seal {
+  position: absolute;
+  top: -18px;
+  right: 40px;
+  width: 48px;
+  height: 48px;
+  background: radial-gradient(circle, #7c3aed 0%, #4c1d95 60%, #1e1035 100%);
+  border: 2px solid #e0e7ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.7);
+  font-size: 1.3rem;
+  user-select: none;
+  transition: transform 0.3s ease;
+}
+
+.shadow-parchment-seal:hover {
+  transform: scale(1.1) rotate(10deg);
+}
+
+.shadow-letter-header {
+  border-bottom: 1px solid rgba(196, 181, 253, 0.2);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.shadow-letter-date {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c4b5fd;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.shadow-letter-salutation {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.shadow-letter-body {
+  font-size: 1.04rem;
+  line-height: 1.85;
+  color: #e2e8f0;
+}
+
+.shadow-letter-body p {
+  margin: 0 0 16px;
+  text-align: justify;
+}
+
+.shadow-letter-signature {
+  margin-top: 32px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(196, 181, 253, 0.2);
+  text-align: right;
+}
+
+.shadow-sign-line {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #cbd5e1;
+  margin: 0 0 4px;
+}
+
+.shadow-sign-author {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px;
+  text-shadow: 0 0 10px rgba(196, 181, 253, 0.5);
+}
+
+.shadow-sign-stamp {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a78bfa;
+  font-weight: 700;
+}
+
+/* Letter Actions & Epilogue Action Buttons */
+.shadow-letter-actions,
+.shadow-epilogue-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.btn-shadow-letter-action,
+.btn-shadow-epilogue-action {
+  padding: 11px 24px;
+  border-radius: 9999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.btn-shadow-letter-action.primary,
+.btn-shadow-epilogue-action.primary {
+  background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #9333ea 100%);
+  border: 1px solid rgba(221, 214, 254, 0.45);
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgba(124, 58, 237, 0.45), 0 0 12px rgba(192, 132, 252, 0.3);
+}
+
+.btn-shadow-letter-action.primary:hover,
+.btn-shadow-epilogue-action.primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #a855f7 100%);
+  border-color: #e0e7ff;
+  box-shadow: 0 8px 25px rgba(147, 51, 234, 0.65), 0 0 20px rgba(192, 132, 252, 0.5);
+  color: #ffffff;
+}
+
+.btn-shadow-letter-action.secondary,
+.btn-shadow-epilogue-action.secondary {
+  background: rgba(22, 15, 42, 0.75);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  color: #e2e8f0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.btn-shadow-letter-action.secondary:hover,
+.btn-shadow-epilogue-action.secondary:hover {
+  background: rgba(46, 26, 85, 0.85);
+  border-color: #c084fc;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(168, 85, 247, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   8. CHAPTER IV: EPILOGUE & OFFICIAL SOUNDTRACK (EPILOGUE: SHADOW)
+   -------------------------------------------------------------------------- */
+.shadow-epilogue-container {
+  max-width: 840px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Grand Climax Quote Box */
+.shadow-climax-quote-box {
+  background: rgba(22, 14, 42, 0.88);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  border-radius: 22px;
+  padding: 38px 34px;
+  text-align: center;
+  box-shadow: 
+    0 16px 45px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(168, 85, 247, 0.25);
+  position: relative;
+}
+
+.shadow-climax-quote-icon {
+  font-size: 2.5rem;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 0 14px rgba(196, 181, 253, 0.7));
+}
+
+.shadow-closing-quote {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.55;
+  color: #ffffff;
+  margin: 0 0 16px;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 16px rgba(196, 181, 253, 0.5);
+}
+
+.shadow-closing-echo {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: #ddd6fe;
+  margin: 0 0 14px;
+}
+
+.shadow-closing-author {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #c4b5fd;
+  display: block;
+}
+
+/* Official Soundtrack Player Card */
+.shadow-player-card {
+  background: rgba(18, 12, 34, 0.9);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+}
+
+.shadow-track-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.shadow-track-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.shadow-track-disc {
+  font-size: 2.2rem;
+  display: inline-block;
+  filter: drop-shadow(0 0 10px rgba(196, 181, 253, 0.7));
+  animation: rotateDisc 10s linear infinite;
+}
+
+@keyframes rotateDisc {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.shadow-track-title {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.shadow-track-artist {
+  display: block;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.shadow-music-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.25);
+  border: 1px solid rgba(196, 181, 253, 0.4);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #c084fc;
+}
+
+.shadow-player-frame-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(196, 181, 253, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  margin-bottom: 14px;
+}
+
+.shadow-youtube-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.shadow-player-caption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  flex-wrap: wrap;
+}
+
+.shadow-player-caption p {
+  margin: 0;
+  flex: 1;
+}
+
+.shadow-ext-link {
+  color: #c084fc;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.shadow-ext-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Meaning Behind the Song Card */
+.shadow-meaning-card {
+  background: rgba(20, 14, 38, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(196, 181, 253, 0.25);
+  border-radius: 20px;
+  padding: 28px 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  font-size: 1.02rem;
+  line-height: 1.8;
+  color: #e2e8f0;
+}
+
+.shadow-meaning-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.shadow-meaning-icon {
+  font-size: 1.4rem;
+}
+
+.shadow-meaning-heading {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 0 12px rgba(196, 181, 253, 0.4);
+}
+
+.shadow-meaning-card p {
+  margin: 0 0 14px;
+  text-align: justify;
+}
+
+.shadow-meaning-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   9. FOOTER CHAPTER NAVIGATION CONTROLS
+   -------------------------------------------------------------------------- */
+.shadow-behind-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(15, 11, 28, 0.85);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(196, 181, 253, 0.18);
+  flex-shrink: 0;
+}
+
+.shadow-behind-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(68, 28, 120, 0.8), rgba(46, 26, 76, 0.9));
+  border: 1px solid rgba(196, 181, 253, 0.4);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.shadow-behind-nav-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.5);
+}
+
+.shadow-behind-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+}
+
+.shadow-chapter-indicators {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shadow-indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(196, 181, 253, 0.3);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.shadow-indicator-dot:hover {
+  background: rgba(196, 181, 253, 0.6);
+  transform: scale(1.2);
+}
+
+.shadow-indicator-dot.active {
+  background: #c084fc;
+  box-shadow: 0 0 10px rgba(192, 132, 252, 0.9);
+  width: 24px;
+  border-radius: 999px;
+}
+
+/* --------------------------------------------------------------------------
+   10. RESPONSIVE DESIGN (TABLET & MOBILE)
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .shadow-chapter-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .shadow-char-profile-card {
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .shadow-behind-chapter-panel {
+    padding: 24px 20px 40px;
+  }
+
+  .shadow-chapter-main-title {
+    font-size: 1.85rem;
+  }
+
+  .shadow-behind-header {
+    padding: 12px 16px;
+  }
+
+  .shadow-behind-footer {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 540px) {
+  .shadow-behind-back-btn span:last-child {
+    display: none;
+  }
+
+  .shadow-behind-back-btn {
+    padding: 8px 12px;
+  }
+
+  .shadow-badge-subtitle {
+    display: none;
+  }
+
+  .shadow-badge-title {
+    font-size: 1.15rem;
+  }
+
+  .shadow-behind-nav {
+    justify-content: flex-start;
+  }
+
+  .shadow-behind-tab-btn {
+    min-width: max-content;
+    flex-shrink: 0;
+    padding: 10px 14px;
+  }
+
+  .shadow-chapter-main-title {
+    font-size: 1.55rem;
+  }
+
+  .shadow-closing-quote {
+    font-size: 1.2rem;
+  }
+
+  .shadow-behind-nav-btn {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+  }
+}

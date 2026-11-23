@@ -12,6 +12,10 @@ import {
   getActiveConversationId,
   setActiveConversationId,
   getAvailableConversations,
+  getAvailableFriendsToChat,
+  startNewConversation,
+  markActiveConversationRead,
+  initMessagesRealtimeSync,
   getCachedMessages,
   sendMessage,
   sendMediaMessage,
@@ -90,6 +94,16 @@ export function openMessagesView(fromView = 'view-private-universe', charKey = n
   if (viewMessages) {
     viewMessages.classList.add('active');
     viewMessages.setAttribute('aria-hidden', 'false');
+
+    // Apply active character visual theme class
+    const current = getActiveUserCharacter() || charKey;
+    viewMessages.classList.remove(
+      'theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil',
+      'theme-akhira', 'theme-ela', 'theme-ruben', 'theme-royan'
+    );
+    if (current) {
+      viewMessages.classList.add(`theme-${current}`);
+    }
   }
 
   // Update navbar active state
@@ -170,20 +184,44 @@ export function closeMessagesView() {
 export function syncMessagesActiveCharacter(charKey) {
   if (charKey && CHARACTERS_MESSAGES[charKey]) {
     setActiveUserCharacter(charKey);
+    const viewMessages = document.getElementById('view-messages');
+    if (viewMessages) {
+      viewMessages.classList.remove(
+        'theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil',
+        'theme-akhira', 'theme-ela', 'theme-ruben', 'theme-royan'
+      );
+      viewMessages.classList.add(`theme-${charKey}`);
+    }
     renderActiveUserHeader();
     renderConversationListUI();
     setupActiveConversationSubscription();
   }
 }
 
-function renderActiveUserHeader() {
-  const current = getActiveUserCharacter();
-  const char = CHARACTERS_MESSAGES[current] || CHARACTERS_MESSAGES.nyanya;
-
+export function renderActiveUserHeader() {
+  let current = getActiveUserCharacter();
+  if (!current && typeof window !== 'undefined') {
+    current = window.activeCharacterKey || null;
+  }
   const avatarEl = document.getElementById('msg-active-user-avatar');
   const nameEl = document.getElementById('msg-active-user-name');
   const subEl = document.getElementById('msg-active-user-sub');
 
+  if (!current || !CHARACTERS_MESSAGES[current]) {
+    if (document.body && document.body.classList.contains('theme-akhira') && CHARACTERS_MESSAGES.akhira) {
+      current = 'akhira';
+    } else {
+      if (avatarEl) {
+        avatarEl.src = '/assets/avatar_nyanya_hd.png';
+        avatarEl.alt = 'Tamu';
+      }
+      if (nameEl) nameEl.textContent = 'Memuat Akun...';
+      if (subEl) subEl.textContent = 'Our Little Universe';
+      return;
+    }
+  }
+
+  const char = CHARACTERS_MESSAGES[current];
   if (avatarEl) {
     avatarEl.src = char.avatar;
     avatarEl.alt = char.name;
@@ -196,7 +234,70 @@ function renderActiveUserHeader() {
   }
 }
 
-function renderConversationListUI() {
+export function openNewChatModal() {
+  const modal = document.getElementById('modal-msg-new-chat');
+  const grid = document.getElementById('msg-friends-picker-grid');
+  if (!modal || !grid) return;
+
+  const current = getActiveUserCharacter();
+  const friends = getAvailableFriendsToChat(current);
+  grid.innerHTML = '';
+
+  if (friends.length === 0) {
+    grid.innerHTML = '<p style="color:#94a3b8; font-size:0.82rem; text-align:center; padding:1.5rem;">Tidak ada sahabat lain yang tersedia saat ini.</p>';
+  } else {
+    friends.forEach((f) => {
+      const card = document.createElement('div');
+      card.className = 'msg-friend-picker-card';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('data-key', f.key);
+      card.setAttribute('aria-label', `Mulai obrolan dengan ${f.name}`);
+      card.innerHTML = `
+        <img src="${escapeHtml(f.avatar)}" alt="${escapeHtml(f.name)}" class="msg-friend-picker-avatar" />
+        <div class="msg-friend-picker-meta">
+          <span class="msg-friend-picker-name">${escapeHtml(f.name)} ${f.symbol}</span>
+          <span class="msg-friend-picker-universe">Universe ${escapeHtml(f.universe)}</span>
+        </div>
+      `;
+      const selectAction = () => {
+        const convId = startNewConversation(f.key);
+        closeNewChatModal();
+        if (convId) {
+          selectConversation(convId);
+          const input = document.getElementById('msg-input-text');
+          if (input) {
+            input.disabled = false;
+            input.focus();
+          }
+        }
+      };
+      card.addEventListener('click', selectAction);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectAction();
+        }
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  modal.style.display = 'flex';
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+export function closeNewChatModal() {
+  const modal = document.getElementById('modal-msg-new-chat');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+export function renderConversationListUI() {
   const listContainer = document.getElementById('msg-conversation-list');
   if (!listContainer) return;
 
@@ -204,6 +305,24 @@ function renderConversationListUI() {
   const currentConvId = getActiveConversationId();
 
   listContainer.innerHTML = '';
+
+  if (convs.length === 0) {
+    listContainer.innerHTML = `
+      <div class="msg-empty-inbox">
+        <div class="msg-empty-inbox-icon">💬</div>
+        <h4 class="msg-empty-inbox-title">Belum ada percakapan</h4>
+        <p class="msg-empty-inbox-desc">Pesan dari sahabatmu akan muncul di sini.</p>
+        <button type="button" class="btn-msg-start-new" id="btn-msg-start-new">+ Mulai Obrolan Baru</button>
+      </div>
+    `;
+    const btnStart = listContainer.querySelector('#btn-msg-start-new');
+    if (btnStart) {
+      btnStart.addEventListener('click', openNewChatModal);
+    }
+    updateChatHeaderPartnerInfo();
+    return;
+  }
+
   convs.forEach((conv) => {
     const isActive = conv.id === currentConvId;
     const btn = document.createElement('button');
@@ -238,16 +357,42 @@ function renderConversationListUI() {
 function updateChatHeaderPartnerInfo() {
   const convId = getActiveConversationId();
   const convs = getAvailableConversations();
-  const activeConv = convs.find((c) => c.id === convId) || convs[0];
+  const activeConv = convs.find((c) => c.id === convId);
 
   const avatarEl = document.getElementById('msg-partner-avatar');
   const nameEl = document.getElementById('msg-partner-name');
   const subEl = document.getElementById('msg-partner-sub');
 
   if (activeConv) {
-    if (avatarEl) avatarEl.src = activeConv.avatar;
+    if (avatarEl) {
+      avatarEl.src = activeConv.avatar;
+      avatarEl.style.display = 'block';
+    }
     if (nameEl) nameEl.textContent = activeConv.title;
     if (subEl) subEl.textContent = activeConv.subtitle;
+  } else if (convId) {
+    const current = getActiveUserCharacter();
+    const parts = convId.split('_');
+    const normKey = (k) => (k === 'syma' ? 'abil' : k);
+    const currentNorm = normKey(current);
+    const partner = parts.find((p) => normKey(p) !== currentNorm) || parts[0];
+    const normPartner = normKey(partner);
+    const char = CHARACTERS_MESSAGES[normPartner];
+    if (char) {
+      if (avatarEl) {
+        avatarEl.src = char.avatar;
+        avatarEl.style.display = 'block';
+      }
+      if (nameEl) nameEl.textContent = `${char.name} ${char.symbol}`;
+      if (subEl) subEl.textContent = `Universe ${char.universe}`;
+    }
+  } else {
+    if (avatarEl) {
+      avatarEl.src = '';
+      avatarEl.style.display = 'none';
+    }
+    if (nameEl) nameEl.textContent = 'Our Little Messages';
+    if (subEl) subEl.textContent = 'Pilih sahabat untuk mulai mengobrol';
   }
 }
 
@@ -261,6 +406,43 @@ function renderMessageThread(messages) {
   if (!feed) return;
 
   const current = getActiveUserCharacter();
+  const convId = getActiveConversationId();
+
+  const input = document.getElementById('msg-input-text');
+  const sendBtn = document.getElementById('btn-msg-send');
+  const attachBtn = document.getElementById('btn-msg-attach');
+  const micBtn = document.getElementById('btn-msg-mic');
+
+  if (!convId) {
+    // No active conversation selected
+    feed.innerHTML = `
+      <div class="msg-empty-feed-placeholder">
+        <div class="msg-empty-feed-icon">🪐</div>
+        <h3>Our Little Messages</h3>
+        <p>Pilih sahabat di sebelah kiri atau klik tombol di bawah untuk mulai berkirim pesan dan kenangan manis.</p>
+        <button type="button" class="btn-msg-start-new" id="btn-msg-start-new-feed">+ Mulai Obrolan Baru</button>
+      </div>
+    `;
+    const btnStartFeed = feed.querySelector('#btn-msg-start-new-feed');
+    if (btnStartFeed) {
+      btnStartFeed.addEventListener('click', openNewChatModal);
+    }
+    if (input) {
+      input.disabled = true;
+      input.placeholder = 'Pilih percakapan untuk mulai mengetik pesan...';
+    }
+    if (sendBtn) sendBtn.disabled = true;
+    if (attachBtn) attachBtn.disabled = true;
+    if (micBtn) micBtn.disabled = true;
+    return;
+  }
+
+  if (input) {
+    input.disabled = false;
+    input.placeholder = 'Ketik pesan manis untuk sahabat...';
+  }
+  if (attachBtn) attachBtn.disabled = false;
+  if (micBtn) micBtn.disabled = false;
 
   if (!messages || messages.length === 0) {
     feed.innerHTML = `
@@ -276,7 +458,12 @@ function renderMessageThread(messages) {
   feed.innerHTML = '';
   messages.forEach((msg) => {
     const isMine = msg.senderCharacter === current;
-    const char = CHARACTERS_MESSAGES[msg.senderCharacter] || CHARACTERS_MESSAGES.nyanya;
+    const char = CHARACTERS_MESSAGES[msg.senderCharacter] || {
+      name: msg.senderName || 'Sahabat',
+      symbol: '✦',
+      universe: 'Universe',
+      avatar: msg.senderAvatar || '/assets/avatar_nyanya_hd.png'
+    };
     const row = document.createElement('div');
     row.className = `msg-bubble-row ${isMine ? 'mine' : 'theirs'}`;
 
@@ -585,10 +772,7 @@ function attachMediaBubbleListeners(container) {
 
 function setupActiveConversationSubscription() {
   const convId = getActiveConversationId();
-
-  // Render cached messages immediately
-  const cached = getCachedMessages(convId);
-  renderMessageThread(cached);
+  const statusNotice = document.getElementById('msg-thread-status');
 
   // Subscribe to realtime updates
   if (currentUnsubscribe) {
@@ -596,17 +780,28 @@ function setupActiveConversationSubscription() {
     currentUnsubscribe = null;
   }
 
+  if (!convId) {
+    if (statusNotice) {
+      statusNotice.style.display = 'none';
+    }
+    renderMessageThread([]);
+    return;
+  }
+
+  // Render cached messages immediately
+  const cached = getCachedMessages(convId);
+  renderMessageThread(cached);
+
   currentUnsubscribe = subscribeToActiveConversation(
     convId,
     (updatedMessages) => {
       renderMessageThread(updatedMessages);
-      const statusNotice = document.getElementById('msg-thread-status');
       if (statusNotice) {
         statusNotice.style.display = 'none';
       }
+      markActiveConversationRead(convId).catch(() => {});
     },
     (err) => {
-      const statusNotice = document.getElementById('msg-thread-status');
       if (statusNotice) {
         statusNotice.textContent = `Offline: ${err.message || 'Koneksi Firestore terganggu'}`;
         statusNotice.style.display = 'block';
@@ -912,6 +1107,9 @@ async function handleSendMessageAction() {
         mimeType: attach.mimeType
       });
       if (sendBtn) sendBtn.disabled = input.value.trim().length === 0;
+      if (typeof onShowToastCallback === 'function') {
+        onShowToastCallback('Pesan berhasil dikirim ✨');
+      }
     } catch (err) {
       console.error('Failed to send media message:', err);
       // Restore user text so it is not lost
@@ -951,14 +1149,22 @@ async function handleSendMessageAction() {
     return;
   }
 
-  // Clear input
-  input.value = '';
-  updateCharCounter(0);
+  // Prevent multiple simultaneous sends while preserving input text until confirmed
   if (sendBtn) sendBtn.disabled = true;
+  input.readOnly = true;
 
   try {
     await sendMessage(validation.text, convId);
-    if (sendBtn) sendBtn.disabled = input.value.trim().length === 0;
+    
+    // Clear input ONLY after message persistence is fully confirmed
+    input.readOnly = false;
+    input.value = '';
+    updateCharCounter(0);
+    if (sendBtn) sendBtn.disabled = true;
+
+    if (typeof onShowToastCallback === 'function') {
+      onShowToastCallback('Pesan berhasil dikirim ✨');
+    }
   } catch (err) {
     console.error('Failed to send message:', err, {
       code: err?.code,
@@ -971,10 +1177,13 @@ async function handleSendMessageAction() {
       activeChar: getActiveUserCharacter(),
       convId
     });
-    // Restore user text so it is not lost
+    
+    // Keep user typed text intact on error
+    input.readOnly = false;
     input.value = rawText;
     updateCharCounter(rawText.length);
     if (sendBtn) sendBtn.disabled = false;
+    
     if (typeof onShowToastCallback === 'function') {
       onShowToastCallback(`❌ Gagal mengirim pesan: ${err.message}`);
     }
@@ -993,6 +1202,9 @@ export function selectConversation(convId) {
   setActiveConversationId(convId);
   renderConversationListUI();
   setupActiveConversationSubscription();
+  if (convId) {
+    markActiveConversationRead(convId).catch(() => {});
+  }
 }
 
 function handleFileInputSelect(e, type) {
@@ -1167,6 +1379,7 @@ export function initMessagesView(options = {}) {
       if (e.key === 'Escape') {
         closeLightbox();
         closeAttachMenu();
+        closeNewChatModal();
       }
     });
   }
@@ -1175,6 +1388,65 @@ export function initMessagesView(options = {}) {
   subscribeConversationList(() => {
     renderConversationListUI();
   });
+
+  // 8. New Chat Modal buttons & backdrop click
+  const btnNewChat = document.getElementById('btn-msg-new-chat');
+  if (btnNewChat) {
+    btnNewChat.addEventListener('click', openNewChatModal);
+  }
+  const btnCloseNewChat = document.getElementById('btn-close-new-chat');
+  if (btnCloseNewChat) {
+    btnCloseNewChat.addEventListener('click', closeNewChatModal);
+  }
+
+  const modalNewChat = document.getElementById('modal-msg-new-chat');
+  if (modalNewChat) {
+    modalNewChat.addEventListener('click', (e) => {
+      if (e.target === modalNewChat) {
+        closeNewChatModal();
+      }
+    });
+  }
+
+  // Global event delegation inside messages view for all new chat buttons
+  const viewMessages = document.getElementById('view-messages');
+  if (viewMessages) {
+    viewMessages.addEventListener('click', (e) => {
+      const target = e.target;
+      if (
+        target.closest('#btn-msg-new-chat') ||
+        target.closest('.btn-msg-new-chat') ||
+        target.closest('#btn-msg-start-new') ||
+        target.closest('#btn-msg-start-new-feed') ||
+        target.closest('.btn-msg-start-new')
+      ) {
+        openNewChatModal();
+      }
+    });
+  }
+
+  // 9. Realtime sync and incoming message notifications
+  initMessagesRealtimeSync((incomingMsg) => {
+    if (incomingMsg) {
+      const senderName = CHARACTERS_MESSAGES[incomingMsg.senderCharacter]?.name || 'Sahabat';
+      const preview = incomingMsg.text
+        ? (incomingMsg.text.length > 35 ? incomingMsg.text.slice(0, 35) + '...' : incomingMsg.text)
+        : 'Mengirim lampiran media';
+      if (typeof onShowToastCallback === 'function') {
+        onShowToastCallback(`✦ Pesan baru dari ${senderName}: "${preview}" ✉`);
+      }
+    }
+    renderConversationListUI();
+  });
+
+  // 10. Listen to Auth State Changes
+  if (auth && typeof auth.onAuthStateChanged === 'function') {
+    auth.onAuthStateChanged((user) => {
+      renderActiveUserHeader();
+      renderConversationListUI();
+      setupActiveConversationSubscription();
+    });
+  }
 
   // Initial render
   renderActiveUserHeader();

@@ -9,14 +9,36 @@ service firebase.storage {
 
     function isUniverseMember() {
       return isAuthenticated() &&
-             ('email' in request.auth.token) &&
-             request.auth.token.email is string &&
-             ('email_verified' in request.auth.token) &&
-             request.auth.token.email_verified == true &&
              (
-               request.auth.token.email == 'nyanya@ourlittleuniverse.com' ||
-               request.auth.token.email == 'lala@ourlittleuniverse.com' ||
-               request.auth.token.email == 'lele@ourlittleuniverse.com'
+               (
+                 ('email' in request.auth.token) &&
+                 request.auth.token.email is string &&
+                 (
+                   request.auth.token.email in [
+                     'nyanya@ourlittleuniverse.com',
+                     'lala@ourlittleuniverse.com',
+                     'lele@ourlittleuniverse.com',
+                     'abil@ourlittleuniverse.com',
+                     'syma@ourlittleuniverse.com',
+                     'akhira@ourlittleuniverse.com',
+                     'ela@ourlittleuniverse.com',
+                     'ruben@ourlittleuniverse.com',
+                     'royan@ourlittleuniverse.com'
+                   ]
+                 )
+               ) ||
+               (
+                 request.auth.uid in [
+                   '1uwba7MrGVU3xHu57VVLvztskrg2',
+                   'EqByKA8FXoTEt0OmIsSDPfnxMDB3',
+                   '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+                   'Euc0JLt3kWMveUEIjBwXHfOfvQD3',
+                   'MT14ZHATNqe90frAeQ74QFk4iXs2',
+                   'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+                   '9PMychPZ4rZ4PBCtZB9GiASttc52',
+                   'swBN9XodDWRuHE5YbYmeoytrcAx2'
+                 ]
+               )
              );
     }
 

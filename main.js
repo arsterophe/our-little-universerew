@@ -30,12 +30,12 @@ const CHARACTERS = {
     id: 'nyanya',
     name: 'Nyanya',
     role: 'The Moonlit Shadow Witch',
-    symbol: '★',
+    symbol: '⭐',
     themeClass: 'theme-nyanya',
     portrait: '/assets/portrait_nyanya_hd_2x.png',
     cardImg: '/assets/card_nyanya_hd_2x.png',
     avatar: '/assets/avatar_nyanya_hd.png',
-    greeting: 'Selamat datang, Nyanya ✦',
+    greeting: 'Selamat datang, Nyanya ⭐',
     accentColor: '#c084fc',
     universe: 'KIDULT',
     ownerName: 'Vanya'
@@ -44,12 +44,12 @@ const CHARACTERS = {
     id: 'lala',
     name: 'Lala',
     role: 'The Everglow Fairy',
-    symbol: '☼',
+    symbol: '☀️',
     themeClass: 'theme-lala',
     portrait: '/assets/portrait_lala_hd_2x.png',
     cardImg: '/assets/card_lala_hd_2x.png',
     avatar: '/assets/avatar_lala_hd.png',
-    greeting: 'Selamat datang, Lala ✦',
+    greeting: 'Selamat datang, Lala ☀️',
     accentColor: '#f472b6',
     universe: 'TO YOU',
     ownerName: 'Bella'
@@ -58,29 +58,29 @@ const CHARACTERS = {
     id: 'lele',
     name: 'Lele',
     role: 'The Eclipse Guardian',
-    symbol: '☾',
+    symbol: '🌙',
     themeClass: 'theme-lele',
     portrait: '/assets/portrait_lele_hd_2x.png',
     cardImg: '/assets/card_lele_hd_2x.png',
     avatar: '/assets/avatar_lele_hd.png',
-    greeting: 'Selamat datang, Lele ✦',
+    greeting: 'Selamat datang, Lele 🌙',
     accentColor: '#818cf8',
     universe: 'SHADOW',
     ownerName: 'Alenda'
   },
   abil: {
     id: 'abil',
-    name: 'Abil',
+    name: 'Syma',
     role: 'PINWHEEL ☁️',
     symbol: '☁️',
     themeClass: 'theme-abil',
     portrait: '/assets/portrait_abil_hd.jpg',
     cardImg: '/assets/card_abil_hd.jpg',
     avatar: '/assets/avatar_abil_hd.jpg',
-    greeting: 'Selamat datang, Abil ☁️',
+    greeting: 'Selamat datang, Syma ☁️',
     accentColor: '#93c5fd',
     universe: 'PINWHEEL',
-    ownerName: 'Abil'
+    ownerName: 'Syma'
   },
   akhira: {
     id: 'akhira',
@@ -99,13 +99,13 @@ const CHARACTERS = {
   ela: {
     id: 'ela',
     name: 'Ela',
-    role: 'US AGAIN 🌸',
-    symbol: '🌸',
+    role: 'US AGAIN 🪷',
+    symbol: '🪷',
     themeClass: 'theme-ela',
     portrait: '/assets/portrait_ela_hd.jpg',
     cardImg: '/assets/card_ela_hd.jpg',
     avatar: '/assets/avatar_ela_hd.jpg',
-    greeting: 'Selamat datang, Ela 🌸',
+    greeting: 'Selamat datang, Ela 🪷',
     accentColor: '#f472b6',
     universe: 'US AGAIN',
     ownerName: 'Ela'
@@ -113,16 +113,30 @@ const CHARACTERS = {
   ruben: {
     id: 'ruben',
     name: 'Ruben',
-    role: 'ASH ❄️',
-    symbol: '❄️',
+    role: 'ASH 🐉',
+    symbol: '🐉',
     themeClass: 'theme-ruben',
     portrait: '/assets/portrait_ruben_hd.jpg',
     cardImg: '/assets/card_ruben_hd.jpg',
     avatar: '/assets/avatar_ruben_hd.jpg',
-    greeting: 'Selamat datang, Ruben ❄️',
+    greeting: 'Selamat datang, Ruben 🐉',
     accentColor: '#94a3b8',
     universe: 'ASH',
     ownerName: 'Ruben'
+  },
+  royan: {
+    id: 'royan',
+    name: 'Royan',
+    role: 'HOT 🎆',
+    symbol: '🎆',
+    themeClass: 'theme-royan',
+    portrait: '/assets/portrait_royan_hd.jpg',
+    cardImg: '/assets/card_royan_hd.jpg',
+    avatar: '/assets/avatar_royan_hd.jpg',
+    greeting: 'Selamat datang, Royan 🎆',
+    accentColor: '#c084fc',
+    universe: 'HOT',
+    ownerName: 'Royan'
   }
 };
 
@@ -202,17 +216,33 @@ export async function ensureUniversesController() {
             window.triggerSparkleBurst(x, y);
           }
         },
-        onNavigateOrbit: async (fromView) => {
+        onNavigateOrbit: async (fromView, charKey) => {
+          if (charKey) {
+            activeCharacterKey = charKey;
+            window.activeCharacterKey = charKey;
+          }
+          const ctrl = await ensureOrbitController();
+          if (ctrl && typeof ctrl.openOrbit === 'function') ctrl.openOrbit(fromView, charKey || activeCharacterKey);
+        },
+        _oldOnNavigateOrbit: async (fromView) => {
           const ctrl = await ensureOrbitController();
           if (ctrl && typeof ctrl.openOrbit === 'function') ctrl.openOrbit(fromView);
         },
-        onNavigateMoments: async (fromView) => {
+        onNavigateMoments: async (fromView, charKey) => {
+          if (charKey) {
+            activeCharacterKey = charKey;
+            window.activeCharacterKey = charKey;
+          }
           const ctrl = await ensureMomentsController();
-          if (ctrl && typeof ctrl.openMoments === 'function') ctrl.openMoments(fromView);
+          if (ctrl && typeof ctrl.openMoments === 'function') ctrl.openMoments(fromView, charKey || activeCharacterKey);
         },
-        onNavigatePhotobooth: async (fromView) => {
+        onNavigatePhotobooth: async (fromView, charKey) => {
+          if (charKey) {
+            activeCharacterKey = charKey;
+            window.activeCharacterKey = charKey;
+          }
           const ctrl = await ensurePhotoboothController();
-          if (ctrl && typeof ctrl.openPhotobooth === 'function') ctrl.openPhotobooth(fromView, activeCharacterKey);
+          if (ctrl && typeof ctrl.openPhotobooth === 'function') ctrl.openPhotobooth(fromView, charKey || activeCharacterKey);
         },
         onNavigateMessages: async (fromView) => {
           const ctrl = await ensureMessagesController();
@@ -225,13 +255,35 @@ export async function ensureUniversesController() {
         onNavigateStarMessages: async (originUniverse) => {
           const ctrl = await ensureStarMessagesController();
           if (ctrl && typeof ctrl.openStarMessages === 'function') {
-            ctrl.openStarMessages(originUniverse, activeCharacterKey);
+            let charFallback = activeCharacterKey;
+            if (originUniverse === 'pinwheel' || originUniverse === 'abil') {
+              charFallback = activeCharacterKey || 'abil';
+            } else if (originUniverse === 'yawn' || originUniverse === 'akhira') {
+              charFallback = activeCharacterKey || 'akhira';
+            } else if (originUniverse === 'us_again' || originUniverse === 'usagain' || originUniverse === 'ela') {
+              charFallback = activeCharacterKey || 'ela';
+            } else if (originUniverse === 'shadow') {
+              charFallback = activeCharacterKey || 'lele';
+            } else if (originUniverse === 'to_you' || originUniverse === 'toyou') {
+              charFallback = activeCharacterKey || 'lala';
+            }
+            ctrl.openStarMessages(originUniverse, charFallback);
           }
         },
         onNavigateKotakPos: async (originUniverse) => {
           const ctrl = await ensureKotakPosController();
           if (ctrl && typeof ctrl.openKotakPos === 'function') {
-            ctrl.openKotakPos(originUniverse, activeCharacterKey);
+            let charFallback = activeCharacterKey;
+            if (originUniverse === 'pinwheel' || originUniverse === 'abil') {
+              charFallback = activeCharacterKey || 'abil';
+            } else if (originUniverse === 'yawn' || originUniverse === 'akhira') {
+              charFallback = activeCharacterKey || 'akhira';
+            } else if (originUniverse === 'shadow') {
+              charFallback = activeCharacterKey || 'lele';
+            } else if (originUniverse === 'to_you' || originUniverse === 'toyou') {
+              charFallback = activeCharacterKey || 'lala';
+            }
+            ctrl.openKotakPos(originUniverse, charFallback);
           }
         },
         onNavigateShadowGazebo: async () => {
@@ -253,14 +305,13 @@ export async function ensureUniversesController() {
           }
         },
         onNavigateShadowCrystalTower: async () => {
-          const ctrl = await ensureShadowCrystalTowerController();
-          if (ctrl && typeof ctrl.showShadowCrystalTowerView === 'function') {
-            ctrl.showShadowCrystalTowerView();
+          if (window.universesController?.openEclipseSanctuary) {
+            window.universesController.openEclipseSanctuary();
           }
         },
         onNavigateStories: async (fromView) => {
           const ctrl = await ensureStoriesController();
-          if (ctrl && typeof ctrl.openOurStories === 'function') ctrl.openOurStories();
+          if (ctrl && typeof ctrl.openOurStories === 'function') ctrl.openOurStories(fromView || 'view-private-universe');
         },
         onNavigateStoryWorkspace: async (fromView, mode = 'editor', storyId = null) => {
           const ctrl = await ensureStoriesController();
@@ -353,8 +404,10 @@ export async function ensureStoriesController() {
           }
         }
       });
-      if (currentAuthenticatedUser && activeCharacterKey) {
-        window.storiesController.syncActiveUser(activeCharacterKey, currentAuthenticatedUser);
+      const activeChar = activeCharacterKey || (auth?.currentUser ? identifyUserCharacter(auth.currentUser) : null);
+      const activeUser = currentAuthenticatedUser || auth?.currentUser || null;
+      if (activeChar) {
+        window.storiesController.syncActiveUser(activeChar, activeUser);
       }
       return window.storiesController;
     });
@@ -426,6 +479,16 @@ export async function ensureStarMessagesController() {
               univCtrl.openToYouWorld();
             } else if (originUniverse === 'shadow') {
               univCtrl.openShadowWorld();
+            } else if (originUniverse === 'pinwheel' || originUniverse === 'abil') {
+              univCtrl.openPinwheelWorld();
+            } else if (originUniverse === 'yawn' || originUniverse === 'akhira') {
+              if (typeof univCtrl.openYawnWorld === 'function') {
+                univCtrl.openYawnWorld();
+              }
+            } else if (originUniverse === 'us_again' || originUniverse === 'usagain' || originUniverse === 'ela') {
+              if (typeof univCtrl.openUsAgainWorld === 'function') {
+                univCtrl.openUsAgainWorld();
+              }
             } else {
               univCtrl.openKidultWorld();
             }
@@ -456,6 +519,16 @@ export async function ensureKotakPosController() {
               univCtrl.openToYouWorld();
             } else if (originUniverse === 'shadow') {
               univCtrl.openShadowWorld();
+            } else if (originUniverse === 'pinwheel' || originUniverse === 'abil') {
+              univCtrl.openPinwheelWorld();
+            } else if (originUniverse === 'yawn' || originUniverse === 'akhira') {
+              if (typeof univCtrl.openYawnWorld === 'function') {
+                univCtrl.openYawnWorld();
+              }
+            } else if (originUniverse === 'us_again' || originUniverse === 'usagain' || originUniverse === 'ela') {
+              if (typeof univCtrl.openUsAgainWorld === 'function') {
+                univCtrl.openUsAgainWorld();
+              }
             } else {
               univCtrl.openKidultWorld();
             }
@@ -582,7 +655,7 @@ function initApp() {
   initStarsCanvas();
   setupEventListeners();
   initAuthObserver();
-  
+
   // Instantly release initial selection UI to user
   hideInitialLoader();
 
@@ -621,18 +694,18 @@ function initApp() {
 
   // Pre-warm secondary modules during idle frames without freezing the UI
   const prewarmIdle = () => {
-    ensureUniversesController().catch(() => {});
+    ensureUniversesController().catch(() => { });
     setTimeout(() => {
-      ensureMomentsController().catch(() => {});
-      ensureOrbitController().catch(() => {});
-      ensureStoriesController().catch(() => {});
-      ensureMessagesController().catch(() => {});
-      ensureGamesController().catch(() => {});
-      ensurePhotoboothController().catch(() => {});
-      ensureStarMessagesController().catch(() => {});
-      ensureKotakPosController().catch(() => {});
-      ensureShadowGazeboController().catch(() => {});
-      ensureShadowGardenController().catch(() => {});
+      ensureMomentsController().catch(() => { });
+      ensureOrbitController().catch(() => { });
+      ensureStoriesController().catch(() => { });
+      ensureMessagesController().catch(() => { });
+      ensureGamesController().catch(() => { });
+      ensurePhotoboothController().catch(() => { });
+      ensureStarMessagesController().catch(() => { });
+      ensureKotakPosController().catch(() => { });
+      ensureShadowGazeboController().catch(() => { });
+      ensureShadowGardenController().catch(() => { });
     }, 1200);
   };
 
@@ -696,33 +769,21 @@ function initAuthObserver() {
       // Check authorization
       const check = verifyCharacterAuthorization(user, verifiedChar);
       if (check.authorized) {
-        const storedActiveSession = sessionStorage.getItem('activeUniverseSession');
-        const isWorldActive = (
-          document.getElementById('view-kidult-world')?.classList.contains('active') ||
-          document.getElementById('view-toyou-world')?.classList.contains('active') ||
-          document.getElementById('view-shadow-world')?.classList.contains('active') ||
-          viewPrivateUniverse?.classList.contains('active')
-        );
-
-        // Only auto-restore universe if user had an explicit active session inside a universe before reload
-        // and no conflicting character selection is active. Never auto-enter a universe when unselected.
-        const hasExplicitSession = Boolean(storedActiveSession && storedActiveSession === verifiedChar);
-        const selectionMatches = !activeCharacterKey || activeCharacterKey === verifiedChar;
-        if ((hasExplicitSession || isWorldActive) && selectionMatches && !viewLogin?.classList.contains('active')) {
-          activeCharacterKey = verifiedChar;
-          sessionStorage.setItem('activeUniverseSession', verifiedChar);
-          dbSyncUserProfile(user, verifiedChar).catch((e) => console.warn('User profile sync notice:', e));
-          dbMigrateUniverseState(user).catch((e) => console.warn('Universe state migration notice:', e));
-          if (window.universesController?.syncUniverseStateActiveCharacter) {
-            window.universesController.syncUniverseStateActiveCharacter(verifiedChar, user);
-          }
-          await renderPrivateUniverse(user, check.characterConfig);
-          hideInitialLoader();
-          return;
+        activeCharacterKey = verifiedChar;
+        dbSyncUserProfile(user, verifiedChar).catch((e) => console.warn('User profile sync notice:', e));
+        dbMigrateUniverseState(user).catch((e) => console.warn('Universe state migration notice:', e));
+        if (window.universesController?.syncUniverseStateActiveCharacter) {
+          window.universesController.syncUniverseStateActiveCharacter(verifiedChar, user);
         }
 
-        // On landing / selection screen, do NOT bypass character selection
-        console.log('Sesi Firebase terdeteksi, menunggu aksi pengguna di layar pemilihan/login.');
+        // Keep character selection active on initial load so the user always chooses their character first
+        // Never auto-open Lele's or any character's universe without explicit user choice
+        if (!viewLogin?.classList.contains('active') && !viewPrivateUniverse?.classList.contains('active')) {
+          if (viewSelection) {
+            viewSelection.classList.add('active');
+            viewSelection.setAttribute('aria-hidden', 'false');
+          }
+        }
         hideInitialLoader();
         return;
       } else {
@@ -762,10 +823,53 @@ function setupEventListeners() {
     btnSwitchOther.addEventListener('click', returnToSelection);
   }
 
-  // Logout Button
-  if (btnLogout) {
-    btnLogout.addEventListener('click', handleLogout);
+  // Logout Buttons & Modal Confirmations
+  const btnHeaderLogout = document.getElementById('btn-header-logout');
+  if (btnHeaderLogout) {
+    btnHeaderLogout.addEventListener('click', openLogoutConfirmModal);
   }
+  const btnDropLogout = document.getElementById('btn-drop-logout');
+  if (btnDropLogout) {
+    btnDropLogout.addEventListener('click', openLogoutConfirmModal);
+  }
+  if (btnLogout) {
+    btnLogout.addEventListener('click', openLogoutConfirmModal);
+  }
+  document.querySelectorAll('.btn-trigger-logout, .univ-header-logout-btn').forEach((btn) => {
+    btn.addEventListener('click', openLogoutConfirmModal);
+  });
+
+  // Modal Action Buttons
+  const btnCancelLogout = document.getElementById('btn-cancel-logout');
+  if (btnCancelLogout) {
+    btnCancelLogout.addEventListener('click', closeLogoutConfirmModal);
+  }
+  const btnCloseLogoutModal = document.getElementById('btn-close-logout-modal');
+  if (btnCloseLogoutModal) {
+    btnCloseLogoutModal.addEventListener('click', closeLogoutConfirmModal);
+  }
+  const btnConfirmLogout = document.getElementById('btn-confirm-logout');
+  if (btnConfirmLogout) {
+    btnConfirmLogout.addEventListener('click', performLogout);
+  }
+
+  // Backdrop click & Escape key for logout modal
+  const modalLogout = document.getElementById('modal-logout-confirm');
+  if (modalLogout) {
+    modalLogout.addEventListener('click', (e) => {
+      if (e.target === modalLogout) {
+        closeLogoutConfirmModal();
+      }
+    });
+  }
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('modal-logout-confirm');
+      if (modal && modal.style.display === 'flex') {
+        closeLogoutConfirmModal();
+      }
+    }
+  });
 
   // Password Visibility Toggle
   if (btnTogglePassword && passwordInput) {
@@ -831,9 +935,9 @@ async function selectCharacter(charKey) {
   setActiveUserStories(null);
   setActiveUserMessages(charKey);
   setActiveUserGames(charKey);
-  
+
   // Pre-warm universes controller quietly in background
-  ensureUniversesController().catch(() => {});
+  ensureUniversesController().catch(() => { });
 
   if (window.storiesController?.syncActiveUser) {
     window.storiesController.syncActiveUser(null, null);
@@ -852,7 +956,7 @@ async function selectCharacter(charKey) {
   }
 
   // Update theme class on body
-  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil', 'theme-akhira', 'theme-ela', 'theme-ruben');
+  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil', 'theme-akhira', 'theme-ela', 'theme-ruben', 'theme-royan');
   document.body.classList.add(char.themeClass);
 
   // Populate Login Card with Character Data
@@ -863,10 +967,19 @@ async function selectCharacter(charKey) {
   loginCharRole.textContent = char.role;
   loginGreetingName.textContent = char.name;
 
+  const loginGreetingSparkle = document.getElementById('login-greeting-sparkle') || document.querySelector('.login-greeting-block .sparkle');
+  if (loginGreetingSparkle) {
+    loginGreetingSparkle.textContent = char.symbol || '✦';
+  }
+  if (btnStarIcon) {
+    btnStarIcon.textContent = char.symbol || '✦';
+  }
+
   // Prefill Email with expected canonical email
   const authRules = CHARACTER_AUTH_RULES[charKey];
   if (emailInput) {
     emailInput.value = authRules?.expectedEmail || `${charKey}@ourlittleuniverse.com`;
+    emailInput.placeholder = 'nama@ourlittleuniverse.com';
   }
 
   // Reset Password & Feedback
@@ -938,14 +1051,14 @@ function returnToSelection() {
     viewPhotobooth.classList.remove('active');
     viewPhotobooth.setAttribute('aria-hidden', 'true');
   }
-  ['view-our-stories', 'view-story-workspace', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos', 'view-shadow-gazebo', 'view-shadow-garden', 'view-moonlight-pond', 'view-shadow-art-gallery'].forEach((id) => {
+  ['view-our-stories', 'view-story-workspace', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos', 'view-shadow-gazebo', 'view-shadow-garden', 'view-moonlight-pond', 'view-shadow-art-gallery', 'view-pinwheel-world', 'view-pinwheel-haven', 'view-yawn-world', 'view-yawn-gazebo', 'view-yawn-cinema', 'view-azure-palace', 'view-ash-world', 'view-dragon-den', 'view-usagain-world', 'view-silent-lotus', 'view-hot-world', 'view-moonpetal-manor', 'view-everdream-house', 'view-enchanted-greenhouse', 'view-kidult-gazebo', 'view-toyou-gazebo', 'view-bloom-cottage', 'view-fairy-atelier', 'view-eclipse'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.classList.remove('active');
       el.setAttribute('aria-hidden', 'true');
     }
   });
-  stopLocalCamera(false);
+  safeStopLocalCamera(false);
 
   setTimeout(() => {
     // Reset body theme to neutral cosmic
@@ -1068,6 +1181,9 @@ async function handleLoginSubmit(e) {
   } catch (error) {
     setSubmitLoading(false);
     console.error('Login error:', error);
+    if (error.code) {
+      console.warn(`[Firebase Auth Error Details] code: ${error.code}, message: ${error.message}`, error.customData || '');
+    }
 
     const friendlyMsg = mapFirebaseError(error);
     showErrorFeedback(friendlyMsg);
@@ -1080,7 +1196,14 @@ function mapFirebaseError(error) {
   if (!error) return 'Terjadi kesalahan saat masuk. Silakan coba lagi.';
 
   // If error is already our custom validation message (e.g. character mismatch or missing env)
-  if (error.message && (error.message.startsWith('Akses ditolak:') || error.message.startsWith('Konfigurasi'))) {
+  if (error.message && (
+    error.message.startsWith('Akses ditolak:') ||
+    error.message.startsWith('Konfigurasi') ||
+    error.message.startsWith('Kredensial') ||
+    error.message.startsWith('Silakan') ||
+    error.message.startsWith('Pilihan') ||
+    error.message.startsWith('Tidak ada')
+  )) {
     return error.message;
   }
 
@@ -1099,6 +1222,11 @@ function mapFirebaseError(error) {
       return 'Terlalu banyak percobaan masuk yang gagal. Akses ditangguhkan sementara demi keamanan.';
     case 'auth/network-request-failed':
       return 'Gagal terhubung ke server Firebase. Pastikan perangkat Anda terhubung ke internet.';
+    case 'auth/unauthorized-domain':
+      return 'Domain atau alamat host saat ini belum terdaftar di Firebase Authorized Domains.';
+    case 'auth/api-key-not-valid':
+    case 'auth/invalid-api-key':
+      return 'Kunci API Firebase tidak valid atau dibatasi. Silakan periksa pengaturan Google Cloud Console.';
     case 'auth/internal-error':
       return 'Terjadi kendala internal pada server autentikasi. Silakan coba sesaat lagi.';
     default:
@@ -1113,8 +1241,8 @@ function showErrorFeedback(message) {
   }
 }
 
-// Render, Guard and Auto-Redirect to User's Own Universe View
-async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = true) {
+// Render, Guard and Show Universe Selection Screen
+async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = false) {
   if (!user || !user.uid) {
     lockdownPrivateUniverse();
     return;
@@ -1129,9 +1257,11 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
     lala: 'TO YOU',
     lele: 'SHADOW',
     abil: 'PINWHEEL',
+    syma: 'PINWHEEL',
     akhira: 'YAWN',
     ela: 'US AGAIN',
-    ruben: 'ASH'
+    ruben: 'ASH',
+    royan: 'HOT'
   };
 
   if (!charId || !validUniverses[charId]) {
@@ -1142,6 +1272,7 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
     return;
   }
 
+  currentAuthenticatedUser = user;
   activeCharacterKey = charId;
   const char = CHARACTERS[charId] || CHARACTER_AUTH_RULES[charId] || characterConfig;
   setActiveUserCharacter(charId);
@@ -1169,7 +1300,7 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
   }
 
   // Set theme on body
-  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil', 'theme-akhira', 'theme-ela', 'theme-ruben');
+  document.body.classList.remove('theme-nyanya', 'theme-lala', 'theme-lele', 'theme-abil', 'theme-akhira', 'theme-ela', 'theme-ruben', 'theme-royan');
   document.body.classList.add(char.themeClass);
 
   // Populate private header & user metadata
@@ -1219,11 +1350,28 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
     } else if (charId === 'lele' && typeof univCtrl.openShadowWorld === 'function') {
       univCtrl.openShadowWorld();
       return;
+    } else if ((charId === 'abil' || charId === 'syma') && typeof univCtrl.openPinwheelWorld === 'function') {
+      univCtrl.openPinwheelWorld();
+      return;
+    } else if (charId === 'akhira' && typeof univCtrl.openYawnWorld === 'function') {
+      univCtrl.openYawnWorld();
+      return;
+    } else if (charId === 'ruben' && typeof univCtrl.openAshWorld === 'function') {
+      univCtrl.openAshWorld();
+      return;
+    } else if (charId === 'ela' && typeof univCtrl.openUsAgainWorld === 'function') {
+      univCtrl.openUsAgainWorld();
+      return;
+    } else if (charId === 'royan') {
+      if (typeof univCtrl.openHotWorld === 'function') {
+        univCtrl.openHotWorld();
+        return;
+      }
     }
   }
 
   // Fallback to three universes selection page if autoOpenOwnWorld is false
-  ['view-kidult-world', 'view-toyou-world', 'view-shadow-world'].forEach((id) => {
+  ['view-kidult-world', 'view-toyou-world', 'view-shadow-world', 'view-pinwheel-world', 'view-pinwheel-haven', 'view-yawn-world', 'view-yawn-gazebo', 'view-yawn-cinema', 'view-azure-palace', 'view-ash-world', 'view-dragon-den', 'view-usagain-world', 'view-silent-lotus', 'view-hot-world', 'view-moonpetal-manor', 'view-everdream-house', 'view-enchanted-greenhouse', 'view-kidult-gazebo', 'view-toyou-gazebo', 'view-bloom-cottage', 'view-fairy-atelier', 'view-eclipse'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.classList.remove('active');
@@ -1234,8 +1382,14 @@ async function renderPrivateUniverse(user, characterConfig, autoOpenOwnWorld = t
   viewPrivateUniverse.setAttribute('aria-hidden', 'false');
 }
 
-// Helper to open Universes view anytime
-async function showUniversesView() {
+function safeStopLocalCamera(notify = false) {
+  try {
+    if (window.photoboothController && typeof window.photoboothController.stopCamera === 'function') {
+      window.photoboothController.stopCamera(notify);
+    }
+  } catch (_) { }
+}
+export async function showUniversesView() {
   await ensureUniversesController();
   isPreviewingUniverses = true;
   if (viewSelection) {
@@ -1276,14 +1430,14 @@ async function showUniversesView() {
     viewPhotobooth.classList.remove('active');
     viewPhotobooth.setAttribute('aria-hidden', 'true');
   }
-  ['view-our-stories', 'view-story-workspace', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos', 'view-shadow-gazebo', 'view-shadow-garden', 'view-moonlight-pond', 'view-shadow-art-gallery'].forEach((id) => {
+  ['view-our-stories', 'view-story-workspace', 'view-story-reading', 'view-messages', 'view-games', 'view-star-messages', 'view-kotak-pos', 'view-shadow-gazebo', 'view-shadow-garden', 'view-moonlight-pond', 'view-shadow-art-gallery', 'view-pinwheel-world', 'view-pinwheel-haven', 'view-yawn-world', 'view-yawn-gazebo', 'view-yawn-cinema', 'view-azure-palace', 'view-ash-world', 'view-dragon-den', 'view-usagain-world', 'view-silent-lotus', 'view-hot-world', 'view-moonpetal-manor', 'view-everdream-house', 'view-enchanted-greenhouse', 'view-kidult-gazebo', 'view-toyou-gazebo', 'view-bloom-cottage', 'view-fairy-atelier', 'view-eclipse'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.classList.remove('active');
       el.setAttribute('aria-hidden', 'true');
     }
   });
-  stopLocalCamera(false);
+  safeStopLocalCamera(false);
 
   if (viewPrivateUniverse) {
     viewPrivateUniverse.classList.add('active');
@@ -1298,14 +1452,26 @@ async function showUniversesView() {
     setActiveUserMoments(activeCharacterKey);
   }
 }
+if (typeof window !== 'undefined') {
+  window.ensureUniversesController = ensureUniversesController;
+  window.showUniversesView = showUniversesView;
+}
 
 // Lockdown Private Universe (If user logs out or session is terminated)
 function lockdownPrivateUniverse() {
+  if (isPreviewingUniverses || (typeof window !== 'undefined' && window.isPreviewingUniverses)) {
+    return;
+  }
   const allProtectedViews = [
     'view-private-universe',
     'view-kidult-world',
     'view-toyou-world',
     'view-shadow-world',
+    'view-pinwheel-world',
+    'view-yawn-world',
+    'view-ash-world',
+    'view-usagain-world',
+    'view-hot-world',
     'view-messages',
     'view-games',
     'view-orbit',
@@ -1318,7 +1484,21 @@ function lockdownPrivateUniverse() {
     'view-kotak-pos',
     'view-shadow-gazebo',
     'view-shadow-garden',
-    'view-moonlight-pond', 'view-shadow-art-gallery'
+    'view-moonlight-pond', 'view-shadow-art-gallery',
+    'view-everdream-house',
+    'view-enchanted-greenhouse',
+    'view-kidult-gazebo',
+    'view-bloom-cottage',
+    'view-fairy-atelier',
+    'view-eclipse',
+    'view-azure-palace',
+    'view-silent-lotus',
+    'view-dragon-den',
+    'view-pinwheel-haven',
+    'view-moonpetal-manor',
+    'view-toyou-gazebo',
+    'view-yawn-gazebo',
+    'view-yawn-cinema'
   ];
 
   allProtectedViews.forEach((id) => {
@@ -1351,24 +1531,46 @@ function lockdownPrivateUniverse() {
       'theme-abil',
       'theme-akhira',
       'theme-ela',
-      'theme-ruben'
+      'theme-ruben',
+      'theme-royan'
     );
   }
 }
 
-// Handle Logout
-async function handleLogout() {
+// Logout Confirmation Modal & Execution Handlers
+function openLogoutConfirmModal() {
+  const modal = document.getElementById('modal-logout-confirm');
+  if (modal) {
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+    const cancelBtn = document.getElementById('btn-cancel-logout');
+    if (cancelBtn) {
+      cancelBtn.focus();
+    }
+  }
+}
+
+function closeLogoutConfirmModal() {
+  const modal = document.getElementById('modal-logout-confirm');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+async function performLogout() {
+  closeLogoutConfirmModal();
   try {
     sessionStorage.removeItem('activeUniverseSession');
     try {
       localStorage.removeItem('olu_active_char_v1');
       localStorage.removeItem('olu_pb_active_char');
-    } catch (_) {}
+    } catch (_) { }
     isPreviewingUniverses = false;
     if (window.universesController?.cleanupUniverseStateOnLogout) {
       window.universesController.cleanupUniverseStateOnLogout();
     }
-    stopLocalCamera();
+    safeStopLocalCamera();
     await logoutFirebase();
     currentAuthenticatedUser = null;
     activeCharacterKey = null;
@@ -1382,11 +1584,23 @@ async function handleLogout() {
     }
 
     lockdownPrivateUniverse();
-    showToast('Anda telah keluar dari ruang privat Universe ✧');
+    showToast('Berhasil Logout. Sampai jumpa kembali!');
   } catch (err) {
     console.error('Logout error:', err);
     showToast('Gagal keluar sesi: ' + (err.message || 'Error'));
   }
+}
+
+// Backward compatible handleLogout triggers confirmation modal
+function handleLogout() {
+  openLogoutConfirmModal();
+}
+
+if (typeof window !== 'undefined') {
+  window.openLogoutConfirmModal = openLogoutConfirmModal;
+  window.closeLogoutConfirmModal = closeLogoutConfirmModal;
+  window.performLogout = performLogout;
+  window.handleLogout = handleLogout;
 }
 
 // Toast Notification
@@ -1412,7 +1626,8 @@ function playMagicalTone(charKey) {
     const pitches = {
       nyanya: [523.25, 659.25, 783.99, 1046.50], // C5, E5, G5, C6 (mystical arpeggio)
       lala: [587.33, 739.99, 880.00, 1174.66],   // D5, F#5, A5, D6 (warm cheerful)
-      lele: [440.00, 554.37, 659.25, 880.00]    // A4, C#5, E5, A5 (celestial calm)
+      lele: [440.00, 554.37, 659.25, 880.00],    // A4, C#5, E5, A5 (celestial calm)
+      royan: [493.88, 622.25, 739.99, 987.77]    // B4, D#5, F#5, B5 (serene meditative)
     };
 
     const notes = pitches[charKey] || pitches.nyanya;
@@ -1576,3 +1791,8 @@ function initStarsCanvas() {
     }
   };
 }
+
+// Expose helpers for external controllers, universe navigation, and automated testing
+window.ensureUniversesController = ensureUniversesController;
+window.ensureStoriesController = ensureStoriesController;
+window.renderPrivateUniverse = renderPrivateUniverse;

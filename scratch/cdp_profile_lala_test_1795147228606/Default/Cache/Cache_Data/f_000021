@@ -1,0 +1,807 @@
+/* ==========================================================================
+   OUR LITTLE UNIVERSE — ELA'S UNIVERSE: THE SILENT LOTUS (US AGAIN 🌸)
+   A Sanctuary of Stillness — Modern Buddhist Sanctuary & Japanese Fantasy
+   Color Palette: Midnight Violet, Lavender, Pearl Silver, Soft Pink, Rose Gold, Glowing White
+   ========================================================================== */
+
+/* --- 1. Base Container & Viewport --- */
+.view-usagain-world {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: none;
+  background-color: #0d0614;
+  z-index: 50;
+  user-select: none;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.view-usagain-world.active {
+  display: block;
+}
+
+.usagain-world-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* --- 2. Background Scenery --- */
+.usagain-world-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/assets/usagain_world_bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transform-origin: center center;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+/* Atmospheric Overlay: Soft violet moonlight, rose mist, and vignette */
+.usagain-world-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 65% 15%, rgba(244, 114, 182, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(192, 132, 252, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(13, 6, 20, 0.28) 0%, rgba(15, 7, 24, 0.05) 40%, rgba(13, 6, 20, 0.5) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Canvas FX for Falling Lotus Petals, Glowing Butterflies & Stardust */
+.usagain-fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* --- 3. Top Header Bar --- */
+.usagain-top-header {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.usagain-top-header > * {
+  pointer-events: auto;
+}
+
+/* Left Header: Profile Pill */
+.usagain-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: rgba(22, 10, 36, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  padding: 0.45rem 1.15rem 0.45rem 0.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(13, 6, 20, 0.6), 0 0 16px rgba(244, 114, 182, 0.2);
+  transition: all 0.3s ease;
+}
+
+.usagain-profile-header:hover {
+  background: rgba(30, 14, 48, 0.8);
+  border-color: rgba(244, 114, 182, 0.6);
+  box-shadow: 0 8px 36px rgba(13, 6, 20, 0.7), 0 0 24px rgba(244, 114, 182, 0.35);
+}
+
+.usagain-avatar-frame {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #f472b6;
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.5);
+}
+
+.usagain-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.usagain-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.usagain-world-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.usagain-world-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(244, 114, 182, 0.6);
+  text-transform: uppercase;
+}
+
+.usagain-world-subtitle {
+  font-size: 0.7rem;
+  color: #fbcfe8;
+  letter-spacing: 0.04em;
+}
+
+/* Center Navigation Shortcuts */
+.usagain-top-center-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.usagain-nav-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1.15rem;
+  border-radius: 9999px;
+  background: rgba(22, 10, 36, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(244, 114, 182, 0.25);
+  color: #fce7f3;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(13, 6, 20, 0.4);
+}
+
+.usagain-nav-pill-btn:hover {
+  background: rgba(45, 18, 70, 0.85);
+  border-color: rgba(244, 114, 182, 0.6);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(244, 114, 182, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Right Header Controls */
+.usagain-top-right-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.usagain-circle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(22, 10, 36, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  color: #fbcfe8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(13, 6, 20, 0.4);
+}
+
+.usagain-circle-btn:hover {
+  background: rgba(50, 20, 78, 0.9);
+  border-color: #f472b6;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(244, 114, 182, 0.45);
+  transform: scale(1.05);
+}
+
+/* --- 4. Interactive Location Hotspots --- */
+.usagain-hotspots-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.usagain-loc-btn {
+  position: absolute;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem 0.45rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(25, 10, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(244, 114, 182, 0.4);
+  box-shadow: 0 6px 20px rgba(13, 6, 20, 0.7), 0 0 14px rgba(244, 114, 182, 0.25);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.usagain-loc-btn:hover {
+  background: rgba(55, 20, 88, 0.9);
+  border-color: #f472b6;
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(13, 6, 20, 0.8), 0 0 25px rgba(244, 114, 182, 0.6);
+  transform: translate(-50%, -50%) scale(1.07);
+}
+
+.usagain-loc-icon {
+  font-size: 0.95rem;
+  filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.5));
+}
+
+.usagain-loc-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Pulse animation on markers */
+.usagain-loc-pulse {
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(244, 114, 182, 0.5);
+  animation: usagainPulse 3s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes usagainPulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.06); opacity: 0.15; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+/* Precise Coordinates Matching Image Composition */
+/* 1. Star Observatory — Telescope (Upper Left Dome) */
+.btn-loc-usagain-observatory {
+  top: 17%;
+  left: 16%;
+}
+
+/* 2. My Residence — Rumah Ela (Grand Central Temple Palace) */
+.btn-loc-usagain-residence {
+  top: 31%;
+  left: 49%;
+}
+
+/* 3. Private Cinema — Horror Movie Theater (Upper Right Outdoor Cinema) */
+.btn-loc-usagain-cinema {
+  top: 36%;
+  left: 86%;
+}
+
+/* 4. Lotus Library — Perpustakaan (Mid-Left Wooden Pavilion) */
+.btn-loc-usagain-library {
+  top: 55%;
+  left: 15%;
+}
+
+/* 5. Meditation Gazebo — Gazebo (Lower-Right Draped Pavilion) */
+.btn-loc-usagain-gazebo {
+  top: 67%;
+  left: 86%;
+}
+
+/* 6. Private Mailbox — Kotak Pos (Lower-Left Pink Mailbox on Steps) */
+.btn-loc-usagain-mailbox {
+  top: 76%;
+  left: 12%;
+}
+
+/* 7. Rose Garden — Taman Mawar (Bottom-Left Foreground Roses) */
+.btn-loc-usagain-garden {
+  top: 88%;
+  left: 18%;
+}
+
+/* 8. Lotus Pond — Kolam Teratai (Foreground Lotus Pond & Boat) */
+.btn-loc-usagain-pond {
+  top: 86%;
+  left: 54%;
+}
+
+/* --- 5. Bottom Navigation Bar --- */
+.usagain-bottom-bar {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.usagain-bottom-bar > * {
+  pointer-events: auto;
+}
+
+/* Bottom Left: Music Player */
+.usagain-music-player {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: rgba(22, 10, 36, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  padding: 0.5rem 1rem 0.5rem 0.65rem;
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(13, 6, 20, 0.6), 0 0 16px rgba(244, 114, 182, 0.15);
+  max-width: 320px;
+}
+
+.usagain-music-disc {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2e1045 20%, #150824 80%);
+  border: 1.5px solid #f472b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(244, 114, 182, 0.4);
+}
+
+.usagain-disc-icon {
+  font-size: 1rem;
+}
+
+.usagain-music-disc.playing {
+  animation: usagainDiscSpin 8s linear infinite;
+}
+
+@keyframes usagainDiscSpin {
+  100% { transform: rotate(360deg); }
+}
+
+.usagain-music-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.usagain-music-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usagain-music-sub {
+  font-size: 0.68rem;
+  color: #fbcfe8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usagain-music-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  margin-top: 0.3rem;
+  overflow: hidden;
+}
+
+.usagain-music-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f472b6, #c084fc);
+  transition: width 0.3s linear;
+}
+
+.usagain-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.usagain-music-ctrl-btn {
+  background: none;
+  border: none;
+  color: #fce7f3;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.usagain-music-ctrl-btn:hover {
+  color: #fff;
+  transform: scale(1.15);
+}
+
+.usagain-play-btn {
+  width: 28px;
+  height: 28px;
+  background: rgba(244, 114, 182, 0.25);
+  border: 1px solid rgba(244, 114, 182, 0.5);
+  border-radius: 50%;
+}
+
+.usagain-play-btn:hover {
+  background: rgba(244, 114, 182, 0.4);
+  box-shadow: 0 0 10px rgba(244, 114, 182, 0.5);
+}
+
+/* Bottom Center: Tagline & Reflection */
+.usagain-tagline-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(22, 10, 36, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(244, 114, 182, 0.25);
+  padding: 0.45rem 1.4rem;
+  border-radius: 9999px;
+  box-shadow: 0 6px 24px rgba(13, 6, 20, 0.5);
+  pointer-events: auto;
+}
+
+.usagain-tagline-main {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+
+.usagain-tagline-sub {
+  font-size: 0.7rem;
+  color: #fbcfe8;
+  font-style: italic;
+}
+
+/* Bottom Right: Actions (Gallery & Collection) */
+.usagain-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.usagain-big-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.usagain-big-action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.usagain-big-action-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(22, 10, 36, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(244, 114, 182, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 6px 20px rgba(13, 6, 20, 0.6), 0 0 12px rgba(244, 114, 182, 0.25);
+  transition: all 0.25s ease;
+}
+
+.usagain-big-action-btn:hover .usagain-big-action-circle {
+  background: rgba(45, 18, 70, 0.9);
+  border-color: #f472b6;
+  box-shadow: 0 8px 24px rgba(13, 6, 20, 0.7), 0 0 20px rgba(244, 114, 182, 0.5);
+  transform: scale(1.08);
+}
+
+.usagain-big-action-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fce7f3;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* --- 6. Modals & Interactive Dialogs --- */
+.usagain-modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 4, 18, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.usagain-modal-overlay.active {
+  display: flex;
+}
+
+.usagain-modal-card {
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: rgba(22, 10, 36, 0.92);
+  border: 1px solid rgba(244, 114, 182, 0.45);
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 50px rgba(10, 4, 18, 0.9), 0 0 35px rgba(244, 114, 182, 0.25);
+  padding: 1.75rem;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: usagainModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes usagainModalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.usagain-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(244, 114, 182, 0.2);
+  padding-bottom: 0.85rem;
+}
+
+.usagain-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.usagain-modal-icon-badge {
+  font-size: 1.5rem;
+  padding: 0.4rem;
+  border-radius: 0.75rem;
+  background: rgba(244, 114, 182, 0.15);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+}
+
+.usagain-modal-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.usagain-modal-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fbcfe8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.usagain-modal-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fce7f3;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.usagain-modal-close-btn:hover {
+  background: rgba(244, 114, 182, 0.3);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.usagain-modal-body {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.usagain-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.usagain-form-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fbcfe8;
+}
+
+.usagain-input,
+.usagain-textarea,
+.usagain-select {
+  width: 100%;
+  background: rgba(13, 6, 20, 0.7);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usagain-input:focus,
+.usagain-textarea:focus,
+.usagain-select:focus {
+  border-color: #f472b6;
+  box-shadow: 0 0 10px rgba(244, 114, 182, 0.35);
+}
+
+.usagain-btn-primary {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #f472b6, #c084fc);
+  border: none;
+  border-radius: 9999px;
+  padding: 0.6rem 1.4rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(244, 114, 182, 0.4);
+  transition: all 0.2s ease;
+}
+
+.usagain-btn-primary:hover {
+  box-shadow: 0 6px 22px rgba(244, 114, 182, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Custom interactive blocks in modals */
+.usagain-card-box {
+  background: rgba(13, 6, 20, 0.6);
+  border: 1px solid rgba(244, 114, 182, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* --- 7. Responsive Breakpoints --- */
+@media (max-width: 900px) {
+  .usagain-top-center-nav {
+    display: none;
+  }
+  .usagain-tagline-panel {
+    display: none;
+  }
+  .usagain-music-player {
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 600px) {
+  .usagain-top-header {
+    top: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+  .usagain-profile-header {
+    padding: 0.35rem 0.85rem 0.35rem 0.35rem;
+  }
+  .usagain-avatar-frame {
+    width: 36px;
+    height: 36px;
+  }
+  .usagain-world-title {
+    font-size: 0.8rem;
+  }
+  .usagain-world-subtitle {
+    display: none;
+  }
+  .usagain-bottom-bar {
+    bottom: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+  .usagain-music-player {
+    max-width: 200px;
+    padding: 0.35rem 0.65rem;
+  }
+  .usagain-loc-btn {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+  }
+  .usagain-loc-icon {
+    font-size: 0.8rem;
+  }
+}
+
+/* --- Unread Badge & Pulsing for Observatory & Mailbox --- */
+.btn-loc-usagain-observatory.has-unread {
+  box-shadow: 0 0 24px rgba(244, 114, 182, 0.9), 0 0 10px rgba(192, 132, 252, 0.9);
+  border-color: #f472b6;
+  animation: usagainObservatoryPulse 1.8s infinite ease-in-out;
+}
+
+.usagain-unread-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 10px rgba(236, 72, 153, 0.8);
+  border: 1.5px solid #ffffff;
+  z-index: 10;
+}
+
+@keyframes usagainObservatoryPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(244, 114, 182, 0.6), 0 0 5px rgba(192, 132, 252, 0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(244, 114, 182, 1), 0 0 15px rgba(192, 132, 252, 1);
+  }
+}
+
+

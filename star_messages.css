@@ -63,6 +63,43 @@
   --star-nebula-2: rgba(168, 85, 247, 0.16);
 }
 
+/* 1D. PINWHEEL — The Nine Tailed Sanctuary (Syma) */
+.view-star-messages.theme-pinwheel {
+  background: radial-gradient(circle at 50% 30%, #152238 0%, #0c1626 50%, #060b14 100%);
+  --star-accent: #93c5fd;
+  --star-accent-glow: rgba(147, 197, 253, 0.55);
+  --star-primary: #38bdf8;
+  --star-border: rgba(186, 230, 253, 0.4);
+  --star-card-bg: rgba(15, 25, 45, 0.85);
+  --star-nebula-1: rgba(56, 189, 248, 0.22);
+  --star-nebula-2: rgba(244, 114, 182, 0.16);
+}
+
+/* 1E. YAWN — Underwater Astral City (Akhira ⚡) */
+.view-star-messages.theme-yawn {
+  background: radial-gradient(circle at 50% 25%, #0d1e3a 0%, #061024 55%, #020612 100%);
+  --star-accent: #38bdf8;
+  --star-accent-glow: rgba(56, 189, 248, 0.65);
+  --star-primary: #818cf8;
+  --star-border: rgba(125, 211, 252, 0.45);
+  --star-card-bg: rgba(10, 20, 42, 0.88);
+  --star-nebula-1: rgba(56, 189, 248, 0.26);
+  --star-nebula-2: rgba(192, 132, 252, 0.22);
+}
+
+/* 1F. US AGAIN — The Silent Lotus Sanctuary (Ela 🪷) */
+.view-star-messages.theme-usagain,
+.view-star-messages.theme-us_again {
+  background: radial-gradient(circle at 50% 25%, #2a1236 0%, #170921 55%, #0d0614 100%);
+  --star-accent: #f472b6;
+  --star-accent-glow: rgba(244, 114, 182, 0.65);
+  --star-primary: #c084fc;
+  --star-border: rgba(244, 114, 182, 0.45);
+  --star-card-bg: rgba(28, 14, 38, 0.88);
+  --star-nebula-1: rgba(244, 114, 182, 0.25);
+  --star-nebula-2: rgba(192, 132, 252, 0.22);
+}
+
 /* ==========================================================================
    2. CELESTIAL BACKGROUND & TELESCOPE LENS OVERLAYS
    ========================================================================== */
@@ -376,6 +413,126 @@
   opacity: 1;
   border-color: var(--star-accent);
   color: #ffffff;
+}
+
+/* 4B. PINWHEEL — Syma's Star Custom Celestial Aesthetics */
+.celestial-star-node.star-node-pinwheel .star-glyph-wrap {
+  width: 38px;
+  height: 38px;
+}
+
+.celestial-star-node.star-node-pinwheel .star-core-glyph {
+  animation: symaStarTwinkle 2.8s ease-in-out infinite alternate;
+}
+
+.celestial-star-node.star-node-pinwheel .star-halo-ring {
+  border: 1.2px dashed rgba(56, 189, 248, 0.7);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+}
+
+.celestial-star-node.star-node-pinwheel .star-floating-label {
+  border-color: rgba(147, 197, 253, 0.5);
+  background: rgba(11, 20, 38, 0.92);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.celestial-star-node.star-node-pinwheel:hover .star-floating-label {
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.65);
+}
+
+@keyframes symaStarTwinkle {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.75));
+  }
+  100% {
+    transform: scale(1.24);
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(56, 189, 248, 1)) drop-shadow(0 0 22px rgba(147, 197, 253, 0.85));
+  }
+}
+
+/* 4C. YAWN — Akhira's Astral Star Custom Celestial Aesthetics */
+.celestial-star-node.star-node-yawn .star-glyph-wrap {
+  width: 40px;
+  height: 40px;
+}
+
+.celestial-star-node.star-node-yawn .star-core-glyph {
+  animation: akhiraStarGlow 2.6s ease-in-out infinite alternate;
+}
+
+.celestial-star-node.star-node-yawn .star-halo-ring {
+  border: 1.2px dashed rgba(56, 189, 248, 0.75);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+}
+
+.celestial-star-node.star-node-yawn .star-floating-label {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(8, 16, 36, 0.94);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+}
+
+.celestial-star-node.star-node-yawn:hover .star-floating-label {
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.75);
+}
+
+@keyframes akhiraStarGlow {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.75));
+  }
+  100% {
+    transform: scale(1.26);
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(56, 189, 248, 1)) drop-shadow(0 0 24px rgba(103, 232, 249, 0.9));
+  }
+}
+
+/* 4D. US AGAIN — Ela's Lotus Star Custom Celestial Aesthetics */
+.celestial-star-node.star-node-usagain .star-glyph-wrap {
+  width: 40px;
+  height: 40px;
+}
+
+.celestial-star-node.star-node-usagain .star-core-glyph {
+  animation: elaStarGlow 2.6s ease-in-out infinite alternate;
+}
+
+.celestial-star-node.star-node-usagain .star-halo-ring {
+  border: 1.2px dashed rgba(244, 114, 182, 0.75);
+  box-shadow: 0 0 16px rgba(244, 114, 182, 0.5);
+}
+
+.celestial-star-node.star-node-usagain .star-floating-label {
+  border-color: rgba(244, 114, 182, 0.5);
+  background: rgba(26, 10, 36, 0.94);
+  box-shadow: 0 0 14px rgba(244, 114, 182, 0.35);
+}
+
+.celestial-star-node.star-node-usagain:hover .star-floating-label {
+  border-color: #f472b6;
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(244, 114, 182, 0.75);
+}
+
+@keyframes elaStarGlow {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.75));
+  }
+  100% {
+    transform: scale(1.26);
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(244, 114, 182, 1)) drop-shadow(0 0 24px rgba(192, 132, 252, 0.9));
+  }
 }
 
 @keyframes starCoreTwinkle {

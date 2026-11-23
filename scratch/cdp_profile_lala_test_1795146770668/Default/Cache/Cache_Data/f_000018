@@ -1,0 +1,1195 @@
+/* ==========================================================================
+   YAWN — AKHIRA'S UNIVERSE: UNDERWATER ASTRAL CITY
+   Theme: Deep Ocean Blue, Soft Cyan, Astral Purple, Lavender & Pearl White
+   ========================================================================== */
+
+.view-yawn-world {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #050a1a;
+  color: #f0f9ff;
+  overflow: hidden;
+  z-index: 80;
+  display: none;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.view-yawn-world.active {
+  display: block;
+}
+
+/* 1. STAGE & BASE BACKGROUND */
+.yawn-2d-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #0d1b3e 0%, #080f26 60%, #030612 100%);
+  user-select: none;
+}
+
+.yawn-base-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.yawn-scene-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+  display: block;
+  transform: scale(1.01);
+  filter: contrast(1.05) saturate(1.08) brightness(0.98);
+}
+
+.yawn-color-grade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 25%, transparent 50%, rgba(3, 7, 22, 0.45) 85%, rgba(2, 4, 15, 0.75) 100%),
+              linear-gradient(to bottom, rgba(14, 165, 233, 0.08) 0%, transparent 40%, rgba(3, 7, 22, 0.5) 100%);
+  pointer-events: none;
+}
+
+/* 2. CANVAS FX (Bubbles, Plankton, Jellyfish, Astral Whale Silhouette) */
+.yawn-magic-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* 3. TOP HEADER (Exact Reference: Left Profile Avatar, Center Nav, Right Settings) */
+.yawn-top-header {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  right: 24px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+/* A. Top-Left: Akhira's Profile & Universe Title */
+.yawn-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(8, 18, 45, 0.82);
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 20px 8px 10px;
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgba(3, 7, 22, 0.65), 0 0 18px rgba(56, 189, 248, 0.35);
+  pointer-events: auto;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.yawn-header-left:hover {
+  border-color: rgba(186, 230, 253, 0.8);
+  box-shadow: 0 10px 32px rgba(3, 7, 22, 0.75), 0 0 24px rgba(56, 189, 248, 0.55);
+}
+
+.yawn-header-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(125, 211, 252, 0.85);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.75), inset 0 0 8px rgba(14, 165, 233, 0.4);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 15, 38, 0.95);
+}
+
+.yawn-header-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.yawn-header-titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.yawn-header-main-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(125, 211, 252, 0.7);
+}
+
+.yawn-header-sub-title {
+  margin: 2px 0 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #bae6fd;
+}
+
+/* B. Top-Center: Explore Universe & Story Buttons */
+.yawn-header-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.yawn-nav-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(8, 18, 45, 0.82);
+  border: 1px solid rgba(125, 211, 252, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #f0f9ff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(3, 7, 22, 0.55), 0 0 12px rgba(56, 189, 248, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.yawn-nav-pill-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(12, 30, 75, 0.9);
+  border-color: rgba(186, 230, 253, 0.85);
+  box-shadow: 0 8px 26px rgba(3, 7, 22, 0.65), 0 0 18px rgba(56, 189, 248, 0.5);
+  color: #ffffff;
+}
+
+.yawn-nav-pill-btn:active {
+  transform: translateY(0);
+}
+
+.yawn-nav-pill-btn .pill-icon {
+  font-size: 0.95rem;
+}
+
+/* C. Top-Right: Settings Button */
+.yawn-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: auto;
+}
+
+.yawn-settings-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(8, 18, 45, 0.82);
+  border: 1px solid rgba(125, 211, 252, 0.42);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #f0f9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(3, 7, 22, 0.55), 0 0 12px rgba(56, 189, 248, 0.25);
+  padding: 0;
+}
+
+.yawn-settings-btn:hover {
+  transform: rotate(45deg) scale(1.08);
+  background: rgba(14, 38, 92, 0.9);
+  border-color: rgba(186, 230, 253, 0.85);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+/* 4. INTERACTIVE LOCATIONS ON THE ARTWORK (Exact 6 Hotspots) */
+.yawn-locations-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.yawn-loc-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(8, 20, 52, 0.84);
+  border: 1px solid rgba(125, 211, 252, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(2, 6, 20, 0.7),
+              0 0 16px rgba(56, 189, 248, 0.35),
+              0 0 24px rgba(168, 85, 247, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: yawnBobbingFloat 4s ease-in-out infinite alternate;
+}
+
+.yawn-loc-btn:hover {
+  transform: translate(-50%, -50%) scale(1.08) translateY(-3px);
+  background: rgba(14, 38, 98, 0.92);
+  border-color: rgba(186, 230, 253, 0.95);
+  box-shadow: 0 12px 32px rgba(2, 6, 20, 0.85),
+              0 0 26px rgba(56, 189, 248, 0.65),
+              0 0 32px rgba(192, 132, 252, 0.45);
+  color: #f0fdf4;
+}
+
+.yawn-loc-btn:active {
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+.yawn-loc-icon {
+  font-size: 1.05rem;
+  filter: drop-shadow(0 0 6px rgba(125, 211, 252, 0.8));
+}
+
+/* Coordinates on Artwork */
+.btn-loc-yawn-residence {
+  top: 32%;
+  left: 54%;
+  animation-delay: 0s;
+}
+
+.btn-loc-yawn-observatory {
+  top: 33%;
+  left: 24%;
+  animation-delay: -1.2s;
+}
+
+.btn-loc-yawn-gazebo {
+  top: 57%;
+  left: 66%;
+  animation-delay: -2.4s;
+}
+
+.btn-loc-yawn-cinema {
+  top: 34%;
+  left: 87%;
+  animation-delay: -0.8s;
+}
+
+.btn-loc-yawn-mailbox {
+  top: 78%;
+  left: 88%;
+  animation-delay: -1.8s;
+  position: absolute;
+}
+
+.btn-loc-yawn-mailbox.has-unread {
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.8), 0 0 10px rgba(56, 189, 248, 0.9);
+  border-color: #fbbf24;
+  animation: yawnMailboxPulse 1.8s infinite ease-in-out;
+}
+
+.btn-loc-yawn-observatory.has-unread {
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.9), 0 0 10px rgba(129, 140, 248, 0.9);
+  border-color: #38bdf8;
+  animation: yawnObservatoryPulse 1.8s infinite ease-in-out;
+}
+
+.yawn-mailbox-badge,
+.yawn-loc-unread-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #ef4444, #f59e0b);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 999px;
+  text-align: center;
+  padding: 0 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 8px rgba(239, 68, 68, 0.8);
+  border: 1.5px solid #ffffff;
+  pointer-events: none;
+}
+
+.yawn-loc-unread-badge {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 8px rgba(56, 189, 248, 0.8);
+}
+
+@keyframes yawnObservatoryPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.95), 0 0 14px rgba(129, 140, 248, 0.8);
+  }
+}
+
+@keyframes yawnMailboxPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.7);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.95), 0 0 14px rgba(56, 189, 248, 0.8);
+  }
+}
+
+@keyframes yawnBobbingFloat {
+  0% { transform: translate(-50%, -50%) translateY(0px); }
+  100% { transform: translate(-50%, -50%) translateY(-6px); }
+}
+
+/* 5. BOTTOM BAR (Music Player, Tagline & Action Circles) */
+.yawn-bottom-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  right: 24px;
+  z-index: 15;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+/* Left: Music Player */
+.yawn-music-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(8, 20, 52, 0.86);
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgba(3, 7, 22, 0.7), 0 0 18px rgba(56, 189, 248, 0.35);
+  pointer-events: auto;
+  min-width: 270px;
+}
+
+.yawn-music-vinyl {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #0284c7 12%, #082f49 40%, #030712 100%);
+  border: 1.5px solid rgba(125, 211, 252, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.yawn-music-vinyl.is-playing {
+  animation: yawnVinylSpin 5s linear infinite;
+}
+
+@keyframes yawnVinylSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.yawn-music-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.yawn-music-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.yawn-music-sub {
+  font-size: 0.68rem;
+  color: #7dd3fc;
+  font-weight: 500;
+}
+
+.yawn-music-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(125, 211, 252, 0.2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.yawn-music-progress-fill {
+  width: 32%;
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #a855f7);
+  transition: width 0.4s ease;
+}
+
+.yawn-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+
+.yawn-music-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: #bae6fd;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.yawn-music-ctrl-btn:hover {
+  color: #ffffff;
+  transform: scale(1.15);
+  text-shadow: 0 0 8px rgba(125, 211, 252, 0.8);
+}
+
+.yawn-play-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(14, 165, 233, 0.25);
+  border: 1px solid rgba(125, 211, 252, 0.6);
+  border-radius: 50%;
+  font-size: 0.92rem;
+  color: #ffffff;
+}
+
+.yawn-play-btn:hover {
+  background: rgba(14, 165, 233, 0.5);
+  border-color: #e0f2fe;
+}
+
+/* Center: Tagline Panel */
+.yawn-tagline-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(8, 20, 52, 0.8);
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 8px 24px;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(3, 7, 22, 0.6);
+  pointer-events: auto;
+}
+
+.yawn-tagline-text {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #e0f2fe;
+  font-style: italic;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.yawn-tagline-diamond {
+  color: #38bdf8;
+  font-size: 0.75rem;
+}
+
+/* Right: Gallery & Collection Big Round Buttons */
+.yawn-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.yawn-big-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #f0f9ff;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.yawn-big-action-btn:hover {
+  transform: translateY(-4px) scale(1.06);
+}
+
+.yawn-big-action-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(14, 165, 233, 0.45) 0%, rgba(8, 20, 52, 0.95) 75%);
+  border: 1.5px solid rgba(125, 211, 252, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 8px 24px rgba(2, 6, 20, 0.7),
+              0 0 16px rgba(56, 189, 248, 0.45);
+  transition: all 0.25s ease;
+}
+
+.yawn-big-action-btn:hover .yawn-big-action-circle {
+  border-color: #bae6fd;
+  box-shadow: 0 10px 30px rgba(2, 6, 20, 0.8),
+              0 0 24px rgba(56, 189, 248, 0.7);
+}
+
+.yawn-big-action-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #e0f2fe;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* 6. MODAL OVERLAY & DIALOG CARDS */
+.yawn-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background: rgba(3, 7, 22, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.yawn-modal-overlay.active {
+  display: flex;
+}
+
+.yawn-modal-card {
+  width: 100%;
+  max-width: 580px;
+  background: linear-gradient(145deg, rgba(8, 24, 62, 0.96) 0%, rgba(4, 12, 34, 0.98) 100%);
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 32px rgba(56, 189, 248, 0.35);
+  padding: 24px;
+  color: #f0f9ff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: yawnModalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes yawnModalPop {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.yawn-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(125, 211, 252, 0.2);
+  padding-bottom: 12px;
+}
+
+.yawn-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.yawn-modal-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(125, 211, 252, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.yawn-modal-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.yawn-modal-title {
+  margin: 2px 0 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.yawn-modal-close-btn {
+  background: rgba(125, 211, 252, 0.1);
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  color: #bae6fd;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.yawn-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ffffff;
+}
+
+.yawn-action-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: 1px solid rgba(186, 230, 253, 0.6);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+}
+
+.yawn-action-btn:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+}
+
+/* 7. OBSERVATORY CONSTELLATION VIEWER */
+.yawn-constellation-box {
+  background: radial-gradient(circle at center, #071536 0%, #03081a 100%);
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.yawn-constellation-graphic {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.8));
+  animation: yawnPulseGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes yawnPulseGlow {
+  0% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.6)); }
+  100% { transform: scale(1.08); filter: drop-shadow(0 0 24px rgba(125, 211, 252, 0.95)); }
+}
+
+/* 8. CINEMA THEATER SHOWCASE */
+.yawn-cinema-screen {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+  border: 1.5px solid rgba(125, 211, 252, 0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.yawn-cinema-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
+  animation: yawnCinemaFlicker 4s infinite alternate;
+}
+
+@keyframes yawnCinemaFlicker {
+  0% { opacity: 0.6; }
+  50% { opacity: 0.9; }
+  100% { opacity: 0.7; }
+}
+
+/* 9. COLLECTIONS & ITEMS */
+.yawn-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.yawn-artifact-item {
+  background: rgba(8, 24, 62, 0.7);
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.yawn-artifact-item:hover {
+  background: rgba(14, 38, 92, 0.85);
+  border-color: rgba(186, 230, 253, 0.7);
+  transform: translateY(-2px);
+}
+
+.yawn-artifact-icon {
+  font-size: 1.8rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(14, 165, 233, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.yawn-artifact-info h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.yawn-artifact-info p {
+  margin: 3px 0 0 0;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.25;
+}
+
+/* 10. RESPONSIVE BREAKPOINTS */
+@media (max-width: 992px) {
+  .yawn-tagline-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .yawn-top-header {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+  }
+  .yawn-header-sub-title {
+    display: none;
+  }
+  .yawn-header-center {
+    gap: 6px;
+  }
+  .yawn-nav-pill-btn {
+    padding: 6px 12px;
+    font-size: 0.76rem;
+  }
+  .yawn-loc-btn {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+  .yawn-bottom-bar {
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+  }
+  .yawn-music-player {
+    padding: 6px 12px;
+    min-width: 200px;
+  }
+  .yawn-big-action-circle {
+    width: 48px;
+    height: 48px;
+    font-size: 1.35rem;
+  }
+  .yawn-mood-container {
+    bottom: 74px;
+    left: 12px;
+    max-width: calc(100vw - 24px);
+  }
+  .yawn-mood-options-bar {
+    max-width: calc(100vw - 160px);
+  }
+}
+
+/* ==========================================================================
+   6. MOOD TODAY (AKHIRA — YAWN ⚡)
+   ========================================================================== */
+.yawn-mood-container {
+  position: absolute;
+  left: 24px;
+  bottom: 82px;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 120px);
+  pointer-events: auto;
+}
+
+.yawn-mood-music-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.85rem 0.5rem 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(8, 22, 54, 0.92) 0%, rgba(14, 38, 92, 0.88) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.2px solid rgba(56, 189, 248, 0.55);
+  box-shadow: 0 8px 24px rgba(3, 8, 26, 0.65), 0 0 16px rgba(56, 189, 248, 0.3);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.yawn-mood-music-card:hover {
+  border-color: #7dd3fc;
+  box-shadow: 0 10px 28px rgba(3, 8, 26, 0.75), 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+.yawn-mood-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(192, 132, 252, 0.25) 70%);
+  border: 1px solid rgba(125, 211, 252, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.45);
+  flex-shrink: 0;
+}
+
+.yawn-mood-ocean-icon {
+  font-size: 0.95rem;
+}
+
+.yawn-mood-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.yawn-mood-header-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: #7dd3fc;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.yawn-mood-state-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.yawn-mood-state-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.yawn-mood-state-text:hover {
+  color: #38bdf8;
+}
+
+.btn-toggle-yawn-mood-picker {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #7dd3fc;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.62rem;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.btn-toggle-yawn-mood-picker:hover {
+  background: rgba(56, 189, 248, 0.3);
+  border-color: #ffffff;
+  transform: scale(1.15);
+}
+
+.btn-toggle-yawn-mood-picker.is-active .picker-caret-icon {
+  transform: rotate(180deg);
+}
+
+.btn-yawn-mood-history {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #c084fc;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.62rem;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.btn-yawn-mood-history:hover {
+  background: rgba(192, 132, 252, 0.3);
+  border-color: #ffffff;
+  transform: scale(1.15);
+}
+
+.yawn-mood-song-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.62rem;
+  color: #cbd5e1;
+  letter-spacing: 0.02em;
+}
+
+.yawn-mood-play-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%);
+  border: 1px solid rgba(125, 211, 252, 0.7);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.55);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.yawn-mood-play-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
+}
+
+/* --- HORIZONTAL MOOD OPTIONS BAR (POP-OUT) --- */
+.yawn-mood-options-bar {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: linear-gradient(135deg, rgba(6, 18, 46, 0.95) 0%, rgba(12, 32, 80, 0.93) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.2px solid rgba(56, 189, 248, 0.55);
+  box-shadow: 0 8px 24px rgba(2, 6, 20, 0.65), 0 0 20px rgba(56, 189, 248, 0.25);
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateX(-12px) scale(0.96);
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  overflow-x: auto;
+  max-width: calc(100vw - 320px);
+  white-space: nowrap;
+}
+
+.yawn-mood-options-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.yawn-mood-options-bar.is-open {
+  display: flex;
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+.yawn-mood-option-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.yawn-mood-option-pill:hover {
+  background: rgba(56, 189, 248, 0.35);
+  border-color: rgba(125, 211, 252, 0.7);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+.yawn-mood-option-pill.active {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.6) 0%, rgba(124, 58, 237, 0.55) 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+}
+
+/* --- YAWN MOOD HISTORY MODAL LIST STYLES --- */
+.yawn-mood-history-card {
+  max-width: 500px;
+}
+
+.yawn-mood-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  margin-top: 12px;
+  padding-right: 4px;
+}
+
+.yawn-mood-history-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.yawn-mood-history-list::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.4);
+  border-radius: 4px;
+}
+
+.yawn-mood-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(8, 22, 54, 0.65);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.yawn-mood-history-item:hover {
+  background: rgba(14, 38, 92, 0.8);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.yawn-mood-history-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.yawn-mood-history-icon {
+  font-size: 1.3rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.yawn-mood-history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.yawn-mood-history-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.yawn-mood-history-song {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.yawn-mood-history-date {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.yawn-mood-history-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+

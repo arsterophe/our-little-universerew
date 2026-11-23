@@ -1,0 +1,823 @@
+/* ==========================================================================
+   THE ECLIPSE — THE AUTHOR'S ETERNAL SANCTUARY
+   Universe: Private Royal Celestial Sanctuary for Lele 🌙 (The Author)
+   ========================================================================== */
+
+:root {
+  --eclipse-bg: #070714;
+  --eclipse-dark-navy: #0d0d26;
+  --eclipse-purple-deep: #251247;
+  --eclipse-amethyst: #a855f7;
+  --eclipse-amethyst-light: #c084fc;
+  --eclipse-amethyst-glow: rgba(168, 85, 247, 0.45);
+  --eclipse-silver: #e2e8f0;
+  --eclipse-silver-glow: rgba(226, 232, 240, 0.35);
+  --eclipse-gold: #fbbf24;
+  --eclipse-gold-glow: rgba(251, 191, 36, 0.3);
+  --eclipse-font-serif: 'Cinzel', 'Cormorant Garamond', serif;
+  --eclipse-font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Base View Container */
+.view-eclipse {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--eclipse-bg);
+  color: var(--eclipse-silver);
+  font-family: var(--eclipse-font-sans);
+  z-index: 105;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.view-eclipse.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* 2D Exploration Stage (16:9 responsive) */
+.eclipse-stage {
+  position: relative;
+  width: min(100vw, 177.78vh);
+  height: min(56.25vw, 100vh);
+  aspect-ratio: 16 / 9;
+  background-color: #050510;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 35px var(--eclipse-amethyst-glow);
+}
+
+/* Background Artwork Layer */
+.eclipse-bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.eclipse-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(0.96) contrast(1.05);
+  transition: filter 0.8s ease, transform 0.8s ease;
+}
+
+/* Celestial Nebula & Moonlight Overlay */
+.eclipse-atmo-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 25%, rgba(168, 85, 247, 0.12) 0%, rgba(13, 13, 38, 0.4) 60%, rgba(7, 7, 20, 0.75) 100%);
+  mix-blend-mode: screen;
+  transition: background 1s ease;
+}
+
+/* Stardust & Moon Corona Particles */
+.eclipse-particles-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.eclipse-star {
+  position: absolute;
+  color: var(--eclipse-amethyst-light);
+  font-size: 0.85rem;
+  opacity: 0.7;
+  animation: eclipseParticleDrift 14s infinite linear;
+  text-shadow: 0 0 8px var(--eclipse-amethyst);
+}
+
+.eclipse-star.st1 { left: 15%; top: 25%; animation-delay: 0s; font-size: 0.75rem; }
+.eclipse-star.st2 { left: 45%; top: 15%; animation-delay: 3s; font-size: 1.1rem; color: var(--eclipse-silver); }
+.eclipse-star.st3 { left: 78%; top: 35%; animation-delay: 7s; font-size: 0.9rem; color: var(--eclipse-gold); }
+.eclipse-star.st4 { left: 85%; top: 70%; animation-delay: 5s; font-size: 0.7rem; }
+.eclipse-star.st5 { left: 25%; top: 65%; animation-delay: 9s; font-size: 1rem; }
+
+@keyframes eclipseParticleDrift {
+  0% { transform: translateY(0) rotate(0deg) scale(0.9); opacity: 0.2; }
+  50% { transform: translateY(-25px) rotate(180deg) scale(1.15); opacity: 0.9; }
+  100% { transform: translateY(-50px) rotate(360deg) scale(0.9); opacity: 0.2; }
+}
+
+/* Interactive Hotspots Layer */
+.eclipse-hotspots-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.eclipse-hotspot-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.eclipse-hotspot-item:hover,
+.eclipse-hotspot-item:focus-visible {
+  transform: translate(-50%, -58%) scale(1.1);
+  outline: none;
+}
+
+.eclipse-hotspot-beacon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, rgba(37, 18, 71, 0.9) 70%);
+  border: 1.5px solid var(--eclipse-silver);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #fff;
+  box-shadow: 0 0 16px var(--eclipse-amethyst-glow), inset 0 0 8px rgba(255, 255, 255, 0.3);
+  position: relative;
+  animation: eclipseBeaconPulse 3s infinite ease-in-out;
+}
+
+@keyframes eclipseBeaconPulse {
+  0%, 100% { box-shadow: 0 0 14px var(--eclipse-amethyst-glow), 0 0 25px rgba(168, 85, 247, 0.3); }
+  50% { box-shadow: 0 0 22px rgba(192, 132, 252, 0.8), 0 0 40px rgba(168, 85, 247, 0.6); }
+}
+
+.eclipse-hotspot-label {
+  margin-top: 6px;
+  background: rgba(13, 13, 38, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: var(--eclipse-silver);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  opacity: 0.9;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.eclipse-hotspot-item:hover .eclipse-hotspot-label {
+  opacity: 1;
+  border-color: var(--eclipse-silver);
+  color: #fff;
+}
+
+/* 2D Player Avatar: Lele (The Author) */
+.eclipse-player-avatar {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: 72px;
+  height: 94px;
+  transform: translate(-50%, -85%);
+  z-index: 15;
+  pointer-events: none;
+  transition: transform 0.1s linear;
+}
+
+.eclipse-player-avatar.facing-left .eclipse-avatar-body {
+  transform: scaleX(-1);
+}
+
+.eclipse-player-avatar.is-walking .eclipse-avatar-body {
+  animation: eclipseAvatarWalk 0.5s infinite alternate ease-in-out;
+}
+
+.eclipse-player-avatar.is-sitting {
+  transform: translate(-50%, -70%) scale(0.92);
+}
+
+@keyframes eclipseAvatarWalk {
+  0% { transform: translateY(0) rotate(-1.5deg); }
+  100% { transform: translateY(-5px) rotate(1.5deg); }
+}
+
+.eclipse-avatar-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eclipse-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.75));
+}
+
+.eclipse-author-halo {
+  position: absolute;
+  top: -8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--eclipse-gold);
+  box-shadow: 0 0 12px var(--eclipse-gold-glow);
+  opacity: 0.85;
+  animation: eclipseHaloPulse 4s infinite ease-in-out;
+}
+
+@keyframes eclipseHaloPulse {
+  0%, 100% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.eclipse-player-shadow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 14px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.65) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Proximity Interaction Prompt */
+.eclipse-interaction-prompt {
+  position: absolute;
+  top: -38px;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: rgba(13, 13, 38, 0.92);
+  border: 1px solid var(--eclipse-amethyst);
+  color: var(--eclipse-silver);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  box-shadow: 0 0 16px var(--eclipse-amethyst-glow);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 25;
+}
+
+.eclipse-interaction-prompt.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.eclipse-interaction-prompt:hover {
+  background: var(--eclipse-purple-deep);
+  border-color: var(--eclipse-silver);
+  color: #fff;
+}
+
+/* TOP-LEFT HUD: Return & Title */
+.eclipse-hud-topleft {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.eclipse-back-orb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(13, 13, 38, 0.85);
+  border: 1.5px solid var(--eclipse-amethyst);
+  color: var(--eclipse-silver);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s ease;
+}
+
+.eclipse-back-orb:hover {
+  border-color: var(--eclipse-silver);
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 0 16px var(--eclipse-amethyst-glow);
+}
+
+.eclipse-title-badge {
+  background: rgba(13, 13, 38, 0.88);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  padding: 6px 14px;
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+}
+
+.eclipse-title-badge h2 {
+  margin: 0;
+  font-family: var(--eclipse-font-serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eclipse-title-badge span {
+  font-size: 0.68rem;
+  color: var(--eclipse-amethyst-light);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* TOP-RIGHT HUD: Room Navigation Pills & Tools */
+.eclipse-hud-topright {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.eclipse-nav-pills {
+  display: flex;
+  gap: 6px;
+  background: rgba(13, 13, 38, 0.85);
+  padding: 4px;
+  border-radius: 20px;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  backdrop-filter: blur(8px);
+  max-width: 62vw;
+  overflow-x: auto;
+}
+
+.eclipse-room-btn {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.eclipse-room-btn:hover {
+  color: #fff;
+  background: rgba(168, 85, 247, 0.25);
+}
+
+.eclipse-room-btn.active {
+  background: linear-gradient(135deg, var(--eclipse-purple-deep), #581c87);
+  color: #fff;
+  border: 1px solid var(--eclipse-amethyst-light);
+  box-shadow: 0 0 12px var(--eclipse-amethyst-glow);
+}
+
+.eclipse-hud-quick-tools {
+  display: flex;
+  gap: 6px;
+}
+
+.eclipse-tool-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(13, 13, 38, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: var(--eclipse-silver);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.eclipse-tool-btn:hover {
+  border-color: var(--eclipse-silver);
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 0 14px var(--eclipse-amethyst-glow);
+}
+
+/* Control Hint */
+.eclipse-hud-controls-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  z-index: 20;
+  background: rgba(13, 13, 38, 0.75);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.68rem;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eclipse-kbd-pill {
+  background: rgba(37, 18, 71, 0.85);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.65rem;
+}
+
+/* Mobile Virtual Touch D-Pad */
+.eclipse-touch-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  display: none;
+}
+
+@media (pointer: coarse), (max-width: 900px) {
+  .eclipse-touch-controls {
+    display: block;
+  }
+}
+
+.eclipse-dpad-grid {
+  position: absolute;
+  left: 20px;
+  bottom: 24px;
+  width: 126px;
+  height: 126px;
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.eclipse-dpad-btn {
+  background: rgba(13, 13, 38, 0.8);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: var(--eclipse-silver);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.eclipse-dpad-btn:active {
+  background: var(--eclipse-amethyst);
+  color: #fff;
+}
+
+.eclipse-dpad-btn.dpad-up { grid-column: 2; grid-row: 1; }
+.eclipse-dpad-btn.dpad-left { grid-column: 1; grid-row: 2; }
+.eclipse-dpad-btn.dpad-center { grid-column: 2; grid-row: 2; background: rgba(37, 18, 71, 0.9); font-size: 0.85rem; border: none; }
+.eclipse-dpad-btn.dpad-right { grid-column: 3; grid-row: 2; }
+.eclipse-dpad-btn.dpad-down { grid-column: 2; grid-row: 3; }
+
+.eclipse-touch-action-btn {
+  position: absolute;
+  right: 24px;
+  bottom: 30px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  pointer-events: auto;
+  background: linear-gradient(135deg, var(--eclipse-amethyst), var(--eclipse-purple-deep));
+  border: 2px solid var(--eclipse-silver);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.72rem;
+  box-shadow: 0 0 20px var(--eclipse-amethyst-glow);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.eclipse-touch-action-btn:active {
+  transform: scale(0.94);
+}
+
+/* Modal Backdrop & Royal Card */
+.eclipse-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(5, 5, 16, 0.82);
+  backdrop-filter: blur(10px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.eclipse-modal-backdrop.active {
+  display: flex;
+  opacity: 1;
+}
+
+.eclipse-modal-card {
+  background: linear-gradient(145deg, #0e0e26, #181038);
+  border: 1.5px solid rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 45px rgba(0, 0, 0, 0.9), 0 0 25px var(--eclipse-amethyst-glow);
+  border-radius: 20px;
+  width: min(92vw, 680px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  color: #e2e8f0;
+}
+
+.eclipse-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(37, 18, 71, 0.5);
+}
+
+.eclipse-modal-header h3 {
+  margin: 0;
+  font-family: var(--eclipse-font-serif);
+  font-size: 1.15rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eclipse-modal-close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.eclipse-modal-close-btn:hover {
+  color: #fff;
+}
+
+.eclipse-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Card Grids for Content */
+.eclipse-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.eclipse-item-card {
+  background: rgba(20, 15, 45, 0.7);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.eclipse-item-card:hover {
+  border-color: var(--eclipse-amethyst-light);
+  box-shadow: 0 0 16px var(--eclipse-amethyst-glow);
+  transform: translateY(-2px);
+}
+
+.eclipse-item-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eclipse-item-card-icon {
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(37, 18, 71, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.eclipse-item-card-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.eclipse-item-card-desc {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.eclipse-btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border: 1px solid var(--eclipse-silver);
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eclipse-btn-primary:hover {
+  background: linear-gradient(135deg, #9333ea, #c084fc);
+  box-shadow: 0 0 14px var(--eclipse-amethyst-glow);
+}
+
+/* Piano Keyboard UI */
+.eclipse-piano-keyboard {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  background: #090918;
+  padding: 16px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  margin: 12px 0;
+}
+
+.eclipse-piano-key {
+  flex: 1;
+  max-width: 50px;
+  height: 140px;
+  background: linear-gradient(to bottom, #1e1e38 0%, #0f0f24 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.5);
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 10px;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.eclipse-piano-key:active,
+.eclipse-piano-key.playing {
+  background: linear-gradient(to bottom, #7c3aed, #a855f7);
+  color: #fff;
+  transform: translateY(4px);
+  box-shadow: 0 0 16px var(--eclipse-amethyst);
+}
+
+.eclipse-piano-key span {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.eclipse-piano-key small {
+  font-size: 0.65rem;
+  color: var(--eclipse-amethyst-light);
+}
+
+/* Author Desk Navigation Tabs */
+.eclipse-author-desk-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+
+.eclipse-desk-tab-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.eclipse-desk-tab-btn:hover {
+  color: #fff;
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.eclipse-desk-tab-btn.active {
+  background: var(--eclipse-purple-deep);
+  color: #fff;
+  border: 1px solid var(--eclipse-amethyst);
+}
+
+/* Sleep & Transition Overlay */
+.eclipse-sleep-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+
+.eclipse-sleep-overlay.active {
+  opacity: 0.95;
+  pointer-events: auto;
+}
+
+/* Secret Chamber Discovery Animation Overlay */
+.eclipse-discovery-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.8) 0%, rgba(13, 13, 38, 0.9) 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.eclipse-discovery-flash.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* SHADOW HUD: The Eclipse Entrance Button */
+.shadow-eclipse-pill {
+  background: linear-gradient(135deg, rgba(37, 18, 71, 0.95) 0%, rgba(88, 28, 135, 0.95) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.85);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(8, 10, 28, 0.7), 0 0 16px rgba(168, 85, 247, 0.5);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.shadow-eclipse-pill:hover {
+  background: linear-gradient(135deg, rgba(59, 23, 114, 0.98) 0%, rgba(107, 33, 168, 0.98) 100%);
+  border-color: #fbbf24;
+  box-shadow: 0 8px 28px rgba(8, 10, 28, 0.8), 0 0 24px rgba(251, 191, 36, 0.6);
+  transform: translateY(-2px);
+}

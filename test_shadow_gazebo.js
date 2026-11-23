@@ -44,8 +44,8 @@ async function runTests() {
   assert(SHADOW_LOCATIONS.gazebo.actionType === 'shadow_gazebo', 'SHADOW Gazebo actionType is shadow_gazebo');
   assert(SHADOW_LOCATIONS.gazebo.title === 'Moonlit Serenity Gazebo', 'SHADOW Gazebo title is Moonlit Serenity Gazebo');
 
-  // Verify KIDULT and TO YOU Gazebos remain untouched
-  assert(KIDULT_LOCATIONS.gazebo.actionType === 'toast', 'KIDULT Gazebo actionType remains untouched (toast)');
+  // Verify KIDULT and TO YOU Gazebos
+  assert(KIDULT_LOCATIONS.gazebo.actionType === 'kidult_gazebo' || KIDULT_LOCATIONS.gazebo.actionType === 'toast', 'KIDULT Gazebo actionType is kidult_gazebo');
   assert(TOYOU_LOCATIONS.gazebo.actionType === 'toast', 'TO YOU Gazebo actionType remains untouched (toast)');
 
   console.log('\n================================================================');

@@ -1,0 +1,987 @@
+/* ========================================================
+   OUR LITTLE UNIVERSE — BEHIND THE PINWHEEL
+   A Memoir & Time-Capsule Letter for Syma (PINWHEEL ☁️)
+   "A Future Self Is Waiting for You."
+   Author: Lele 🌙 ~ Kitsune Meadow & Wind Chimes Aesthetic
+   ======================================================== */
+
+/* Fullscreen Overlay Dialog */
+.pinwheel-behind-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: none;
+  background: radial-gradient(circle at 50% 15%, rgba(26, 16, 52, 0.98) 0%, rgba(14, 10, 36, 0.98) 50%, rgba(6, 4, 20, 0.99) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  animation: pinwheelBehindFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pinwheel-behind-overlay.active {
+  display: flex !important;
+  flex-direction: column;
+}
+
+@keyframes pinwheelBehindFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Floating Magical Ambient Particles: Pinwheels, Sakura, Kitsune Whisps, Wind Chimes */
+.pinwheel-behind-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.pinwheel-behind-particles .particle {
+  position: absolute;
+  user-select: none;
+  animation: floatPinwheelParticle 10s ease-in-out infinite alternate;
+}
+
+.pinwheel-behind-particles .p1 { top: 10%; left: 6%; animation-delay: 0s; font-size: 1.5rem; color: rgba(147, 197, 253, 0.7); text-shadow: 0 0 14px rgba(147, 197, 253, 0.6); }
+.pinwheel-behind-particles .p2 { top: 20%; right: 8%; animation-delay: 1.8s; font-size: 1.3rem; color: rgba(192, 132, 252, 0.65); filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.6)); }
+.pinwheel-behind-particles .p3 { bottom: 18%; left: 9%; animation-delay: 3.2s; font-size: 1.6rem; color: rgba(254, 240, 138, 0.6); text-shadow: 0 0 14px rgba(254, 240, 138, 0.5); }
+.pinwheel-behind-particles .p4 { bottom: 26%; right: 10%; animation-delay: 4.4s; font-size: 1.4rem; color: rgba(147, 197, 253, 0.75); }
+.pinwheel-behind-particles .p5 { top: 52%; left: 4%; animation-delay: 2.5s; font-size: 1.3rem; color: rgba(232, 121, 249, 0.6); }
+.pinwheel-behind-particles .p6 { top: 62%; right: 6%; animation-delay: 3.7s; font-size: 1.5rem; color: rgba(254, 240, 138, 0.7); }
+
+@keyframes floatPinwheelParticle {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.35; }
+  50% { transform: translateY(-28px) rotate(35deg); opacity: 0.85; }
+  100% { transform: translateY(-56px) rotate(70deg); opacity: 0.35; }
+}
+
+/* Subtle Meadow Mist and Wind Glow Background Effect */
+.pinwheel-behind-wind-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(147, 197, 253, 0.16) 0%, rgba(192, 132, 252, 0.08) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Main Container */
+.pinwheel-behind-container {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 1080px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Header Bar */
+.pinwheel-behind-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(147, 197, 253, 0.25);
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.pinwheel-behind-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(30, 20, 60, 0.85);
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  color: #eff6ff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.pinwheel-behind-back-btn:hover {
+  background: rgba(79, 70, 229, 0.85);
+  border-color: #93c5fd;
+  color: #ffffff;
+  transform: translateX(-3px);
+  box-shadow: 0 0 16px rgba(147, 197, 253, 0.55), 0 0 24px rgba(192, 132, 252, 0.35);
+}
+
+.pinwheel-behind-title-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.pinwheel-badge-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.8)) drop-shadow(0 0 16px rgba(192, 132, 252, 0.5));
+  animation: gentlePinwheelSpin 6s linear infinite;
+}
+
+@keyframes gentlePinwheelSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pinwheel-badge-tag {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #93c5fd;
+  text-transform: uppercase;
+}
+
+.pinwheel-badge-title {
+  margin: 2px 0 0 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(147, 197, 253, 0.7), 0 0 28px rgba(192, 132, 252, 0.5);
+}
+
+.pinwheel-behind-close-btn {
+  background: transparent;
+  border: 1px solid rgba(147, 197, 253, 0.4);
+  color: #cbd5e1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pinwheel-behind-close-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transform: scale(1.1);
+  border-color: #93c5fd;
+}
+
+/* 5-Chapter Stepper Tabs */
+.pinwheel-behind-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 0;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.pinwheel-behind-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(30, 20, 56, 0.7);
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  color: #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.pinwheel-behind-tab-btn .tab-num {
+  font-weight: 800;
+  color: #93c5fd;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pinwheel-behind-tab-btn .tab-title {
+  font-weight: 600;
+}
+
+.pinwheel-behind-tab-btn:hover {
+  background: rgba(79, 70, 229, 0.85);
+  color: #eff6ff;
+  border-color: rgba(147, 197, 253, 0.6);
+}
+
+.pinwheel-behind-tab-btn.active {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.95), rgba(124, 58, 237, 0.95));
+  border-color: #93c5fd;
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(147, 197, 253, 0.55), 0 0 24px rgba(192, 132, 252, 0.35);
+}
+
+.pinwheel-behind-tab-btn.active .tab-num {
+  color: #dbeafe;
+}
+
+/* Reading Progress Bar */
+.pinwheel-behind-progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(147, 197, 253, 0.15);
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.pinwheel-behind-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 20%;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa, #c084fc);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 12px rgba(147, 197, 253, 0.8);
+}
+
+/* Scrollable Content Deck */
+.pinwheel-behind-deck {
+  flex: 1;
+  position: relative;
+  overflow-y: auto;
+  padding: 8px 6px 16px 6px;
+  scroll-behavior: smooth;
+}
+
+/* Chapter Panel */
+.pinwheel-behind-chapter-panel {
+  display: none;
+  background: linear-gradient(135deg, rgba(28, 16, 52, 0.88) 0%, rgba(18, 12, 38, 0.92) 100%);
+  border: 1.5px solid rgba(147, 197, 253, 0.32);
+  border-radius: 24px;
+  padding: 30px 36px;
+  box-shadow: 0 24px 60px rgba(4, 2, 12, 0.75), inset 0 0 35px rgba(147, 197, 253, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: pinwheelPanelIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pinwheel-behind-chapter-panel.active {
+  display: block;
+}
+
+@keyframes pinwheelPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chapter Header */
+.pinwheel-behind-page-header {
+  margin-bottom: 22px;
+  border-bottom: 1px dashed rgba(147, 197, 253, 0.3);
+  padding-bottom: 16px;
+}
+
+.pinwheel-chapter-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #93c5fd;
+  text-transform: uppercase;
+  background: rgba(147, 197, 253, 0.14);
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  padding: 3px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.pinwheel-chapter-main-title {
+  margin: 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 18px rgba(147, 197, 253, 0.65), 0 0 28px rgba(192, 132, 252, 0.4);
+}
+
+.pinwheel-chapter-sub-title {
+  margin: 6px 0 0 0;
+  font-size: 1rem;
+  font-style: italic;
+  color: #cbd5e1;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* 2-Column Chapter Layout */
+.pinwheel-chapter-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.pinwheel-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pinwheel-paragraph {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #e2e8f0;
+  margin: 0;
+  text-align: justify;
+}
+
+.pinwheel-paragraph.drop-cap::first-letter {
+  font-family: 'Cinzel', serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  float: left;
+  margin-right: 12px;
+  margin-top: 3px;
+  color: #93c5fd;
+  text-shadow: 0 0 14px rgba(147, 197, 253, 0.7);
+}
+
+.pinwheel-quote-box {
+  margin: 12px 0;
+  padding: 14px 20px;
+  background: rgba(147, 197, 253, 0.08);
+  border-left: 3px solid #93c5fd;
+  border-radius: 0 14px 14px 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #bfdbfe;
+  line-height: 1.6;
+}
+
+.pinwheel-highlight-text {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #fde047;
+  text-shadow: 0 0 12px rgba(253, 224, 71, 0.45);
+  margin: 4px 0;
+}
+
+/* Visual Feature Cards in Chapters */
+.pinwheel-feature-card {
+  background: rgba(20, 12, 38, 0.75);
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 12px 36px rgba(4, 2, 14, 0.55);
+}
+
+.pinwheel-card-portrait {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(147, 197, 253, 0.4);
+  margin-bottom: 16px;
+}
+
+.pinwheel-card-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.pinwheel-card-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(24, 14, 46, 0.9);
+  border: 1px solid rgba(147, 197, 253, 0.55);
+  backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #bfdbfe;
+}
+
+.pinwheel-specs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pinwheel-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 12px;
+}
+
+.pinwheel-spec-label {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.pinwheel-spec-val {
+  color: #f8fafc;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ========================================================
+   OPENING SCENE (HERO SCREEN BEFORE CHAPTER I)
+   ======================================================== */
+.pinwheel-behind-intro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 30px;
+  background: radial-gradient(circle at 50% 30%, rgba(38, 22, 70, 0.85) 0%, rgba(18, 10, 36, 0.9) 100%);
+  border: 1.5px solid rgba(147, 197, 253, 0.4);
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(5, 2, 16, 0.8);
+  margin-bottom: 20px;
+}
+
+.intro-pinwheel-icon-wrap {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(147, 197, 253, 0.25) 0%, rgba(124, 58, 237, 0.2) 70%, transparent 100%);
+  border: 1.5px solid rgba(147, 197, 253, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  margin-bottom: 18px;
+  box-shadow: 0 0 25px rgba(147, 197, 253, 0.5);
+  animation: introPinwheelBreathe 4s ease-in-out infinite alternate;
+}
+
+@keyframes introPinwheelBreathe {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.08) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.intro-main-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(147, 197, 253, 0.8), 0 0 32px rgba(192, 132, 252, 0.5);
+}
+
+.intro-sub-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: #cbd5e1;
+  margin: 8px 0 18px 0;
+}
+
+.intro-lead-text {
+  max-width: 680px;
+  font-size: 0.96rem;
+  line-height: 1.8;
+  color: #e2e8f0;
+  margin-bottom: 26px;
+}
+
+.btn-pinwheel-begin-journey {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed, #9333ea);
+  border: 1.5px solid #93c5fd;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 12px 32px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.5), 0 0 20px rgba(147, 197, 253, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-pinwheel-begin-journey:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(79, 70, 229, 0.7), 0 0 28px rgba(147, 197, 253, 0.6);
+  border-color: #ffffff;
+}
+
+/* ========================================================
+   CHAPTER IV: A LETTER FROM LELE — IVORY PARCHMENT
+   ======================================================== */
+.pinwheel-manuscript-parchment {
+  background: #fbfbf6;
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(219, 234, 254, 0.4) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(237, 233, 254, 0.4) 0%, transparent 40%);
+  color: #1e293b;
+  border-radius: 20px;
+  padding: 38px 46px;
+  border: 2px solid rgba(147, 197, 253, 0.6);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), inset 0 0 30px rgba(219, 234, 254, 0.4);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  line-height: 1.85;
+  position: relative;
+  overflow: hidden;
+}
+
+.pinwheel-manuscript-parchment::before {
+  content: '🎐';
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  font-size: 4rem;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.pinwheel-wax-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  border: 2px solid #93c5fd;
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 16px rgba(30, 58, 138, 0.35);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.pinwheel-wax-seal:hover {
+  transform: scale(1.05);
+}
+
+.pinwheel-letter-salutation {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 18px;
+  font-family: 'Cinzel', serif;
+}
+
+.pinwheel-letter-body p {
+  margin: 0 0 16px 0;
+  font-size: 0.96rem;
+  color: #1e293b;
+  text-align: justify;
+}
+
+.pinwheel-letter-body p strong {
+  color: #1e3a8a;
+}
+
+.pinwheel-letter-signoff {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(147, 197, 253, 0.4);
+  font-style: italic;
+  color: #334155;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.15rem;
+}
+
+.pinwheel-letter-signoff strong {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.1rem;
+  color: #1e3a8a;
+  display: block;
+  font-style: normal;
+  margin-top: 4px;
+}
+
+.pinwheel-letter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.btn-pinwheel-letter-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #93c5fd;
+  color: #1e3a8a;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(147, 197, 253, 0.25);
+}
+
+.btn-pinwheel-letter-action:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+}
+
+.btn-pinwheel-letter-action.primary {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  color: #ffffff;
+  border-color: #93c5fd;
+}
+
+.btn-pinwheel-letter-action.primary:hover {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+}
+
+/* ========================================================
+   CHAPTER V: EPILOGUE & SONG INTEGRATION
+   ======================================================== */
+.pinwheel-epilogue-box {
+  background: linear-gradient(135deg, rgba(30, 20, 56, 0.85) 0%, rgba(16, 10, 32, 0.85) 100%);
+  border: 1.5px solid rgba(147, 197, 253, 0.35);
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.pinwheel-climax-quote {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  margin: 10px 0;
+  text-shadow: 0 0 18px rgba(147, 197, 253, 0.8), 0 0 30px rgba(192, 132, 252, 0.5);
+}
+
+.pinwheel-song-player-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(18, 10, 36, 0.85);
+  border: 1.5px solid rgba(147, 197, 253, 0.3);
+  border-radius: 18px;
+  padding: 18px 24px;
+  margin-top: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.pinwheel-song-disc {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #0f172a 30%, #1e1b4b 60%, #312e81 100%);
+  border: 2px solid #93c5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 0 16px rgba(147, 197, 253, 0.4);
+}
+
+.pinwheel-song-disc.playing {
+  animation: spinVinyl 3.5s linear infinite;
+}
+
+@keyframes spinVinyl {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pinwheel-song-info {
+  flex: 1;
+  text-align: left;
+}
+
+.pinwheel-song-title {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: #ffffff;
+}
+
+.pinwheel-song-sub {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.btn-pinwheel-song-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: 1px solid #93c5fd;
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+}
+
+.btn-pinwheel-song-toggle:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.6);
+  border-color: #ffffff;
+}
+
+/* YouTube Video Responsive Container */
+.pinwheel-video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid rgba(147, 197, 253, 0.35);
+  margin-top: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.pinwheel-video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Footer Navigation Controls */
+.pinwheel-behind-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid rgba(147, 197, 253, 0.2);
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.pinwheel-behind-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(30, 20, 56, 0.85);
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  color: #eff6ff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.pinwheel-behind-btn:hover:not(:disabled) {
+  background: rgba(79, 70, 229, 0.85);
+  border-color: #93c5fd;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(147, 197, 253, 0.5);
+}
+
+.pinwheel-behind-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pinwheel-indicators {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pinwheel-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(147, 197, 253, 0.3);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.pinwheel-indicator-dot.active {
+  width: 24px;
+  border-radius: 999px;
+  background: #93c5fd;
+  box-shadow: 0 0 10px rgba(147, 197, 253, 0.8);
+}
+
+/* Universe Top HUD Pill Button (Syma's PINWHEEL World) */
+.pinwheel-behind-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(38, 22, 70, 0.92) 0%, rgba(20, 14, 44, 0.92) 100%);
+  border: 1.5px solid rgba(147, 197, 253, 0.65);
+  box-shadow: 0 6px 18px rgba(6, 4, 18, 0.65), 0 0 14px rgba(147, 197, 253, 0.3);
+  border-radius: 999px;
+  padding: 6px 16px 6px 14px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 50;
+}
+
+.pinwheel-behind-pill:hover {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(124, 58, 237, 0.95) 100%);
+  border-color: #ffffff;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(6, 4, 18, 0.8), 0 0 20px rgba(147, 197, 253, 0.6);
+}
+
+.pinwheel-behind-icon {
+  font-size: 1.25rem;
+  display: inline-block;
+  animation: gentlePinwheelSpin 5s linear infinite;
+}
+
+.pinwheel-behind-label {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.15;
+}
+
+.pinwheel-behind-main {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.pinwheel-behind-sub {
+  font-size: 0.65rem;
+  color: #93c5fd;
+  letter-spacing: 0.02em;
+}
+
+.pinwheel-behind-sparkle {
+  color: #fde047;
+  font-size: 0.85rem;
+  text-shadow: 0 0 8px rgba(253, 224, 71, 0.7);
+}
+
+/* ========================================================
+   RESPONSIVE BREAKPOINTS (TABLET & MOBILE)
+   ======================================================== */
+@media (max-width: 960px) {
+  .pinwheel-chapter-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .pinwheel-behind-container {
+    padding: 14px 18px;
+  }
+  .pinwheel-behind-chapter-panel {
+    padding: 22px 24px;
+  }
+  .pinwheel-manuscript-parchment {
+    padding: 26px 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pinwheel-behind-header {
+    gap: 8px;
+    padding-bottom: 10px;
+  }
+  .pinwheel-behind-back-btn span:last-child {
+    display: none;
+  }
+  .pinwheel-badge-title {
+    font-size: 1.05rem;
+  }
+  .pinwheel-behind-tab-btn {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+  .pinwheel-behind-tab-btn .tab-title {
+    display: none;
+  }
+  .pinwheel-behind-tab-btn.active .tab-title {
+    display: inline;
+  }
+  .pinwheel-behind-chapter-panel {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+  .pinwheel-manuscript-parchment {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+  .pinwheel-chapter-main-title {
+    font-size: 1.4rem;
+  }
+  .pinwheel-paragraph {
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+  .pinwheel-behind-sub {
+    display: none;
+  }
+  .pinwheel-song-player-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    text-align: center;
+  }
+  .pinwheel-song-info {
+    text-align: center;
+  }
+  .btn-pinwheel-song-toggle {
+    justify-content: center;
+  }
+}

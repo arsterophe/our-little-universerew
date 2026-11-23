@@ -1,0 +1,1190 @@
+/**
+ * YAWN CINEMA — THE QUIET ABYSS CSS
+ * Private Underwater Sanctuary Theme & Interactive Components
+ * =============================================================================
+ */
+
+/* -------------------------------------------------------------------------- */
+/* 1. ROOT VIEW CONTAINER & BACKGROUND                                       */
+/* -------------------------------------------------------------------------- */
+.view-yawn-cinema {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #040817;
+  background-image: url('/assets/yawn_cinema_bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  transition: filter 0.5s ease, background 0.5s ease;
+}
+
+.view-yawn-cinema.active {
+  display: flex !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 2. DYNAMIC LIGHTING MODES                                                  */
+/* -------------------------------------------------------------------------- */
+.view-yawn-cinema.light-deep {
+  filter: contrast(102%) brightness(96%) saturate(108%);
+}
+.view-yawn-cinema.light-aurora {
+  filter: hue-rotate(15deg) brightness(102%) saturate(115%);
+}
+.view-yawn-cinema.light-warm {
+  filter: sepia(20%) saturate(125%) brightness(98%);
+}
+.view-yawn-cinema.light-cinema {
+  filter: brightness(75%) contrast(110%);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. CEILING PROJECTION & CAUSTIC OVERLAYS                                   */
+/* -------------------------------------------------------------------------- */
+.ycinema-ceiling-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.65;
+  transition: opacity 0.6s ease, background 0.6s ease;
+}
+
+.ycinema-ceiling-overlay.proj-caustics {
+  background: radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.28) 0%, rgba(30, 58, 138, 0.12) 55%, transparent 80%);
+  animation: causticsSwell 12s ease-in-out infinite alternate;
+}
+
+.ycinema-ceiling-overlay.proj-nebula {
+  background: radial-gradient(ellipse at 50% 0%, rgba(192, 132, 252, 0.35) 0%, rgba(99, 102, 241, 0.15) 60%, transparent 85%);
+  animation: nebulaPulse 14s ease-in-out infinite alternate;
+}
+
+.ycinema-ceiling-overlay.proj-stars {
+  background: radial-gradient(ellipse at 50% 0%, rgba(254, 240, 138, 0.22) 0%, rgba(56, 189, 248, 0.1) 60%, transparent 85%);
+  animation: starTwinkle 8s ease-in-out infinite alternate;
+}
+
+@keyframes causticsSwell {
+  0% { transform: scale(1) translateY(0); opacity: 0.55; }
+  100% { transform: scale(1.08) translateY(12px); opacity: 0.78; }
+}
+
+@keyframes nebulaPulse {
+  0% { opacity: 0.45; filter: hue-rotate(0deg); }
+  100% { opacity: 0.75; filter: hue-rotate(25deg); }
+}
+
+@keyframes starTwinkle {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.85; }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4. UNDERWATER AMBIENT SWIMMING ELEMENTS                                    */
+/* -------------------------------------------------------------------------- */
+.ycinema-marine-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.marine-whale-silhouette {
+  position: absolute;
+  top: 18%;
+  left: -280px;
+  width: 260px;
+  height: 90px;
+  background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.32) 0%, rgba(14, 165, 233, 0.12) 65%, transparent 80%);
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: whaleSwimAcross 45s linear infinite;
+}
+
+.marine-jellyfish-1 {
+  position: absolute;
+  bottom: 25%;
+  left: 20%;
+  width: 44px;
+  height: 60px;
+  border-radius: 50% 50% 25% 25%;
+  background: radial-gradient(circle at 50% 30%, rgba(192, 132, 252, 0.45) 0%, rgba(147, 51, 234, 0.15) 75%, transparent 100%);
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.4);
+  animation: jellyfishFloat 9s ease-in-out infinite alternate;
+}
+
+.marine-jellyfish-2 {
+  position: absolute;
+  bottom: 30%;
+  right: 18%;
+  width: 52px;
+  height: 72px;
+  border-radius: 50% 50% 25% 25%;
+  background: radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.45) 0%, rgba(6, 182, 212, 0.15) 75%, transparent 100%);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+  animation: jellyfishFloat 11s ease-in-out infinite alternate 2s;
+}
+
+@keyframes whaleSwimAcross {
+  0% { transform: translateX(0) translateY(0) scaleX(1); }
+  48% { transform: translateX(calc(100vw + 320px)) translateY(30px) scaleX(1); }
+  50% { transform: translateX(calc(100vw + 320px)) translateY(30px) scaleX(-1); }
+  98% { transform: translateX(-300px) translateY(-15px) scaleX(-1); }
+  100% { transform: translateX(-300px) translateY(-15px) scaleX(1); }
+}
+
+@keyframes jellyfishFloat {
+  0% { transform: translateY(0) scale(0.95); opacity: 0.65; }
+  50% { transform: translateY(-40px) scale(1.05); opacity: 0.95; }
+  100% { transform: translateY(-10px) scale(0.98); opacity: 0.7; }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5. TOP HUD BAR                                                             */
+/* -------------------------------------------------------------------------- */
+.ycinema-top-hud {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: linear-gradient(180deg, rgba(4, 8, 23, 0.88) 0%, rgba(4, 8, 23, 0.25) 85%, transparent 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+.ycinema-hud-left,
+.ycinema-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ycinema-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 9999px;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ycinema-hud-btn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+}
+
+.ycinema-hud-btn.is-active {
+  border-color: #38bdf8;
+  background: rgba(14, 165, 233, 0.22);
+  color: #7dd3fc;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+}
+
+.ycinema-title-group {
+  text-align: center;
+}
+
+.ycinema-badge {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.ycinema-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 6. WELCOMING AFFIRMATION CARD                                              */
+/* -------------------------------------------------------------------------- */
+.ycinema-welcome-card {
+  position: absolute;
+  top: 86px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  width: min(92%, 640px);
+  padding: 16px 20px;
+  background: rgba(11, 19, 43, 0.78);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 16px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 0 24px rgba(192, 132, 252, 0.2);
+  text-align: center;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ycinema-welcome-text {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #e0e7ff;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.btn-ycinema-welcome-dismiss {
+  padding: 5px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ycinema-welcome-dismiss:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translate(-50%, -15px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 7. SANCTUARY STAGE HOTSPOTS & QUICK CONTROLS                               */
+/* -------------------------------------------------------------------------- */
+.ycinema-stage-container {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.ycinema-spot-btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(8, 15, 38, 0.78);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 16px;
+  color: #ffffff;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.25);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: left;
+}
+
+.ycinema-spot-btn:hover {
+  transform: translateY(-4px) scale(1.03);
+  background: rgba(15, 28, 68, 0.92);
+  border-color: #38bdf8;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 28px rgba(56, 189, 248, 0.5);
+}
+
+.ycinema-spot-btn .spot-icon {
+  font-size: 1.6rem;
+}
+
+.ycinema-spot-btn .spot-title {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.ycinema-spot-btn .spot-desc {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+/* Hotspot placements on the sanctuary backdrop */
+#btn-spot-cinema-screen {
+  top: 26%;
+  right: 5%;
+  border-color: rgba(192, 132, 252, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(192, 132, 252, 0.3);
+}
+
+#btn-spot-do-nothing {
+  bottom: 22%;
+  left: 6%;
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+#btn-spot-whale-watch {
+  top: 28%;
+  left: 38%;
+  border-color: rgba(45, 212, 191, 0.45);
+}
+
+#btn-spot-letters {
+  bottom: 12%;
+  left: 36%;
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+#btn-spot-soundscape {
+  bottom: 12%;
+  right: 8%;
+  border-color: rgba(96, 165, 250, 0.45);
+}
+
+/* Quick stage controls dock at bottom */
+.ycinema-bottom-dock {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  background: rgba(11, 19, 43, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 9999px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.ycinema-dock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ycinema-dock-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.ycinema-dock-btn.active {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #7dd3fc;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 8. OBSERVATION (WHALE WATCHING) FULL PANORAMA MODE                         */
+/* -------------------------------------------------------------------------- */
+.ycinema-observation-exit {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  display: none;
+}
+
+.view-yawn-cinema.whale-watching-active .ycinema-top-hud,
+.view-yawn-cinema.whale-watching-active .ycinema-welcome-card,
+.view-yawn-cinema.whale-watching-active .ycinema-spot-btn,
+.view-yawn-cinema.whale-watching-active .ycinema-bottom-dock {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.view-yawn-cinema.whale-watching-active .ycinema-observation-exit {
+  display: block;
+}
+
+.btn-exit-whale-watch {
+  padding: 10px 20px;
+  background: rgba(8, 15, 38, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 9999px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+  backdrop-filter: blur(12px);
+  transition: all 0.2s;
+}
+
+.btn-exit-whale-watch:hover {
+  background: rgba(14, 165, 233, 0.9);
+  transform: scale(1.04);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 9. MODALS COMMON ARCHITECTURE                                              */
+/* -------------------------------------------------------------------------- */
+.ycinema-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 7, 20, 0.78);
+  backdrop-filter: blur(16px);
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ycinema-modal.active,
+.ycinema-modal.open {
+  display: flex !important;
+  opacity: 1;
+}
+
+.ycinema-modal-panel {
+  position: relative;
+  width: min(94%, 840px);
+  max-height: 88vh;
+  background: #0a1128;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ycinema-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ycinema-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ycinema-modal-icon {
+  font-size: 1.8rem;
+}
+
+.ycinema-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ycinema-modal-header p {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.btn-close-ycinema-modal {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close-ycinema-modal:hover {
+  background: rgba(239, 68, 68, 0.8);
+  color: #fff;
+  border-color: transparent;
+}
+
+.ycinema-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 10. STARLIGHT CINEMA PLAYER MODAL                                          */
+/* -------------------------------------------------------------------------- */
+.ycinema-player-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  margin-bottom: 18px;
+}
+
+.ycinema-screen-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ycinema-player-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 18px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.player-left-ctrls,
+.player-right-ctrls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-player-action {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-player-action:hover {
+  background: #38bdf8;
+  color: #040817;
+}
+
+.btn-player-action.is-playing {
+  background: #38bdf8;
+  color: #040817;
+}
+
+.player-info-strip {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.player-info-strip h4 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: #f8fafc;
+}
+
+.player-info-strip p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.ycinema-filter-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.btn-film-cat {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-film-cat.active {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #7dd3fc;
+}
+
+.ycinema-film-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.ycinema-film-card {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.ycinema-film-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-2px);
+}
+
+.ycinema-film-card.active {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+}
+
+.film-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.film-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.film-duration {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.btn-fav-film {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s;
+}
+
+.btn-fav-film.is-fav {
+  color: #fbbf24;
+}
+
+.film-title {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.film-subtitle {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.btn-play-film {
+  width: 100%;
+  padding: 6px 12px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 8px;
+  color: #7dd3fc;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-play-film:hover {
+  background: #38bdf8;
+  color: #040817;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 11. DO NOTHING CORNER MODAL                                                */
+/* -------------------------------------------------------------------------- */
+.donothing-status-card {
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(192, 132, 252, 0.12) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.current-rest-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e0e7ff;
+  margin-bottom: 8px;
+}
+
+.current-rest-affirmation {
+  margin: 0;
+  font-size: 1rem;
+  font-style: italic;
+  color: #f8fafc;
+  line-height: 1.5;
+}
+
+.donothing-timer-tag {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.resting-states-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-resting-state {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.btn-resting-state:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+}
+
+.btn-resting-state.active {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.14);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+}
+
+.btn-resting-state .st-icon {
+  font-size: 1.8rem;
+}
+
+.btn-resting-state .st-title {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.btn-resting-state .st-sub {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.donothing-interactive-dock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-donothing-action {
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-donothing-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.btn-donothing-action.active {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: #38bdf8;
+  color: #7dd3fc;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 12. OCEAN SOUNDSCAPE MODAL                                                 */
+/* -------------------------------------------------------------------------- */
+.soundscape-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.soundscape-volume-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
+
+.soundscape-volume-wrap input[type="range"] {
+  accent-color: #38bdf8;
+  width: 140px;
+}
+
+.btn-stop-all-sound {
+  padding: 6px 14px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 9999px;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-stop-all-sound:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.soundscape-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.ycinema-sound-card {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.ycinema-sound-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+}
+
+.ycinema-sound-card.active {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+}
+
+.sound-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sound-icon {
+  font-size: 1.8rem;
+}
+
+.sound-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.sound-title {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sound-desc {
+  margin: 0 0 14px;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.sound-status-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+}
+
+.ycinema-sound-card.active .sound-status-pill {
+  background: #38bdf8;
+  color: #040817;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 13. LETTERS TO MYSELF (JURNAL PRIBADI AKHIRA) MODAL                        */
+/* -------------------------------------------------------------------------- */
+.letters-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.btn-new-letter {
+  padding: 8px 16px;
+  background: #38bdf8;
+  border: none;
+  border-radius: 9999px;
+  color: #040817;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+}
+
+.btn-new-letter:hover {
+  background: #7dd3fc;
+  transform: translateY(-1px);
+}
+
+.letters-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.ycinema-letter-item {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.ycinema-letter-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(192, 132, 252, 0.4);
+  transform: translateY(-2px);
+}
+
+.letter-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.letter-cat-pill {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.letter-date {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.letter-title {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.letter-snippet {
+  margin: 0 0 12px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.letter-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-open-letter {
+  background: none;
+  border: none;
+  color: #38bdf8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Letter Editor Form */
+.ycinema-letter-editor {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.editor-row {
+  display: flex;
+  gap: 12px;
+}
+
+.editor-input,
+.editor-select,
+.editor-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.editor-textarea {
+  resize: vertical;
+  min-height: 160px;
+  line-height: 1.6;
+}
+
+.editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.editor-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-editor-cancel {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-editor-delete {
+  padding: 8px 14px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-editor-save {
+  padding: 8px 20px;
+  background: #38bdf8;
+  border: none;
+  border-radius: 8px;
+  color: #040817;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.editor-status-text {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 14. RESPONSIVE BREAKPOINTS (MOBILE & TABLET)                              */
+/* -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  #btn-spot-cinema-screen { top: 22%; right: 4%; }
+  #btn-spot-do-nothing { bottom: 26%; left: 4%; }
+  #btn-spot-whale-watch { top: 34%; left: 28%; }
+  #btn-spot-letters { bottom: 14%; left: 16%; }
+  #btn-spot-soundscape { bottom: 14%; right: 4%; }
+  .resting-states-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .ycinema-top-hud { padding: 12px 14px; }
+  .ycinema-hud-label { display: none; }
+  .ycinema-welcome-card { top: 72px; width: 94%; padding: 12px 14px; }
+  .ycinema-welcome-text { font-size: 0.82rem; }
+  .ycinema-spot-btn { padding: 8px 12px; }
+  .ycinema-spot-btn .spot-desc { display: none; }
+  .ycinema-bottom-dock { width: 92%; justify-content: space-around; padding: 6px 10px; }
+  .ycinema-modal-panel { width: 100%; height: 95vh; max-height: 95vh; border-radius: 16px; }
+  .ycinema-modal-body { padding: 14px; }
+  .editor-row { flex-direction: column; }
+}

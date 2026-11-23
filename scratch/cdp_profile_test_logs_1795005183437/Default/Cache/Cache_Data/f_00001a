@@ -1,0 +1,655 @@
+/* ==========================================================================
+   THE AZURE TIDE PALACE — AKHIRA ⚡ (UNIVERSE YAWN)
+   Akhira's Ocean Sanctuary — 2D Underwater Astral Palace Simulation Styles
+   ========================================================================== */
+
+:root {
+  --az-ocean-blue: #0284c7;
+  --az-deep-teal: #0f766e;
+  --az-turquoise: #06b6d4;
+  --az-aquamarine: #2dd4bf;
+  --az-pearl-white: #f8fafc;
+  --az-soft-silver: #cbd5e1;
+  --az-lavender-blue: #c7d2fe;
+  --az-champagne-gold: #fef08a;
+  --az-electric-cyan: #22d3ee;
+  --az-dark-abyss: #03141f;
+  --az-card-bg: rgba(3, 20, 31, 0.88);
+  --az-glass-border: rgba(34, 211, 238, 0.45);
+  --az-glow-cyan: rgba(34, 211, 238, 0.45);
+  --az-glow-gold: rgba(254, 240, 138, 0.35);
+  --az-glow-teal: rgba(45, 212, 191, 0.4);
+}
+
+/* Base View Container */
+.view-azure-palace {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--az-dark-abyss);
+  color: #f0fdf4;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  z-index: 105;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.view-azure-palace.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* 16:9 Simulation Stage */
+.azure-palace-stage {
+  position: relative;
+  width: min(100vw, 177.78vh);
+  height: min(56.25vw, 100vh);
+  aspect-ratio: 16 / 9;
+  background-color: #041c2c;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 35px var(--az-glow-cyan);
+}
+
+/* Background Room Image Layer */
+.azure-palace-bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.azure-palace-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(0.98) contrast(1.04);
+  transition: filter 0.8s ease, transform 0.8s ease;
+}
+
+/* Underwater Sunbeam Caustics & Atmosphere Overlay */
+.azure-palace-atmo-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 25%, rgba(56, 189, 248, 0.16) 0%, rgba(15, 118, 110, 0.18) 55%, rgba(3, 20, 31, 0.45) 100%);
+  mix-blend-mode: screen;
+  transition: background 1s ease;
+}
+
+/* Rising Bubbles & Bioluminescent Particles Layer */
+.azure-palace-particles-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.azure-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(34, 211, 238, 0.4) 60%, rgba(6, 182, 212, 0.15) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+  animation: azureBubbleRise 8s infinite ease-in;
+}
+
+.azure-bubble.b1 { left: 8%; bottom: -20px; width: 14px; height: 14px; animation-duration: 9s; animation-delay: 0s; }
+.azure-bubble.b2 { left: 24%; bottom: -20px; width: 8px; height: 8px; animation-duration: 6s; animation-delay: 2s; }
+.azure-bubble.b3 { left: 45%; bottom: -20px; width: 18px; height: 18px; animation-duration: 11s; animation-delay: 1s; }
+.azure-bubble.b4 { left: 68%; bottom: -20px; width: 11px; height: 11px; animation-duration: 7.5s; animation-delay: 3.5s; }
+.azure-bubble.b5 { left: 85%; bottom: -20px; width: 16px; height: 16px; animation-duration: 10s; animation-delay: 1.5s; }
+.azure-bubble.b6 { left: 93%; bottom: -20px; width: 9px; height: 9px; animation-duration: 8s; animation-delay: 4.5s; }
+
+@keyframes azureBubbleRise {
+  0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0; }
+  20% { opacity: 0.85; transform: translateY(-120px) translateX(6px) scale(1); }
+  50% { transform: translateY(-300px) translateX(-8px) scale(1.05); }
+  80% { opacity: 0.75; transform: translateY(-500px) translateX(5px) scale(1.1); }
+  100% { transform: translateY(-720px) translateX(-4px) scale(1.2); opacity: 0; }
+}
+
+/* Glowing Bioluminescent Plankton Motes */
+.azure-mote {
+  position: absolute;
+  color: var(--az-electric-cyan);
+  font-size: 0.85rem;
+  opacity: 0.7;
+  animation: azureMoteDrift 12s infinite linear;
+  text-shadow: 0 0 8px var(--az-electric-cyan), 0 0 16px var(--az-turquoise);
+}
+
+.azure-mote.m1 { left: 18%; top: 35%; animation-delay: 0s; font-size: 0.75rem; }
+.azure-mote.m2 { left: 52%; top: 22%; animation-delay: 3s; font-size: 1rem; color: var(--az-champagne-gold); }
+.azure-mote.m3 { left: 78%; top: 40%; animation-delay: 6s; font-size: 0.85rem; color: var(--az-aquamarine); }
+.azure-mote.m4 { left: 32%; top: 68%; animation-delay: 4s; font-size: 0.7rem; }
+.azure-mote.m5 { left: 88%; top: 72%; animation-delay: 7s; font-size: 0.9rem; color: var(--az-electric-cyan); }
+
+@keyframes azureMoteDrift {
+  0% { transform: translateY(0) rotate(0deg) scale(0.9); opacity: 0.2; }
+  50% { transform: translateY(-20px) rotate(180deg) scale(1.15); opacity: 0.9; }
+  100% { transform: translateY(-40px) rotate(360deg) scale(0.9); opacity: 0.2; }
+}
+
+/* Hotspots Layer */
+.azure-palace-hotspots-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.azure-palace-hotspot-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.azure-palace-hotspot-item:hover,
+.azure-palace-hotspot-item:focus-visible {
+  transform: translate(-50%, -58%) scale(1.1);
+  outline: none;
+}
+
+.azure-palace-hotspot-beacon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.9) 0%, rgba(15, 118, 110, 0.92) 70%);
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #fff;
+  box-shadow: 0 0 18px var(--az-glow-cyan), inset 0 0 8px rgba(255, 255, 255, 0.5);
+  position: relative;
+  animation: azureBeaconPulse 3s infinite ease-in-out;
+}
+
+@keyframes azureBeaconPulse {
+  0%, 100% { box-shadow: 0 0 14px var(--az-glow-cyan), 0 0 25px rgba(34, 211, 238, 0.4); }
+  50% { box-shadow: 0 0 24px rgba(254, 240, 138, 0.85), 0 0 40px rgba(34, 211, 238, 0.7); }
+}
+
+.azure-palace-hotspot-label {
+  margin-top: 6px;
+  background: rgba(3, 20, 31, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--az-glass-border);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+  opacity: 0.92;
+  transition: opacity 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.azure-palace-hotspot-item:hover .azure-palace-hotspot-label {
+  opacity: 1;
+  border-color: #fff;
+  transform: translateY(-2px);
+  color: var(--az-champagne-gold);
+}
+
+/* 2D Player Avatar: Akhira */
+.azure-palace-player-avatar {
+  position: absolute;
+  left: 50%;
+  top: 72%;
+  width: 76px;
+  height: 96px;
+  transform: translate(-50%, -85%);
+  z-index: 15;
+  pointer-events: none;
+  transition: transform 0.1s linear;
+}
+
+.azure-palace-player-avatar.facing-left .azure-avatar-body {
+  transform: scaleX(-1);
+}
+
+.azure-palace-player-avatar.is-walking .azure-avatar-body {
+  animation: azureAvatarWalk 0.5s infinite alternate ease-in-out;
+}
+
+.azure-palace-player-avatar.is-sitting {
+  transform: translate(-50%, -68%) scale(0.92);
+}
+
+@keyframes azureAvatarWalk {
+  0% { transform: translateY(0) rotate(-2deg); }
+  100% { transform: translateY(-6px) rotate(2deg); }
+}
+
+.azure-avatar-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.azure-avatar-img-wrap {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  padding: 2.5px;
+  background: linear-gradient(135deg, var(--az-electric-cyan), var(--az-turquoise), var(--az-champagne-gold));
+  box-shadow: 0 0 16px var(--az-glow-cyan), 0 4px 12px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.azure-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.azure-avatar-lightning-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0369a1;
+  border: 1.5px solid var(--az-electric-cyan);
+  color: var(--az-champagne-gold);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px var(--az-electric-cyan);
+}
+
+.azure-player-shadow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 16px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.75) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Proximity Interaction Prompt */
+.azure-palace-interaction-prompt {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: linear-gradient(135deg, rgba(3, 20, 31, 0.95), rgba(15, 118, 110, 0.95));
+  border: 1.5px solid var(--az-electric-cyan);
+  color: #fff;
+  padding: 5px 14px;
+  border-radius: 18px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  box-shadow: 0 0 18px var(--az-glow-cyan);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 25;
+}
+
+.azure-palace-interaction-prompt.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.azure-palace-interaction-prompt:hover {
+  border-color: var(--az-champagne-gold);
+  color: var(--az-champagne-gold);
+}
+
+/* TOP-LEFT HUD */
+.azure-palace-hud-topleft {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.azure-palace-back-orb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(3, 20, 31, 0.88);
+  border: 1.5px solid var(--az-electric-cyan);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s ease;
+}
+
+.azure-palace-back-orb:hover {
+  border-color: var(--az-champagne-gold);
+  color: var(--az-champagne-gold);
+  transform: scale(1.08);
+  box-shadow: 0 0 16px var(--az-glow-gold);
+}
+
+.azure-palace-title-badge {
+  background: rgba(3, 20, 31, 0.9);
+  border: 1px solid var(--az-glass-border);
+  padding: 6px 14px;
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.azure-palace-title-badge h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Cinzel', 'Plus Jakarta Sans', serif;
+}
+
+.azure-palace-title-badge span {
+  font-size: 0.68rem;
+  color: var(--az-aquamarine);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* TOP-RIGHT HUD: Room Navigation Pills & Quick Tools */
+.azure-palace-hud-topright {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.azure-nav-pills {
+  display: flex;
+  background: rgba(3, 20, 31, 0.88);
+  border: 1px solid var(--az-glass-border);
+  border-radius: 20px;
+  padding: 4px;
+  backdrop-filter: blur(8px);
+  gap: 4px;
+}
+
+.azure-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--az-soft-silver);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.azure-nav-btn:hover {
+  color: #fff;
+  background: rgba(34, 211, 238, 0.15);
+}
+
+.azure-nav-btn.active {
+  background: linear-gradient(135deg, var(--az-ocean-blue), var(--az-deep-teal));
+  color: #fff;
+  box-shadow: 0 0 12px var(--az-glow-cyan);
+}
+
+.azure-quick-tools {
+  display: flex;
+  gap: 6px;
+}
+
+.azure-tool-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(3, 20, 31, 0.88);
+  border: 1px solid var(--az-glass-border);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.azure-tool-btn:hover {
+  border-color: var(--az-champagne-gold);
+  color: var(--az-champagne-gold);
+  transform: scale(1.08);
+  box-shadow: 0 0 12px var(--az-glow-cyan);
+}
+
+/* Modals & Overlays */
+.azure-palace-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(3, 14, 22, 0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: azureFadeIn 0.3s ease;
+}
+
+.azure-palace-modal-backdrop.show {
+  display: flex;
+}
+
+@keyframes azureFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.azure-palace-modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  background: linear-gradient(145deg, rgba(3, 20, 31, 0.98), rgba(15, 118, 110, 0.92));
+  border: 1.5px solid var(--az-glass-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px var(--az-glow-cyan);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: azureSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes azureSlideUp {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.azure-palace-modal-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--az-glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.azure-palace-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Cinzel', 'Plus Jakarta Sans', serif;
+}
+
+.azure-palace-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--az-soft-silver);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.azure-palace-modal-close:hover {
+  color: #fff;
+}
+
+.azure-palace-modal-body {
+  padding: 18px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--az-soft-silver);
+}
+
+/* Sleep Fade Overlay */
+.azure-palace-sleep-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #01080e;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--az-aquamarine);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: opacity 1.2s ease-in-out;
+}
+
+.azure-palace-sleep-overlay.active {
+  opacity: 0.95;
+  pointer-events: auto;
+}
+
+/* Touch D-Pad for Mobile Responsiveness */
+.azure-palace-touch-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 25;
+  display: none;
+}
+
+.azure-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 44px);
+  gap: 4px;
+}
+
+.azure-dpad-btn {
+  background: rgba(3, 20, 31, 0.85);
+  border: 1px solid var(--az-glass-border);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  backdrop-filter: blur(8px);
+}
+
+.azure-dpad-btn:active {
+  background: var(--az-electric-cyan);
+  color: #03141f;
+}
+
+.azure-dpad-up { grid-column: 2; grid-row: 1; }
+.azure-dpad-left { grid-column: 1; grid-row: 2; }
+.azure-dpad-down { grid-column: 2; grid-row: 3; }
+.azure-dpad-right { grid-column: 3; grid-row: 2; }
+
+.azure-touch-action-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--az-ocean-blue), var(--az-deep-teal));
+  border: 2px solid var(--az-electric-cyan);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--az-glow-cyan);
+  z-index: 25;
+  touch-action: manipulation;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .azure-palace-touch-controls {
+    display: block;
+  }
+  .azure-touch-action-btn {
+    display: flex;
+  }
+}

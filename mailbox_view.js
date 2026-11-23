@@ -89,12 +89,16 @@ export function initKotakPosView({
   function getOriginClass(univ) {
     if (univ === 'to_you' || univ === 'toyou') return 'theme-toyou';
     if (univ === 'shadow') return 'theme-shadow';
+    if (univ === 'pinwheel' || univ === 'abil') return 'theme-pinwheel';
+    if (univ === 'yawn' || univ === 'akhira') return 'theme-yawn';
     return 'theme-kidult';
   }
 
   function getUniverseTitle(univ) {
     if (univ === 'to_you' || univ === 'toyou') return "TO YOU · LALA'S UNIVERSE";
     if (univ === 'shadow') return "SHADOW · LELE'S UNIVERSE";
+    if (univ === 'pinwheel' || univ === 'abil') return "PINWHEEL · SYMA'S UNIVERSE";
+    if (univ === 'yawn' || univ === 'akhira') return "YAWN · AKHIRA'S UNIVERSE";
     return "KIDULT · NYANYA'S UNIVERSE";
   }
 
@@ -103,12 +107,20 @@ export function initKotakPosView({
     if (fromCharKey) {
       activeUserCharKey = fromCharKey;
     } else if (auth?.currentUser) {
-      activeUserCharKey = getVerifiedCharacterKey(auth.currentUser) || identifyUserCharacter(auth.currentUser) || 'nyanya';
+      activeUserCharKey = getVerifiedCharacterKey(auth.currentUser) || identifyUserCharacter(auth.currentUser) || (originUniverse === 'pinwheel' || originUniverse === 'abil' ? 'abil' : (originUniverse === 'yawn' || originUniverse === 'akhira' ? 'akhira' : 'nyanya'));
+    } else if (originUniverse === 'pinwheel' || originUniverse === 'abil') {
+      activeUserCharKey = 'abil';
+    } else if (originUniverse === 'yawn' || originUniverse === 'akhira') {
+      activeUserCharKey = 'akhira';
+    } else if (originUniverse === 'shadow') {
+      activeUserCharKey = 'lele';
+    } else if (originUniverse === 'to_you' || originUniverse === 'toyou') {
+      activeUserCharKey = 'lala';
     }
     activeAuthUser = auth?.currentUser || null;
 
     // Apply theme
-    viewKotakPos.classList.remove('theme-kidult', 'theme-toyou', 'theme-to_you', 'theme-shadow');
+    viewKotakPos.classList.remove('theme-kidult', 'theme-toyou', 'theme-to_you', 'theme-shadow', 'theme-pinwheel', 'theme-yawn');
     viewKotakPos.classList.add(getOriginClass(activeOriginUniverse));
 
     if (mailboxUnivTag) {
@@ -120,6 +132,10 @@ export function initKotakPosView({
       selectPaperTheme('morning');
     } else if (activeOriginUniverse === 'shadow') {
       selectPaperTheme('crystal');
+    } else if (activeOriginUniverse === 'pinwheel' || activeOriginUniverse === 'abil') {
+      selectPaperTheme('pinwheel');
+    } else if (activeOriginUniverse === 'yawn' || activeOriginUniverse === 'akhira') {
+      selectPaperTheme('lightning');
     } else {
       selectPaperTheme('dreamy');
     }
@@ -154,6 +170,8 @@ export function initKotakPosView({
       let targetViewId = 'view-kidult-world';
       if (activeOriginUniverse === 'to_you' || activeOriginUniverse === 'toyou') targetViewId = 'view-toyou-world';
       else if (activeOriginUniverse === 'shadow') targetViewId = 'view-shadow-world';
+      else if (activeOriginUniverse === 'pinwheel' || activeOriginUniverse === 'abil') targetViewId = 'view-pinwheel-world';
+      else if (activeOriginUniverse === 'yawn' || activeOriginUniverse === 'akhira') targetViewId = 'view-yawn-world';
 
       const targetEl = document.getElementById(targetViewId);
       if (targetEl) {
@@ -191,11 +209,11 @@ export function initKotakPosView({
     if (!recipientCardsContainer) return;
     recipientCardsContainer.innerHTML = '';
 
-    const allKeys = ['nyanya', 'lala', 'lele'];
+    const allKeys = Object.keys(CANONICAL_CHARACTERS);
     const candidates = allKeys.filter(k => k !== activeUserCharKey);
 
     if (!candidates.includes(selectedRecipientChar)) {
-      selectedRecipientChar = candidates[0] || 'lala';
+      selectedRecipientChar = candidates[0] || 'nyanya';
     }
 
     candidates.forEach(k => {

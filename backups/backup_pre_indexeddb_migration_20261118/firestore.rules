@@ -1,0 +1,1213 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model & Architecture
+// ===============================================================
+//
+// Application: Our Little Universe (our-little-universe-dcd75)
+// Target Users: 8 Canonical Characters
+//   1. Nyanya (KIDULT - 1uwba7MrGVU3xHu57VVLvztskrg2)
+//   2. Lala (TO YOU - EqByKA8FXoTEt0OmIsSDPfnxMDB3)
+//   3. Lele (SHADOW - 1ArxphLQpAOoOIvH9BKYw0ebD1e2)
+//   4. Abil / Syma (PINWHEEL - Euc0JLt3kWMveUEIjBwXHfOfvQD3)
+//   5. Akhira (YAWN - MT14ZHATNqe90frAeQ74QFk4iXs2)
+//   6. Ela (US AGAIN - plxSNowjCkOMfUQMAwnZzQPR9Xr1)
+//   7. Ruben (ASH - 9PMychPZ4rZ4PBCtZB9GiASttc52)
+//   8. Royan (HOT - swBN9XodDWRuHE5YbYmeoytrcAx2)
+// Authentication: Firebase Auth (request.auth != null) with verified UID & email.
+//
+// Collections:
+// 1. orbit_events/{eventId} (Our Calendar & Selective Meeting Invitations)
+// 2. users/{userId} (Character Profiles & User Metadata)
+// 3. stories/{storyId} (Story Sanctuary & Our Stories Shared Library)
+// 4. moments/{momentId} (Our Little Moments & Personal/Friend Gallery)
+// 5. photobooth_sessions/{sessionId} (Photobooth Collaborative Sessions)
+// 6. messages/{messageId} (Realtime Pairwise & Trio Messaging)
+// 7. conversations/{conversationId} (Conversations Metadata)
+// 8. game_records/{recordId} (Mini-games Score & History Records)
+// 9. game_sessions/{sessionId} (Mini-games Multiplayer Sessions)
+// 10. universe_states/{uid} (Interactive Universe States, Decorations & Elements)
+// 11. star_messages/{messageId} (Messages Across the Universe / Teleskop)
+// 12. letters/{letterId} (Kotak Pos / Digital Letters & Mailbox)
+// 13. artworks/{artworkId} (Universal Art Gallery & Artworks Metadata)
+// 14. artwork_notes/{artworkId} (Universal Art Gallery Private Artist Notes & Stories)
+// 15. orbit_notifications/{notifId} (Calendar & Meeting Notifications across the Universe)
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the user is authenticated with Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    // Check if user owns the resource by matching path userId
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Check if document has required fields
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Checks if the authenticated user is any one of the 8 verified canonical characters
+    function isUniverseMember() {
+      return isAuthenticated() &&
+             (
+               (
+                 ('email' in request.auth.token) &&
+                 request.auth.token.email is string &&
+                 request.auth.token.email in [
+                   'nyanya@ourlittleuniverse.com',
+                   'lala@ourlittleuniverse.com',
+                   'lele@ourlittleuniverse.com',
+                   'abil@ourlittleuniverse.com',
+                   'syma@ourlittleuniverse.com',
+                   'akhira@ourlittleuniverse.com',
+                   'ela@ourlittleuniverse.com',
+                   'ruben@ourlittleuniverse.com',
+                   'royan@ourlittleuniverse.com'
+                 ]
+               ) ||
+               request.auth.uid in [
+                 '1uwba7MrGVU3xHu57VVLvztskrg2',
+                 'EqByKA8FXoTEt0OmIsSDPfnxMDB3',
+                 '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+                 'Euc0JLt3kWMveUEIjBwXHfOfvQD3',
+                 'MT14ZHATNqe90frAeQ74QFk4iXs2',
+                 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+                 '9PMychPZ4rZ4PBCtZB9GiASttc52',
+                 'swBN9XodDWRuHE5YbYmeoytrcAx2'
+               ]
+             );
+    }
+
+    // Checks if the authenticated user has the verified character identity and verified email/UID for any of the 8 canonical characters
+    // Note: abil and syma are recognized as equivalent aliases for Syma (UID: Euc0JLt3kWMveUEIjBwXHfOfvQD3)
+    function isCharacterUser(charKey) {
+      return (charKey == 'nyanya' && (('email' in request.auth.token && request.auth.token.email == 'nyanya@ourlittleuniverse.com') || request.auth.uid == '1uwba7MrGVU3xHu57VVLvztskrg2')) ||
+             (charKey == 'lala' && (('email' in request.auth.token && request.auth.token.email == 'lala@ourlittleuniverse.com') || request.auth.uid == 'EqByKA8FXoTEt0OmIsSDPfnxMDB3')) ||
+             (charKey == 'lele' && (('email' in request.auth.token && request.auth.token.email == 'lele@ourlittleuniverse.com') || request.auth.uid == '1ArxphLQpAOoOIvH9BKYw0ebD1e2')) ||
+             ((charKey == 'abil' || charKey == 'syma') && (('email' in request.auth.token && (request.auth.token.email == 'abil@ourlittleuniverse.com' || request.auth.token.email == 'syma@ourlittleuniverse.com')) || request.auth.uid == 'Euc0JLt3kWMveUEIjBwXHfOfvQD3')) ||
+             (charKey == 'akhira' && (('email' in request.auth.token && request.auth.token.email == 'akhira@ourlittleuniverse.com') || request.auth.uid == 'MT14ZHATNqe90frAeQ74QFk4iXs2')) ||
+             (charKey == 'ela' && (('email' in request.auth.token && request.auth.token.email == 'ela@ourlittleuniverse.com') || request.auth.uid == 'plxSNowjCkOMfUQMAwnZzQPR9Xr1')) ||
+             (charKey == 'ruben' && (('email' in request.auth.token && request.auth.token.email == 'ruben@ourlittleuniverse.com') || request.auth.uid == '9PMychPZ4rZ4PBCtZB9GiASttc52')) ||
+             (charKey == 'royan' && (('email' in request.auth.token && request.auth.token.email == 'royan@ourlittleuniverse.com') || request.auth.uid == 'swBN9XodDWRuHE5YbYmeoytrcAx2'));
+    }
+
+    // Role kanonikal yang sah per karakter
+    function isValidCharacterRole(charKey, role) {
+      return role is string && role.size() > 0 && role.size() <= 100;
+    }
+
+    // Canonical 8 members UID check for Star Messages & Letters
+    function isCanonicalStarUser(uid) {
+      return uid in [
+        '1uwba7MrGVU3xHu57VVLvztskrg2',
+        'EqByKA8FXoTEt0OmIsSDPfnxMDB3',
+        '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+        'Euc0JLt3kWMveUEIjBwXHfOfvQD3',
+        'MT14ZHATNqe90frAeQ74QFk4iXs2',
+        'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+        '9PMychPZ4rZ4PBCtZB9GiASttc52',
+        'swBN9XodDWRuHE5YbYmeoytrcAx2'
+      ];
+    }
+
+    // Canonical character to UID mapping for Star Messages and Letters
+    function isValidStarCharacterMapping(uid, charKey) {
+      return (uid == '1uwba7MrGVU3xHu57VVLvztskrg2' && charKey == 'nyanya') ||
+             (uid == 'EqByKA8FXoTEt0OmIsSDPfnxMDB3' && charKey == 'lala') ||
+             (uid == '1ArxphLQpAOoOIvH9BKYw0ebD1e2' && charKey == 'lele') ||
+             (uid == 'Euc0JLt3kWMveUEIjBwXHfOfvQD3' && (charKey == 'abil' || charKey == 'syma')) ||
+             (uid == 'MT14ZHATNqe90frAeQ74QFk4iXs2' && charKey == 'akhira') ||
+             (uid == 'plxSNowjCkOMfUQMAwnZzQPR9Xr1' && charKey == 'ela') ||
+             (uid == '9PMychPZ4rZ4PBCtZB9GiASttc52' && charKey == 'ruben') ||
+             (uid == 'swBN9XodDWRuHE5YbYmeoytrcAx2' && charKey == 'royan');
+    }
+
+    // Character to Universe mapping
+    function isValidCharacterUniverseMapping(charKey, univName) {
+      return (charKey == 'nyanya' && (univName == 'KIDULT' || univName == 'kidult')) ||
+             (charKey == 'lala' && (univName == 'TO YOU' || univName == 'to_you' || univName == 'toyou')) ||
+             (charKey == 'lele' && (univName == 'SHADOW' || univName == 'shadow')) ||
+             ((charKey == 'abil' || charKey == 'syma') && (univName == 'PINWHEEL' || univName == 'pinwheel')) ||
+             (charKey == 'akhira' && (univName == 'YAWN' || univName == 'yawn')) ||
+             (charKey == 'ela' && (univName == 'US AGAIN' || univName == 'usagain' || univName == 'us_again')) ||
+             (charKey == 'ruben' && (univName == 'ASH' || univName == 'ash')) ||
+             (charKey == 'royan' && (univName == 'HOT' || univName == 'hot'));
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    // --- 1. Orbit Events Validation ---
+    function isValidOrbitEvent(data) {
+      return hasRequiredFields(['title', 'date', 'category', 'proposerUid']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 150 &&
+             data.date is string && data.date.size() > 0 && data.date.size() <= 50 &&
+             data.category in ['together', 'meeting', 'birthday', 'reminder', 'personal'] &&
+             data.proposerUid is string && data.proposerUid.size() > 0 &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 3000)) &&
+             (!('location' in data) || (data.location is string && data.location.size() <= 200)) &&
+             (!('time' in data) || (data.time is string && data.time.size() <= 30)) &&
+             (!('proposer' in data) || (data.proposer is string && data.proposer.size() <= 50)) &&
+             (!('proposerName' in data) || (data.proposerName is string && data.proposerName.size() <= 100)) &&
+             (!('proposerEmail' in data) || (data.proposerEmail is string && data.proposerEmail.size() <= 100)) &&
+             (!('status' in data) || (data.status is string && data.status in ['confirmed', 'pending', 'cancelled'])) &&
+             (!('participants' in data) || (data.participants is list && data.participants.size() <= 10)) &&
+             (!('participantUids' in data) || (data.participantUids is list && data.participantUids.size() <= 10)) &&
+             (!('invitedParticipants' in data) || (data.invitedParticipants is list && data.invitedParticipants.size() <= 10)) &&
+             (!('invitedParticipantUids' in data) || (data.invitedParticipantUids is list && data.invitedParticipantUids.size() <= 10)) &&
+             (!('responses' in data) || (data.responses is map && data.responses.keys().hasOnly(['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])));
+    }
+
+    // Validates response entry fields and rejects arbitrary properties
+    function isValidParticipantResponseEntry(entry) {
+      return entry is map &&
+             entry.keys().hasOnly(['status', 'uid', 'email', 'note', 'respondedAt', 'altDate', 'altTime']) &&
+             entry.status in ['accepted', 'declined', 'tentative', 'proposed_alt', 'rejected', 'pending'] &&
+             (!('uid' in entry) || entry.uid == request.auth.uid) &&
+             (!('email' in entry) || (entry.email is string && entry.email.size() <= 100)) &&
+             (!('note' in entry) || (entry.note is string && entry.note.size() <= 500)) &&
+             (!('respondedAt' in entry) || (entry.respondedAt is string && entry.respondedAt.size() <= 50) || entry.respondedAt == null) &&
+             (!('altDate' in entry) || (entry.altDate is string && entry.altDate.size() <= 50)) &&
+             (!('altTime' in entry) || (entry.altTime is string && entry.altTime.size() <= 30));
+    }
+
+    // Safely checks whether a specific participant's response remains untouched
+    function responseMatchesChar(charKey) {
+      return (!('responses' in resource.data) || !(charKey in resource.data.responses)) ?
+             !(charKey in request.resource.data.responses) :
+             ((charKey in request.resource.data.responses) && request.resource.data.responses[charKey] == resource.data.responses[charKey]);
+    }
+
+    // Ensures all characters OTHER than the responding character remain strictly unchanged
+    function otherResponsesMatch(updatedChar) {
+      return (updatedChar == 'nyanya' || responseMatchesChar('nyanya')) &&
+             (updatedChar == 'lala' || responseMatchesChar('lala')) &&
+             (updatedChar == 'lele' || responseMatchesChar('lele')) &&
+             (updatedChar == 'abil' || responseMatchesChar('abil')) &&
+             (updatedChar == 'syma' || responseMatchesChar('syma')) &&
+             (updatedChar == 'akhira' || responseMatchesChar('akhira')) &&
+             (updatedChar == 'ela' || responseMatchesChar('ela')) &&
+             (updatedChar == 'ruben' || responseMatchesChar('ruben')) &&
+             (updatedChar == 'royan' || responseMatchesChar('royan'));
+    }
+
+    // Checks if a character is a participant or invited in the event
+    function isEventParticipantOrInvited(charKey) {
+      return (('participants' in resource.data) && (charKey in resource.data.participants || (charKey in ['abil', 'syma'] && ('abil' in resource.data.participants || 'syma' in resource.data.participants)))) ||
+             (('invitedParticipants' in resource.data) && (charKey in resource.data.invitedParticipants || (charKey in ['abil', 'syma'] && ('abil' in resource.data.invitedParticipants || 'syma' in resource.data.invitedParticipants)))) ||
+             (('responses' in resource.data) && (charKey in resource.data.responses || (charKey in ['abil', 'syma'] && ('abil' in resource.data.responses || 'syma' in resource.data.responses)))) ||
+             (('participantUids' in resource.data) && (request.auth.uid in resource.data.participantUids)) ||
+             (('invitedParticipantUids' in resource.data) && (request.auth.uid in resource.data.invitedParticipantUids));
+    }
+
+    // Validates that a single character is updating only their own response
+    function isSingleCharacterResponseUpdate(charKey) {
+      return isCharacterUser(charKey) &&
+             isEventParticipantOrInvited(charKey) &&
+             (charKey in request.resource.data.responses) &&
+             isValidParticipantResponseEntry(request.resource.data.responses[charKey]) &&
+             otherResponsesMatch(charKey);
+    }
+
+    // Checks that a specific character, if a designated participant or having a response, is accepted
+    function isCharParticipantAccepted(c) {
+      return !(
+                (('participants' in request.resource.data) && (c in request.resource.data.participants)) ||
+                (('invitedParticipants' in request.resource.data) && (c in request.resource.data.invitedParticipants)) ||
+                (('responses' in request.resource.data) && (c in request.resource.data.responses))
+              ) ||
+              (
+                ('responses' in request.resource.data) &&
+                (c in request.resource.data.responses) &&
+                request.resource.data.responses[c].status == 'accepted'
+              );
+    }
+
+    // Checks that all participants in request.resource.data.participants or request.resource.data.responses have status == 'accepted'
+    function areAllMeetingParticipantsAccepted() {
+      return ('responses' in request.resource.data) &&
+             request.resource.data.responses.keys().size() > 0 &&
+             isCharParticipantAccepted('nyanya') &&
+             isCharParticipantAccepted('lala') &&
+             isCharParticipantAccepted('lele') &&
+             isCharParticipantAccepted('abil') &&
+             isCharParticipantAccepted('syma') &&
+             isCharParticipantAccepted('akhira') &&
+             isCharParticipantAccepted('ela') &&
+             isCharParticipantAccepted('ruben') &&
+             isCharParticipantAccepted('royan');
+    }
+
+    // Validates that status field is mandatory, cannot be deleted or set to invalid string
+    function isValidMeetingStatusTransition() {
+      return ('status' in request.resource.data) &&
+             request.resource.data.status is string &&
+             (areAllMeetingParticipantsAccepted() ?
+               request.resource.data.status == 'confirmed' :
+               request.resource.data.status == 'pending');
+    }
+
+    // Verifies that a participant ONLY updates their own response entry
+    function isParticipantResponseOnlyUpdate() {
+      return isSingleCharacterResponseUpdate('nyanya') ||
+             isSingleCharacterResponseUpdate('lala') ||
+             isSingleCharacterResponseUpdate('lele') ||
+             isSingleCharacterResponseUpdate('abil') ||
+             isSingleCharacterResponseUpdate('syma') ||
+             isSingleCharacterResponseUpdate('akhira') ||
+             isSingleCharacterResponseUpdate('ela') ||
+             isSingleCharacterResponseUpdate('ruben') ||
+             isSingleCharacterResponseUpdate('royan');
+    }
+
+    // Validates meeting response updates from non-proposer participants
+    function isValidMeetingResponseUpdate() {
+      return resource.data.category == 'meeting' &&
+             request.resource.data.proposerUid == resource.data.proposerUid &&
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['responses', 'status', 'updatedAt']) &&
+             ('responses' in request.resource.data) &&
+             request.resource.data.responses is map &&
+             request.resource.data.responses.keys().hasOnly(['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan']) &&
+             isValidMeetingStatusTransition() &&
+             isParticipantResponseOnlyUpdate();
+    }
+
+    // Verifies whether the authenticated universe user is an invited participant in the meeting
+    function isUserMeetingParticipant() {
+      return (('participantUids' in resource.data) && (request.auth.uid in resource.data.participantUids)) ||
+             (('invitedParticipantUids' in resource.data) && (request.auth.uid in resource.data.invitedParticipantUids)) ||
+             (isCharacterUser('nyanya') && (
+               (('participants' in resource.data) && ('nyanya' in resource.data.participants)) ||
+               (('invitedParticipants' in resource.data) && ('nyanya' in resource.data.invitedParticipants)) ||
+               (('responses' in resource.data) && ('nyanya' in resource.data.responses))
+             )) ||
+             (isCharacterUser('lala') && (
+               (('participants' in resource.data) && ('lala' in resource.data.participants)) ||
+               (('invitedParticipants' in resource.data) && ('lala' in resource.data.invitedParticipants)) ||
+               (('responses' in resource.data) && ('lala' in resource.data.responses))
+             )) ||
+             (isCharacterUser('lele') && (
+               (('participants' in resource.data) && ('lele' in resource.data.participants)) ||
+               (('invitedParticipants' in resource.data) && ('lele' in resource.data.invitedParticipants)) ||
+               (('responses' in resource.data) && ('lele' in resource.data.responses))
+             )) ||
+             ((isCharacterUser('abil') || isCharacterUser('syma')) && (
+               (('participants' in resource.data) && (('abil' in resource.data.participants) || ('syma' in resource.data.participants))) ||
+               (('invitedParticipants' in resource.data) && (('abil' in resource.data.invitedParticipants) || ('syma' in resource.data.invitedParticipants))) ||
+               (('responses' in resource.data) && (('abil' in resource.data.responses) || ('syma' in resource.data.responses)))
+             )) ||
+             (isCharacterUser('akhira') && (
+               (('participants' in resource.data) && ('akhira' in resource.data.participants)) ||
+               (('invitedParticipants' in resource.data) && ('akhira' in resource.data.invitedParticipants)) ||
+               (('responses' in resource.data) && ('akhira' in resource.data.responses))
+             )) ||
+             (isCharacterUser('ela') && (
+               (('participants' in resource.data) && ('ela' in resource.data.participants)) ||
+               (('invitedParticipants' in resource.data) && ('ela' in resource.data.invitedParticipants)) ||
+               (('responses' in resource.data) && ('ela' in resource.data.responses))
+             )) ||
+             (isCharacterUser('ruben') && (
+               (('participants' in resource.data) && ('ruben' in resource.data.participants)) ||
+               (('invitedParticipants' in resource.data) && ('ruben' in resource.data.invitedParticipants)) ||
+               (('responses' in resource.data) && ('ruben' in resource.data.responses))
+             )) ||
+             (isCharacterUser('royan') && (
+               (('participants' in resource.data) && ('royan' in resource.data.participants)) ||
+               (('invitedParticipants' in resource.data) && ('royan' in resource.data.invitedParticipants)) ||
+               (('responses' in resource.data) && ('royan' in resource.data.responses))
+             ));
+    }
+
+    // --- 2. Users Validation ---
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'characterKey', 'role']) &&
+             data.keys().hasOnly(['uid', 'characterKey', 'displayName', 'role', 'avatar', 'universe', 'email', 'createdAt', 'updatedAt']) &&
+             data.uid == request.auth.uid &&
+             data.characterKey in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             isCharacterUser(data.characterKey) &&
+             isValidCharacterRole(data.characterKey, data.role) &&
+             (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 100)) &&
+             (!('avatar' in data) || (data.avatar is string && data.avatar.size() <= 500)) &&
+             (!('universe' in data) || (data.universe is string && data.universe.size() <= 50)) &&
+             (!('email' in data) || (data.email is string && data.email.size() <= 100)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50));
+    }
+
+    // --- 3. Stories Validation ---
+    function isValidStory(data) {
+      return hasRequiredFields(['id', 'title', 'content', 'status', 'authorUid', 'authorChar']) &&
+             data.keys().hasOnly(['id', 'title', 'subtitle', 'synopsis', 'content', 'category', 'genre', 'status', 'coverTheme', 'coverUrl', 'wordCount', 'readingTimeMinutes', 'authorUid', 'authorChar', 'authorName', 'createdAt', 'updatedAt', 'publishedAt']) &&
+             data.id is string && data.id.size() <= 100 &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 300 &&
+             data.content is string && data.content.size() > 0 && data.content.size() <= 500000 &&
+             data.status in ['draft', 'published'] &&
+             data.authorUid == request.auth.uid &&
+             data.authorChar in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             isCharacterUser(data.authorChar) &&
+             (!('subtitle' in data) || (data.subtitle is string && data.subtitle.size() <= 500)) &&
+             (!('synopsis' in data) || (data.synopsis is string && data.synopsis.size() <= 2000)) &&
+             (!('category' in data) || (data.category is string && data.category.size() <= 50)) &&
+             (!('genre' in data) || (data.genre is string && data.genre.size() <= 100)) &&
+             (!('coverTheme' in data) || (data.coverTheme is string && data.coverTheme.size() <= 50)) &&
+             (!('coverUrl' in data) || (data.coverUrl is string && data.coverUrl.size() <= 1000)) &&
+             (!('authorName' in data) || (data.authorName is string && data.authorName.size() <= 100)) &&
+             (!('wordCount' in data) || (data.wordCount is number && data.wordCount >= 0)) &&
+             (!('readingTimeMinutes' in data) || (data.readingTimeMinutes is number && data.readingTimeMinutes >= 0)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50)) &&
+             (!('publishedAt' in data) || data.publishedAt == null || (data.publishedAt is string && data.publishedAt.size() <= 50));
+    }
+
+    // --- 4. Moments Validation ---
+    function isValidMoment(data) {
+      return data.keys().hasOnly([
+                'id', 'authorUid', 'author', 'authorName', 'authorFullName',
+                'authorRole', 'authorSymbol', 'authorAvatar', 'avatar',
+                'location', 'mediaUrl', 'photoUrl', 'storagePath', 'mediaType',
+                'mimeType', 'caption', 'publishedAt', 'createdAt', 'expiresAt',
+                'updatedAt', 'isStory', 'visibility', 'isArchived', 'viewedBy',
+                'likedBy', 'likes', 'isDeleted', 'deleteStatus'
+              ]) &&
+              hasRequiredFields(['id', 'authorUid', 'author', 'mediaType', 'storagePath', 'visibility', 'publishedAt', 'expiresAt']) &&
+              data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+              data.authorUid == request.auth.uid &&
+              data.author in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+              isCharacterUser(data.author) &&
+              data.mediaType in ['image', 'video'] &&
+              data.storagePath is string && data.storagePath.size() > 0 && data.storagePath.size() <= 300 &&
+              data.visibility in ['friends', 'private'] &&
+              (
+                (data.visibility == 'private' && (data.storagePath.matches('^moments/private/' + request.auth.uid + '/.+') || data.storagePath.matches('^photobooth/private/' + request.auth.uid + '/.+'))) ||
+                (data.visibility == 'friends' && (data.storagePath.matches('^moments/shared/' + request.auth.uid + '/.+') || data.storagePath.matches('^photobooth/shared/' + request.auth.uid + '/.+')))
+              ) &&
+              (!('caption' in data) || (data.caption is string && data.caption.size() <= 2000)) &&
+              (!('mimeType' in data) || (data.mimeType is string && data.mimeType.size() <= 100)) &&
+              (!('authorName' in data) || (data.authorName is string && data.authorName.size() <= 100)) &&
+              (!('authorFullName' in data) || (data.authorFullName is string && data.authorFullName.size() <= 100)) &&
+              (!('authorRole' in data) || (data.authorRole is string && data.authorRole.size() <= 100)) &&
+              (!('authorSymbol' in data) || (data.authorSymbol is string && data.authorSymbol.size() <= 10)) &&
+              (!('authorAvatar' in data) || (data.authorAvatar is string && data.authorAvatar.size() <= 500)) &&
+              (!('avatar' in data) || (data.avatar is string && data.avatar.size() <= 500)) &&
+              (!('location' in data) || (data.location is string && data.location.size() <= 200)) &&
+              (!('mediaUrl' in data) || (data.mediaUrl is string && data.mediaUrl.size() <= 2000)) &&
+              (!('photoUrl' in data) || (data.photoUrl is string && data.photoUrl.size() <= 2000)) &&
+              (!('likes' in data) || (data.likes is number && data.likes >= 0)) &&
+              (!('isStory' in data) || (data.isStory is bool)) &&
+              (!('isArchived' in data) || (data.isArchived is bool)) &&
+              (!('isDeleted' in data) || (data.isDeleted is bool)) &&
+              (!('deleteStatus' in data) || (data.deleteStatus in ['active', 'pending_storage_cleanup', 'storage_cleanup_failed'])) &&
+              (!('viewedBy' in data) || (data.viewedBy is map && data.viewedBy.keys().hasOnly(['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan']))) &&
+              (!('likedBy' in data) || (data.likedBy is map && data.likedBy.keys().hasOnly(['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan']))) &&
+              (!('createdAt' in data) || (data.createdAt is string || data.createdAt is number)) &&
+              (!('updatedAt' in data) || (data.updatedAt is string || data.updatedAt is number));
+    }
+
+    // --- 5. Photobooth Sessions Validation ---
+    function isValidPhotoboothSession(data) {
+      return hasRequiredFields(['authorUid']) &&
+             data.authorUid is string && data.authorUid == request.auth.uid &&
+             (!('id' in data) || (data.id is string && data.id.size() <= 100)) &&
+             (!('author' in data) || (data.author is string && data.author.size() <= 50)) &&
+             (!('roomCode' in data) || (data.roomCode is string && data.roomCode.size() <= 50)) &&
+             (!('theme' in data) || (data.theme is string && data.theme.size() <= 50)) &&
+             (!('stripLayout' in data) || (data.stripLayout is string && data.stripLayout.size() <= 50)) &&
+             (!('photos' in data) || (data.photos is list && data.photos.size() <= 20)) &&
+             (!('createdAt' in data) || (data.createdAt is string || data.createdAt is number)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string || data.updatedAt is number));
+    }
+
+    // --- 6 & 7. Messages & Conversations Validation ---
+    function isAllowedConversation(convId) {
+      return convId is string &&
+             (
+               convId == 'all_friends' ||
+               (isAuthenticated() && (
+                 convId.matches('.*' + request.auth.uid + '.*') ||
+                 (isCharacterUser('nyanya') && convId.matches('.*nyanya.*')) ||
+                 (isCharacterUser('lala') && convId.matches('.*lala.*')) ||
+                 (isCharacterUser('lele') && convId.matches('.*lele.*')) ||
+                 ((isCharacterUser('abil') || isCharacterUser('syma')) && (convId.matches('.*abil.*') || convId.matches('.*syma.*'))) ||
+                 (isCharacterUser('akhira') && convId.matches('.*akhira.*')) ||
+                 (isCharacterUser('ela') && convId.matches('.*ela.*')) ||
+                 (isCharacterUser('ruben') && convId.matches('.*ruben.*')) ||
+                 (isCharacterUser('royan') && convId.matches('.*royan.*'))
+               ))
+             );
+    }
+
+    function isMessageParticipant(data) {
+      return isAuthenticated() &&
+             (
+               (('senderUid' in data) && request.auth.uid == data.senderUid) ||
+               (('recipientUid' in data) && request.auth.uid == data.recipientUid) ||
+               (('lastSenderUid' in data) && request.auth.uid == data.lastSenderUid) ||
+               (('participants' in data) && data.participants is list && (
+                 (request.auth.uid in data.participants) ||
+                 (isCharacterUser('nyanya') && 'nyanya' in data.participants) ||
+                 (isCharacterUser('lala') && 'lala' in data.participants) ||
+                 (isCharacterUser('lele') && 'lele' in data.participants) ||
+                 ((isCharacterUser('abil') || isCharacterUser('syma')) && (('abil' in data.participants) || ('syma' in data.participants))) ||
+                 (isCharacterUser('akhira') && 'akhira' in data.participants) ||
+                 (isCharacterUser('ela') && 'ela' in data.participants) ||
+                 (isCharacterUser('ruben') && 'ruben' in data.participants) ||
+                 (isCharacterUser('royan') && 'royan' in data.participants)
+               ))
+             );
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasOnly([
+                'id', 'conversationId', 'senderUid', 'senderCharacter',
+                'senderName', 'senderAvatar', 'recipientUid', 'recipientCharacter',
+                'recipientName', 'recipientAvatar', 'participants', 'text',
+                'type', 'mediaUrl', 'storagePath', 'fileName', 'fileSize',
+                'mimeType', 'duration', 'waveform',
+                'createdAt', 'updatedAt', 'readBy', 'clientTimestamp'
+              ]) &&
+              hasRequiredFields(['id', 'conversationId', 'senderUid', 'senderCharacter', 'participants', 'createdAt']) &&
+              data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+              data.conversationId is string && data.conversationId.size() > 0 && data.conversationId.size() <= 100 &&
+              isAllowedConversation(data.conversationId) &&
+              data.senderUid == request.auth.uid &&
+              data.senderCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+              data.participants is list && data.participants.size() >= 2 && data.participants.size() <= 10 &&
+              ((data.senderCharacter in data.participants) || (data.senderUid in data.participants) || (data.senderCharacter in ['abil', 'syma'] && (('abil' in data.participants) || ('syma' in data.participants)))) &&
+              (!('recipientUid' in data) || (data.recipientUid is string && data.recipientUid.size() <= 100)) &&
+              (!('recipientCharacter' in data) || (data.recipientCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])) &&
+              (!('recipientName' in data) || (data.recipientName is string && data.recipientName.size() <= 100)) &&
+              (!('recipientAvatar' in data) || (data.recipientAvatar is string && data.recipientAvatar.size() <= 500)) &&
+              (!('type' in data) || data.type in ['text', 'image', 'video', 'audio', 'voice', 'file']) &&
+              (!('text' in data) || (data.text is string && data.text.size() <= 2000)) &&
+              (
+                (('text' in data) && data.text is string && data.text.size() > 0) ||
+                (('type' in data) && data.type in ['image', 'video', 'audio', 'voice', 'file'])
+              ) &&
+              (!('mediaUrl' in data) || (data.mediaUrl is string && data.mediaUrl.size() <= 2000)) &&
+              (!('storagePath' in data) || (data.storagePath is string && data.storagePath.size() <= 500 && data.storagePath.matches('^messages/' + data.conversationId + '/' + request.auth.uid + '/.+'))) &&
+              (!('fileName' in data) || (data.fileName is string && data.fileName.size() <= 255)) &&
+              (!('fileSize' in data) || (data.fileSize is number && data.fileSize >= 0 && data.fileSize <= 50 * 1024 * 1024)) &&
+              (!('mimeType' in data) || (data.mimeType is string && data.mimeType.size() <= 100)) &&
+              (!('duration' in data) || (data.duration is number && data.duration >= 0)) &&
+              (!('waveform' in data) || (data.waveform is list && data.waveform.size() <= 100)) &&
+              (data.createdAt is number || data.createdAt is string) &&
+              (!('updatedAt' in data) || (data.updatedAt is number || data.updatedAt is string)) &&
+              (!('senderName' in data) || (data.senderName is string && data.senderName.size() <= 100)) &&
+              (!('senderAvatar' in data) || (data.senderAvatar is string && data.senderAvatar.size() <= 500)) &&
+              (!('readBy' in data) || (data.readBy is map && data.readBy.keys().hasOnly(['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])));
+    }
+
+    function isValidConversationDoc(data) {
+      return data.keys().hasOnly([
+               'id', 'participants', 'lastMessage', 'lastSender',
+               'lastSenderUid', 'lastMessageAt', 'updatedAt', 'lastMessageType',
+               'recipientUid', 'recipientCharacter', 'createdAt'
+             ]) &&
+             hasRequiredFields(['id', 'participants']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+             isAllowedConversation(data.id) &&
+             data.participants is list && data.participants.size() >= 2 && data.participants.size() <= 10 &&
+             (!('recipientUid' in data) || (data.recipientUid is string && data.recipientUid.size() <= 100)) &&
+             (!('recipientCharacter' in data) || (data.recipientCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])) &&
+             (!('createdAt' in data) || (data.createdAt is number || data.createdAt is string)) &&
+             (!('lastMessage' in data) || (data.lastMessage is string && data.lastMessage.size() <= 2000)) &&
+             (!('lastSender' in data) || (data.lastSender in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])) &&
+             (!('lastSenderUid' in data) || (data.lastSenderUid is string && data.lastSenderUid == request.auth.uid)) &&
+             (!('lastMessageType' in data) || (data.lastMessageType in ['text', 'image', 'video', 'audio', 'voice', 'file'])) &&
+             (!('lastMessageAt' in data) || (data.lastMessageAt is number || data.lastMessageAt is string)) &&
+             (!('updatedAt' in data) || (data.updatedAt is number || data.updatedAt is string));
+    }
+
+    // --- 8 & 9. Games Validation ---
+    function isValidGameRecord(data) {
+      return data.keys().hasOnly([
+               'id', 'gameId', 'playerUid', 'playerChar', 'playerName',
+               'playerAvatar', 'score', 'maxScore', 'percentage', 'summary',
+               'answers', 'createdAt', 'status'
+             ]) &&
+             hasRequiredFields(['id', 'gameId', 'playerUid', 'playerChar', 'score', 'maxScore', 'createdAt', 'status']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+             data.gameId in ['know_me', 'this_or_that', 'who_said_it', 'bestie_mission'] &&
+             data.playerUid == request.auth.uid &&
+             data.playerChar in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             isCharacterUser(data.playerChar) &&
+             data.score is number && data.score >= 0 && data.score <= 10000 &&
+             data.maxScore is number && data.maxScore >= 0 && data.maxScore <= 10000 &&
+             (!('percentage' in data) || (data.percentage is number && data.percentage >= 0 && data.percentage <= 100)) &&
+             (!('summary' in data) || (data.summary is string && data.summary.size() <= 500)) &&
+             (!('playerName' in data) || (data.playerName is string && data.playerName.size() <= 100)) &&
+             (!('playerAvatar' in data) || (data.playerAvatar is string && data.playerAvatar.size() <= 500)) &&
+             data.status in ['completed', 'abandoned'] &&
+             (data.createdAt is number || data.createdAt is string);
+    }
+
+    function isValidGameSession(data) {
+      return data.keys().hasOnly([
+               'id', 'gameId', 'participants', 'status', 'createdBy',
+               'creatorUid', 'progress', 'updatedAt', 'createdAt'
+             ]) &&
+             hasRequiredFields(['id', 'gameId', 'participants', 'status', 'createdBy', 'creatorUid', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+             data.gameId in ['know_me', 'this_or_that', 'who_said_it', 'bestie_mission'] &&
+             data.createdBy in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             isCharacterUser(data.createdBy) &&
+             data.creatorUid == request.auth.uid &&
+             data.participants is list && data.participants.size() >= 1 && data.participants.size() <= 10 &&
+             data.status in ['active', 'completed', 'waiting'] &&
+             (data.createdAt is number || data.createdAt is string) &&
+             (!('updatedAt' in data) || (data.updatedAt is number || data.updatedAt is string));
+    }
+
+    // --- 10. Universe State & Interactive Elements Validation ---
+    function isValidUniverseState(data) {
+      return data.keys().hasOnly([
+               'uid', 'characterKey', 'universeName', 'decorations',
+               'elements', 'lastUpdated', 'updatedBy', 'version'
+             ]) &&
+             hasRequiredFields(['uid', 'characterKey', 'universeName', 'lastUpdated']) &&
+             data.uid == request.auth.uid &&
+             data.characterKey in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             isCharacterUser(data.characterKey) &&
+             isValidCharacterUniverseMapping(data.characterKey, data.universeName) &&
+             (!('decorations' in data) || (data.decorations is list && data.decorations.size() <= 50)) &&
+             (!('elements' in data) || (
+               data.elements is map &&
+               data.elements.keys().size() <= 25 &&
+               data.elements.keys().hasOnly([
+                 'greenhouse', 'river', 'gazebo', 'telescope', 'mailbox',
+                 'atelier', 'butterfly', 'crystal_tower', 'gallery', 'bath',
+                 'cat_garden', 'fishing_pond', 'residence', 'photography',
+                 'vision_studio', 'garden', 'fountain', 'study', 'pond', 'orchard'
+               ])
+             )) &&
+             (!('version' in data) || data.version is number) &&
+             (!('updatedBy' in data) || (data.updatedBy in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] && isCharacterUser(data.updatedBy))) &&
+             (data.lastUpdated is number || data.lastUpdated is string);
+    }
+
+    // --- 11. Star Messages Validation (Messages Across the Universe) ---
+    function isValidStarMessage(data) {
+      return data.keys().hasOnly([
+               'id', 'senderUid', 'senderCharacter', 'senderName', 'senderAvatar',
+               'recipientUid', 'recipientCharacter', 'recipientName', 'text',
+               'category', 'starType', 'x', 'y', 'universeOrigin',
+               'createdAt', 'updatedAt', 'read', 'readAt', 'favorites'
+             ]) &&
+             hasRequiredFields(['id', 'senderUid', 'senderCharacter', 'recipientUid', 'recipientCharacter', 'text', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+             data.senderUid == request.auth.uid &&
+             data.senderUid in [
+               '1uwba7MrGVU3xHu57VVLvztskrg2', 'EqByKA8FXoTEt0OmIsSDPfnxMDB3', '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+               'Euc0JLt3kWMveUEIjBwXHfOfvQD3', 'MT14ZHATNqe90frAeQ74QFk4iXs2', 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+               '9PMychPZ4rZ4PBCtZB9GiASttc52', 'swBN9XodDWRuHE5YbYmeoytrcAx2'
+             ] &&
+             data.senderCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             isValidStarCharacterMapping(data.senderUid, data.senderCharacter) &&
+             data.recipientUid in [
+               '1uwba7MrGVU3xHu57VVLvztskrg2', 'EqByKA8FXoTEt0OmIsSDPfnxMDB3', '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+               'Euc0JLt3kWMveUEIjBwXHfOfvQD3', 'MT14ZHATNqe90frAeQ74QFk4iXs2', 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+               '9PMychPZ4rZ4PBCtZB9GiASttc52', 'swBN9XodDWRuHE5YbYmeoytrcAx2'
+             ] &&
+             data.recipientCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             isValidStarCharacterMapping(data.recipientUid, data.recipientCharacter) &&
+             data.senderUid != data.recipientUid &&
+             data.text is string && data.text.size() > 0 && data.text.size() <= 2000 &&
+             (!('category' in data) || (data.category is string && data.category in ['warmth', 'wish', 'greeting', 'secret'])) &&
+             (!('starType' in data) || (data.starType is string && data.starType.size() <= 50)) &&
+             (!('x' in data) || (data.x is number && data.x >= 0 && data.x <= 100)) &&
+             (!('y' in data) || (data.y is number && data.y >= 0 && data.y <= 100)) &&
+             (!('universeOrigin' in data) || (data.universeOrigin is string && data.universeOrigin in ['kidult', 'to_you', 'toyou', 'shadow', 'pinwheel', 'yawn', 'ash', 'usagain', 'hot'])) &&
+             (data.createdAt is number || data.createdAt is string) &&
+             (!('updatedAt' in data) || (data.updatedAt is number || data.updatedAt is string)) &&
+             (!('senderName' in data) || (data.senderName is string && data.senderName.size() <= 100)) &&
+             (!('senderAvatar' in data) || (data.senderAvatar is string && data.senderAvatar.size() <= 500)) &&
+             (!('recipientName' in data) || (data.recipientName is string && data.recipientName.size() <= 100)) &&
+             (!('read' in data) || data.read is bool) &&
+             (!('readAt' in data) || data.readAt is number || data.readAt == null) &&
+             (!('favorites' in data) || (data.favorites is map && data.favorites.keys().hasOnly([
+               'nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan',
+               '1uwba7MrGVU3xHu57VVLvztskrg2', 'EqByKA8FXoTEt0OmIsSDPfnxMDB3', '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+               'Euc0JLt3kWMveUEIjBwXHfOfvQD3', 'MT14ZHATNqe90frAeQ74QFk4iXs2', 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+               '9PMychPZ4rZ4PBCtZB9GiASttc52', 'swBN9XodDWRuHE5YbYmeoytrcAx2'
+             ])));
+    }
+
+    // --- 12. Kotak Pos / Letters Validation ---
+    function isValidLetter(data) {
+      return data.keys().hasOnly([
+               'id', 'senderUid', 'senderCharacter', 'senderName', 'senderAvatar',
+               'recipientUid', 'recipientCharacter', 'recipientName', 'recipientAvatar',
+               'title', 'body', 'paperTheme', 'universeOrigin',
+               'read', 'readAt', 'deletedBySender', 'deletedByRecipient',
+               'createdAt', 'updatedAt'
+             ]) &&
+             hasRequiredFields([
+               'id', 'senderUid', 'senderCharacter',
+               'recipientUid', 'recipientCharacter',
+               'title', 'body', 'createdAt'
+             ]) &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+             data.senderUid == request.auth.uid &&
+             data.senderUid in [
+               '1uwba7MrGVU3xHu57VVLvztskrg2', 'EqByKA8FXoTEt0OmIsSDPfnxMDB3', '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+               'Euc0JLt3kWMveUEIjBwXHfOfvQD3', 'MT14ZHATNqe90frAeQ74QFk4iXs2', 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+               '9PMychPZ4rZ4PBCtZB9GiASttc52', 'swBN9XodDWRuHE5YbYmeoytrcAx2'
+             ] &&
+             data.recipientUid in [
+               '1uwba7MrGVU3xHu57VVLvztskrg2', 'EqByKA8FXoTEt0OmIsSDPfnxMDB3', '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+               'Euc0JLt3kWMveUEIjBwXHfOfvQD3', 'MT14ZHATNqe90frAeQ74QFk4iXs2', 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+               '9PMychPZ4rZ4PBCtZB9GiASttc52', 'swBN9XodDWRuHE5YbYmeoytrcAx2'
+             ] &&
+             data.senderCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             data.recipientCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+             data.senderUid != data.recipientUid &&
+             isValidStarCharacterMapping(data.senderUid, data.senderCharacter) &&
+             isValidStarCharacterMapping(data.recipientUid, data.recipientCharacter) &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+             data.body is string && data.body.size() >= 1 && data.body.size() <= 4000 &&
+             (!('paperTheme' in data) || (data.paperTheme is string && data.paperTheme.size() <= 50)) &&
+             (!('universeOrigin' in data) || (data.universeOrigin is string && data.universeOrigin in ['kidult', 'to_you', 'toyou', 'shadow', 'pinwheel', 'yawn', 'ash', 'usagain', 'hot'])) &&
+             (data.createdAt is number || data.createdAt is string) &&
+             (!('updatedAt' in data) || (data.updatedAt is number || data.updatedAt is string)) &&
+             (!('senderName' in data) || (data.senderName is string && data.senderName.size() <= 100)) &&
+             (!('recipientName' in data) || (data.recipientName is string && data.recipientName.size() <= 100)) &&
+             (!('senderAvatar' in data) || (data.senderAvatar is string && data.senderAvatar.size() <= 500)) &&
+             (!('recipientAvatar' in data) || (data.recipientAvatar is string && data.recipientAvatar.size() <= 500)) &&
+             (!('read' in data) || data.read is bool) &&
+             (!('readAt' in data) || data.readAt is number || data.readAt == null) &&
+             (!('deletedBySender' in data) || data.deletedBySender is bool) &&
+             (!('deletedByRecipient' in data) || data.deletedByRecipient is bool);
+    }
+
+    // --- 13 & 14. Universal Art Gallery Validation ---
+    function isValidArtworkStoryMap(story) {
+      return story is map &&
+             story.keys().hasOnly(['inspiration', 'meaning', 'process']) &&
+             (!('inspiration' in story) || (story.inspiration is string && story.inspiration.size() <= 2000)) &&
+             (!('meaning' in story) || (story.meaning is string && story.meaning.size() <= 2000)) &&
+             (!('process' in story) || (story.process is string && story.process.size() <= 2000));
+    }
+
+    function isValidArtwork(data) {
+      return data.keys().hasOnly([
+                'id', 'authorUid', 'author', 'universeOrigin', 'title',
+                'description', 'createdDate', 'collectionId', 'status',
+                'orderIndex', 'storagePath', 'imageStorageType', 'mimeType', 'aspectRatio',
+                'storyPublic', 'story', 'createdAt', 'updatedAt'
+              ]) &&
+              hasRequiredFields(['id', 'authorUid', 'author', 'title', 'collectionId', 'status', 'createdAt']) &&
+              data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+              data.authorUid == request.auth.uid &&
+              data.author in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+              isCharacterUser(data.author) &&
+              (!('universeOrigin' in data) || (data.universeOrigin is string && data.universeOrigin.size() <= 50)) &&
+              data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+              (!('description' in data) || (data.description is string && data.description.size() <= 2000)) &&
+              (!('createdDate' in data) || (data.createdDate is string && data.createdDate.size() <= 30)) &&
+              data.collectionId is string && data.collectionId.size() >= 1 && data.collectionId.size() <= 60 &&
+              data.status in ['published', 'draft', 'in_development'] &&
+              (!('orderIndex' in data) || (data.orderIndex is number && data.orderIndex >= 0)) &&
+              (!('storagePath' in data) || (data.storagePath is string && data.storagePath.size() <= 300)) &&
+              (!('imageStorageType' in data) || (data.imageStorageType is string && data.imageStorageType == 'indexeddb')) &&
+              (!('mimeType' in data) || (data.mimeType is string && data.mimeType.size() <= 100)) &&
+              (!('aspectRatio' in data) || (data.aspectRatio is number && data.aspectRatio > 0 && data.aspectRatio <= 20)) &&
+              (!('storyPublic' in data) || data.storyPublic is bool) &&
+              (!('story' in data) || data.story == null || (('storyPublic' in data) && data.storyPublic == true && isValidArtworkStoryMap(data.story))) &&
+              (data.createdAt is number || (data.createdAt is string && data.createdAt.size() <= 100)) &&
+              (!('updatedAt' in data) || (data.updatedAt is number || (data.updatedAt is string && data.updatedAt.size() <= 100)));
+    }
+
+    function isValidArtworkNote(data) {
+      return data.keys().hasOnly([
+                'id', 'authorUid', 'author', 'story', 'privateNotes', 'createdAt', 'updatedAt'
+              ]) &&
+              hasRequiredFields(['id', 'authorUid', 'author']) &&
+              data.id is string && data.id.size() > 0 && data.id.size() <= 100 &&
+              data.authorUid == request.auth.uid &&
+              data.author in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'] &&
+              isCharacterUser(data.author) &&
+              (!('story' in data) || data.story == null || isValidArtworkStoryMap(data.story)) &&
+              (!('privateNotes' in data) || (data.privateNotes is string && data.privateNotes.size() <= 4000)) &&
+              (!('createdAt' in data) || (data.createdAt is number || (data.createdAt is string && data.createdAt.size() <= 100))) &&
+              (!('updatedAt' in data) || (data.updatedAt is number || (data.updatedAt is string && data.updatedAt.size() <= 100)));
+    }
+
+    // --- 15. Orbit Notifications Validation ---
+    function isValidOrbitNotification(data) {
+      return hasRequiredFields(['senderUid']) &&
+             data.senderUid == request.auth.uid &&
+             (('recipientUid' in data) || ('targetUid' in data)) &&
+             (!('recipientUid' in data) || (data.recipientUid is string && data.recipientUid.size() <= 100 && isCanonicalStarUser(data.recipientUid) && data.recipientUid != request.auth.uid)) &&
+             (!('targetUid' in data) || (data.targetUid is string && data.targetUid.size() <= 100 && isCanonicalStarUser(data.targetUid) && data.targetUid != request.auth.uid)) &&
+             (!('id' in data) || (data.id is string && data.id.size() <= 100)) &&
+             (!('type' in data) || (data.type is string && data.type.size() <= 50)) &&
+             (!('title' in data) || (data.title is string && data.title.size() <= 200)) &&
+             (!('message' in data) || (data.message is string && data.message.size() <= 1000)) &&
+             (!('text' in data) || (data.text is string && data.text.size() <= 1000)) &&
+             (!('conversationId' in data) || (data.conversationId is string && data.conversationId.size() <= 100)) &&
+             (!('messageId' in data) || (data.messageId is string && data.messageId.size() <= 100)) &&
+             (!('senderCharacter' in data) || (data.senderCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])) &&
+             (!('senderName' in data) || (data.senderName is string && data.senderName.size() <= 100)) &&
+             (!('recipientCharacter' in data) || (data.recipientCharacter in ['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])) &&
+             (!('read' in data) || data.read is bool) &&
+             (!('createdAt' in data) || (data.createdAt is string || data.createdAt is number));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // 1. Our Calendar (orbit_events)
+    match /orbit_events/{eventId} {
+      // Read:
+      // - Personal: only creator (proposerUid == request.auth.uid)
+      // - Meeting: strictly host (proposerUid == request.auth.uid) OR invited participant (isUserMeetingParticipant())
+      // - Shared non-meeting ('together', 'birthday', 'reminder'): all verified universe members
+      allow read: if isAuthenticated() &&
+                     (
+                       resource == null ||
+                       (resource.data.category == 'personal' && resource.data.proposerUid == request.auth.uid) ||
+                       (resource.data.category == 'meeting' && isUniverseMember() && (resource.data.proposerUid == request.auth.uid || isUserMeetingParticipant())) ||
+                       (isUniverseMember() && resource.data.category in ['together', 'birthday', 'reminder'])
+                     );
+
+      // Create: Authenticated universe member with strictly matching proposerUid, proposer matching auth character, and schema validation
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.proposerUid == request.auth.uid &&
+                       (!('proposer' in request.resource.data) || isCharacterUser(request.resource.data.proposer)) &&
+                       isValidOrbitEvent(request.resource.data);
+
+      // Update:
+      // (a) Full update by proposer with schema validation & immutable proposerUid
+      // (b) Participant meeting response update restricted to responses, status, and updatedAt
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       (
+                         (resource.data.proposerUid == request.auth.uid &&
+                          request.resource.data.proposerUid == resource.data.proposerUid &&
+                          isValidOrbitEvent(request.resource.data))
+                         ||
+                         isValidMeetingResponseUpdate()
+                       );
+
+      // Delete: Strictly proposer only
+      allow delete: if isAuthenticated() && isUniverseMember() && resource.data.proposerUid == request.auth.uid;
+    }
+
+    // 2. Users (users)
+    match /users/{userId} {
+      // Read: Any authenticated verified member of the universe
+      allow read: if isAuthenticated() && isUniverseMember();
+
+      // Write (Create, Update): Strictly document owner and verified character only
+      allow create: if isOwner(userId) && isUniverseMember() && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) &&
+                       isUniverseMember() &&
+                       isValidUser(request.resource.data) &&
+                       request.resource.data.uid == resource.data.uid &&
+                       (request.resource.data.characterKey == resource.data.characterKey || (request.resource.data.characterKey in ['abil', 'syma'] && resource.data.characterKey in ['abil', 'syma'])) &&
+                       (!('createdAt' in request.resource.data) || request.resource.data.createdAt == resource.data.createdAt);
+      allow delete: if false;
+    }
+
+    // 3. Stories & Our Stories (stories)
+    match /stories/{storyId} {
+      // Read: Published stories are readable by verified universe members;
+      // Drafts are STRICTLY restricted to the author UID!
+      allow read: if isAuthenticated() &&
+                     (
+                       resource == null ||
+                       resource.data.authorUid == request.auth.uid ||
+                       (isUniverseMember() && resource.data.status == 'published')
+                     );
+
+      // Create: Authenticated verified author with matching authorUid
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == storyId &&
+                       request.resource.data.authorUid == request.auth.uid &&
+                       isValidStory(request.resource.data);
+
+      // Update: Only author can update, authorUid, id, and createdAt are immutable
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource.data.authorUid == request.auth.uid &&
+                       request.resource.data.authorUid == resource.data.authorUid &&
+                       (request.resource.data.authorChar == resource.data.authorChar || (request.resource.data.authorChar in ['abil', 'syma'] && resource.data.authorChar in ['abil', 'syma'])) &&
+                       request.resource.data.id == resource.data.id &&
+                       (!('createdAt' in request.resource.data) || request.resource.data.createdAt == resource.data.createdAt) &&
+                       isValidStory(request.resource.data);
+
+      // Delete: Only author can delete
+      allow delete: if isAuthenticated() && isUniverseMember() && resource.data.authorUid == request.auth.uid;
+    }
+
+    // 4. Our Little Moments & Gallery (moments)
+    match /moments/{momentId} {
+      // Read: Shared/friends moments viewable only by verified universe members (if not deleted);
+      // Private moments viewable ONLY by author UID;
+      // Deleted moments viewable ONLY by author UID (for safe cleanup tracking)
+      allow read: if isAuthenticated() &&
+                     (
+                       resource == null ||
+                       resource.data.authorUid == request.auth.uid ||
+                       (isUniverseMember() && resource.data.visibility == 'friends' && (!('isDeleted' in resource.data) || resource.data.isDeleted != true))
+                     );
+
+      // Create: Authenticated verified author with matching authorUid and momentId
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == momentId &&
+                       request.resource.data.authorUid == request.auth.uid &&
+                       isValidMoment(request.resource.data);
+
+      // Update: Only author can update. Immutable fields: id, authorUid, mediaType, publishedAt, expiresAt, storagePath, visibility
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource.data.authorUid == request.auth.uid &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.authorUid == resource.data.authorUid &&
+                       (request.resource.data.author == resource.data.author || (request.resource.data.author in ['abil', 'syma'] && resource.data.author in ['abil', 'syma'])) &&
+                       request.resource.data.mediaType == resource.data.mediaType &&
+                       request.resource.data.publishedAt == resource.data.publishedAt &&
+                       request.resource.data.expiresAt == resource.data.expiresAt &&
+                       request.resource.data.storagePath == resource.data.storagePath &&
+                       request.resource.data.visibility == resource.data.visibility &&
+                       (!('createdAt' in request.resource.data) || request.resource.data.createdAt == resource.data.createdAt) &&
+                       isValidMoment(request.resource.data);
+
+      // Delete: Only author can delete
+      allow delete: if isAuthenticated() && isUniverseMember() && resource.data.authorUid == request.auth.uid;
+    }
+
+    // 5. Photobooth Sessions (photobooth_sessions)
+    match /photobooth_sessions/{sessionId} {
+      // Read: Authenticated verified universe members
+      allow read: if isAuthenticated() && isUniverseMember();
+
+      // Create: Authenticated verified author with matching authorUid
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.authorUid == request.auth.uid &&
+                       isValidPhotoboothSession(request.resource.data);
+
+      // Update: Only author can update, authorUid is immutable, data must be valid
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource.data.authorUid == request.auth.uid &&
+                       request.resource.data.authorUid == resource.data.authorUid &&
+                       isValidPhotoboothSession(request.resource.data);
+
+      // Delete: Only author can delete
+      allow delete: if isAuthenticated() && isUniverseMember() && resource.data.authorUid == request.auth.uid;
+    }
+
+    // 6. Messages (messages)
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() &&
+                     isUniverseMember() &&
+                     (
+                       resource == null ||
+                       isAllowedConversation(resource.data.conversationId) ||
+                       isMessageParticipant(resource.data)
+                     );
+
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == messageId &&
+                       request.resource.data.senderUid == request.auth.uid &&
+                       isCharacterUser(request.resource.data.senderCharacter) &&
+                       isValidMessage(request.resource.data);
+
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource != null &&
+                       isMessageParticipant(resource.data) &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.conversationId == resource.data.conversationId &&
+                       request.resource.data.senderUid == resource.data.senderUid &&
+                       (request.resource.data.senderCharacter == resource.data.senderCharacter || (request.resource.data.senderCharacter in ['abil', 'syma'] && resource.data.senderCharacter in ['abil', 'syma'])) &&
+                       request.resource.data.text == resource.data.text &&
+                       request.resource.data.createdAt == resource.data.createdAt &&
+                       request.resource.data.participants == resource.data.participants &&
+                       request.resource.data.keys().hasOnly([
+                         'id', 'conversationId', 'senderUid', 'senderCharacter',
+                         'senderName', 'senderAvatar', 'recipientUid', 'recipientCharacter',
+                         'recipientName', 'recipientAvatar', 'participants', 'text',
+                         'type', 'mediaUrl', 'storagePath', 'fileName', 'fileSize',
+                         'mimeType', 'duration', 'waveform',
+                         'createdAt', 'updatedAt', 'readBy', 'clientTimestamp'
+                       ]) &&
+                       (!('readBy' in request.resource.data) || (request.resource.data.readBy is map && request.resource.data.readBy.keys().hasOnly(['nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan'])));
+
+      allow delete: if isAuthenticated() && isUniverseMember() && resource.data.senderUid == request.auth.uid;
+    }
+
+    // 7. Conversations (conversations)
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() &&
+                     isUniverseMember() &&
+                     (
+                       resource == null ||
+                       isAllowedConversation(conversationId) ||
+                       isMessageParticipant(resource.data)
+                     );
+
+      allow create, update: if isAuthenticated() &&
+                               isUniverseMember() &&
+                               (isAllowedConversation(request.resource.data.id) || isMessageParticipant(request.resource.data)) &&
+                               isValidConversationDoc(request.resource.data);
+
+      allow delete: if false;
+    }
+
+    // 8. Game Records (game_records)
+    match /game_records/{recordId} {
+      // Read: Any authenticated canonical character can view leaderboard / history
+      allow read: if isAuthenticated() && isUniverseMember();
+
+      // Create: Character creates their own verified score record
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == recordId &&
+                       request.resource.data.playerUid == request.auth.uid &&
+                       isCharacterUser(request.resource.data.playerChar) &&
+                       isValidGameRecord(request.resource.data);
+
+      // Records are immutable game histories
+      allow update: if false;
+
+      // Delete: Only owner can delete their own record
+      allow delete: if isAuthenticated() && isUniverseMember() && resource.data.playerUid == request.auth.uid;
+    }
+
+    // 9. Game Sessions (game_sessions)
+    match /game_sessions/{sessionId} {
+      allow read: if isAuthenticated() && isUniverseMember();
+
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == sessionId &&
+                       request.resource.data.creatorUid == request.auth.uid &&
+                       isCharacterUser(request.resource.data.createdBy) &&
+                       isValidGameSession(request.resource.data);
+
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.gameId == resource.data.gameId &&
+                       request.resource.data.creatorUid == resource.data.creatorUid &&
+                       (request.resource.data.createdBy == resource.data.createdBy || (request.resource.data.createdBy in ['abil', 'syma'] && resource.data.createdBy in ['abil', 'syma'])) &&
+                       request.resource.data.createdAt == resource.data.createdAt &&
+                       isValidGameSession(request.resource.data);
+
+      allow delete: if isAuthenticated() && isUniverseMember() && resource.data.creatorUid == request.auth.uid;
+    }
+
+    // 10. Universe States (universe_states)
+    match /universe_states/{uid} {
+      allow read: if isAuthenticated() && isUniverseMember();
+
+      allow create, update: if isAuthenticated() &&
+                               isUniverseMember() &&
+                               request.auth.uid == uid &&
+                               isValidUniverseState(request.resource.data);
+
+      allow delete: if isAuthenticated() && isUniverseMember() && request.auth.uid == uid;
+    }
+
+    // 11. Star Messages (star_messages)
+    match /star_messages/{messageId} {
+      allow read: if isAuthenticated() &&
+                     isCanonicalStarUser(request.auth.uid) &&
+                     (
+                       resource == null ||
+                       resource.data.senderUid == request.auth.uid ||
+                       resource.data.recipientUid == request.auth.uid
+                     );
+
+      allow create: if isAuthenticated() &&
+                       isCanonicalStarUser(request.auth.uid) &&
+                       request.resource.data.id == messageId &&
+                       request.resource.data.senderUid == request.auth.uid &&
+                       isValidStarMessage(request.resource.data);
+
+      allow update: if isAuthenticated() &&
+                       isCanonicalStarUser(request.auth.uid) &&
+                       (resource.data.recipientUid == request.auth.uid || resource.data.senderUid == request.auth.uid) &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.senderUid == resource.data.senderUid &&
+                       (request.resource.data.senderCharacter == resource.data.senderCharacter || (request.resource.data.senderCharacter in ['abil', 'syma'] && resource.data.senderCharacter in ['abil', 'syma'])) &&
+                       request.resource.data.recipientUid == resource.data.recipientUid &&
+                       (request.resource.data.recipientCharacter == resource.data.recipientCharacter || (request.resource.data.recipientCharacter in ['abil', 'syma'] && resource.data.recipientCharacter in ['abil', 'syma'])) &&
+                       request.resource.data.createdAt == resource.data.createdAt &&
+                       request.resource.data.text == resource.data.text &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'readAt', 'favorites', 'updatedAt']) &&
+                       (
+                         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['read', 'readAt'])) ||
+                         (resource.data.recipientUid == request.auth.uid)
+                       ) &&
+                       (!('read' in request.resource.data) || request.resource.data.read is bool) &&
+                       (!('readAt' in request.resource.data) || request.resource.data.readAt is number || request.resource.data.readAt == null) &&
+                       (!('favorites' in request.resource.data) || (request.resource.data.favorites is map && request.resource.data.favorites.keys().hasOnly([
+                         'nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan',
+                         '1uwba7MrGVU3xHu57VVLvztskrg2', 'EqByKA8FXoTEt0OmIsSDPfnxMDB3', '1ArxphLQpAOoOIvH9BKYw0ebD1e2',
+                         'Euc0JLt3kWMveUEIjBwXHfOfvQD3', 'MT14ZHATNqe90frAeQ74QFk4iXs2', 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+                         '9PMychPZ4rZ4PBCtZB9GiASttc52', 'swBN9XodDWRuHE5YbYmeoytrcAx2'
+                       ]))) &&
+                       (!('updatedAt' in request.resource.data) || (request.resource.data.updatedAt is number || request.resource.data.updatedAt is string));
+
+      allow delete: if isAuthenticated() && isCanonicalStarUser(request.auth.uid) && resource.data.senderUid == request.auth.uid;
+    }
+
+    // 12. Kotak Pos / Letters (letters)
+    match /letters/{letterId} {
+      allow read: if isAuthenticated() &&
+                     isUniverseMember() &&
+                     (
+                       resource == null ||
+                       resource.data.senderUid == request.auth.uid ||
+                       resource.data.recipientUid == request.auth.uid
+                     );
+
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == letterId &&
+                       request.resource.data.senderUid == request.auth.uid &&
+                       isValidLetter(request.resource.data);
+
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       (resource.data.senderUid == request.auth.uid || resource.data.recipientUid == request.auth.uid) &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.senderUid == resource.data.senderUid &&
+                       (request.resource.data.senderCharacter == resource.data.senderCharacter || (request.resource.data.senderCharacter in ['abil', 'syma'] && resource.data.senderCharacter in ['abil', 'syma'])) &&
+                       request.resource.data.recipientUid == resource.data.recipientUid &&
+                       (request.resource.data.recipientCharacter == resource.data.recipientCharacter || (request.resource.data.recipientCharacter in ['abil', 'syma'] && resource.data.recipientCharacter in ['abil', 'syma'])) &&
+                       request.resource.data.title == resource.data.title &&
+                       request.resource.data.body == resource.data.body &&
+                       request.resource.data.createdAt == resource.data.createdAt &&
+                       request.resource.data.keys().hasOnly([
+                         'id', 'senderUid', 'senderCharacter', 'senderName', 'senderAvatar',
+                         'recipientUid', 'recipientCharacter', 'recipientName', 'recipientAvatar',
+                         'title', 'body', 'paperTheme', 'universeOrigin',
+                         'read', 'readAt', 'deletedBySender', 'deletedByRecipient',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       // If sender is updating, they cannot toggle read/readAt or deletedByRecipient
+                       // If recipient is updating, they cannot toggle deletedBySender
+                       (
+                         (request.auth.uid == resource.data.senderUid &&
+                          (!('read' in request.resource.data) || request.resource.data.read == resource.data.read) &&
+                          (!('deletedByRecipient' in request.resource.data) || request.resource.data.deletedByRecipient == resource.data.deletedByRecipient))
+                         ||
+                         (request.auth.uid == resource.data.recipientUid &&
+                          (!('deletedBySender' in request.resource.data) || request.resource.data.deletedBySender == resource.data.deletedBySender))
+                       );
+
+      allow delete: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       (resource.data.senderUid == request.auth.uid || resource.data.recipientUid == request.auth.uid);
+    }
+
+    // 13. Universal Art Gallery & Artworks (artworks)
+    match /artworks/{artworkId} {
+      allow read: if isAuthenticated() &&
+                     isUniverseMember() &&
+                     (
+                       resource == null ||
+                       resource.data.authorUid == request.auth.uid ||
+                       resource.data.status == 'published'
+                     );
+
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == artworkId &&
+                       request.resource.data.authorUid == request.auth.uid &&
+                       isCharacterUser(request.resource.data.author) &&
+                       isValidArtwork(request.resource.data);
+
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource.data.authorUid == request.auth.uid &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.authorUid == resource.data.authorUid &&
+                       (request.resource.data.author == resource.data.author || (request.resource.data.author in ['abil', 'syma'] && resource.data.author in ['abil', 'syma'])) &&
+                       request.resource.data.createdAt == resource.data.createdAt &&
+                       isValidArtwork(request.resource.data);
+
+      allow delete: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource.data.authorUid == request.auth.uid;
+    }
+
+    // 14. Universal Art Gallery Private Notes (artwork_notes)
+    match /artwork_notes/{artworkId} {
+      allow read: if isAuthenticated() &&
+                     isUniverseMember() &&
+                     (
+                       resource == null ||
+                       resource.data.authorUid == request.auth.uid
+                     );
+
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.id == artworkId &&
+                       request.resource.data.authorUid == request.auth.uid &&
+                       isCharacterUser(request.resource.data.author) &&
+                       isValidArtworkNote(request.resource.data);
+
+      allow update: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource.data.authorUid == request.auth.uid &&
+                       request.resource.data.id == resource.data.id &&
+                       request.resource.data.authorUid == resource.data.authorUid &&
+                       isValidArtworkNote(request.resource.data);
+
+      allow delete: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       resource.data.authorUid == request.auth.uid;
+    }
+
+    // 15. Orbit Notifications (orbit_notifications)
+    match /orbit_notifications/{notifId} {
+      allow read: if isAuthenticated() &&
+                     (
+                       resource == null ||
+                       (('recipientUid' in resource.data) && resource.data.recipientUid == request.auth.uid) ||
+                       (('targetUid' in resource.data) && resource.data.targetUid == request.auth.uid)
+                     );
+
+      allow update, delete: if isAuthenticated() &&
+                               resource != null &&
+                               (
+                                 (('recipientUid' in resource.data) && resource.data.recipientUid == request.auth.uid) ||
+                                 (('targetUid' in resource.data) && resource.data.targetUid == request.auth.uid)
+                               );
+
+      allow create: if isAuthenticated() &&
+                       isUniverseMember() &&
+                       request.resource.data.senderUid == request.auth.uid &&
+                       isValidOrbitNotification(request.resource.data);
+    }
+
+    // ===============================================================
+    // Default Deny Rule for All Other Paths
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

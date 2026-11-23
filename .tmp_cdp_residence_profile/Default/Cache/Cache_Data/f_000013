@@ -1,0 +1,1268 @@
+/* ==========================================================================
+   OUR LITTLE UNIVERSE — ROYAN'S UNIVERSE: THE ENCHANTED ELVEN SANCTUARY (HOT 🎆)
+   Magical Elven Forest, Enchanted Woodland & Celestial Fantasy
+   Color Palette: Lavender, Violet, Midnight Blue, Emerald Green, Soft Pink, Moonlight Silver, Warm Gold
+   ========================================================================== */
+
+/* --- 1. Base Container & Viewport --- */
+.view-hot-world {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: none;
+  background-color: #0b0717;
+  z-index: 50;
+  user-select: none;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.view-hot-world.active {
+  display: block;
+}
+
+.hot-world-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* --- 2. Background Scenery --- */
+.hot-world-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/assets/hot_world_bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transform-origin: center center;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+/* Atmospheric Overlay: Soft violet starlight, emerald canopy mist, vignette */
+.hot-world-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 68% 18%, rgba(192, 132, 252, 0.16) 0%, transparent 48%),
+    radial-gradient(circle at 20% 75%, rgba(52, 211, 153, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 88%, rgba(244, 114, 182, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(11, 7, 23, 0.32) 0%, rgba(11, 7, 23, 0.04) 40%, rgba(11, 7, 23, 0.55) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Canvas FX for Floating Fireflies, Petals, Butterflies & Stardust */
+.hot-fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* --- 3. Top Header Bar --- */
+.hot-top-header {
+  position: absolute;
+  top: 1.15rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hot-top-header > * {
+  pointer-events: auto;
+}
+
+/* Left Header: Universe Brand */
+.hot-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: rgba(18, 11, 35, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  padding: 0.45rem 1.25rem 0.45rem 0.6rem;
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(11, 7, 23, 0.6), 0 0 16px rgba(192, 132, 252, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hot-header-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.4), rgba(52, 211, 153, 0.35));
+  border: 1.5px solid rgba(233, 213, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
+}
+
+.hot-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.hot-world-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.hot-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  color: #fde68a;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+  vertical-align: middle;
+  margin-left: 0.35rem;
+}
+
+.hot-world-title {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #f3e8ff;
+  text-shadow: 0 0 12px rgba(192, 132, 252, 0.7);
+  text-transform: uppercase;
+}
+
+.hot-world-subtitle {
+  font-size: 0.7rem;
+  color: #d8b4fe;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+/* Center Global Navigation Bar */
+.hot-top-center-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(18, 11, 35, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(192, 132, 252, 0.25);
+  padding: 0.35rem 0.6rem;
+  border-radius: 9999px;
+  box-shadow: 0 6px 24px rgba(11, 7, 23, 0.5);
+}
+
+.hot-nav-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.85rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #e9d5ff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.hot-nav-pill-btn:hover {
+  background: rgba(192, 132, 252, 0.22);
+  border-color: rgba(192, 132, 252, 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Right Header Controls */
+.hot-top-right-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.hot-back-universes-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.95rem;
+  background: rgba(18, 11, 35, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  border-radius: 9999px;
+  color: #f3e8ff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(11, 7, 23, 0.5);
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.hot-back-universes-btn:hover {
+  background: rgba(45, 20, 75, 0.85);
+  border-color: rgba(192, 132, 252, 0.8);
+  box-shadow: 0 6px 20px rgba(11, 7, 23, 0.7), 0 0 16px rgba(192, 132, 252, 0.45);
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+
+.hot-back-arrow {
+  font-size: 0.95rem;
+  line-height: 1;
+  color: #c084fc;
+  transition: transform 0.25s ease;
+}
+
+.hot-back-universes-btn:hover .hot-back-arrow {
+  transform: translateX(-2px);
+  color: #e9d5ff;
+}
+
+.hot-profile-greeting-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(18, 11, 35, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  padding: 0.3rem 0.95rem 0.3rem 0.35rem;
+  border-radius: 9999px;
+  box-shadow: 0 6px 24px rgba(11, 7, 23, 0.5);
+}
+
+.hot-header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #c084fc;
+}
+
+.hot-header-greeting-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f3e8ff;
+}
+
+.hot-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(18, 11, 35, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  color: #e9d5ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(11, 7, 23, 0.4);
+}
+
+.hot-circle-btn:hover {
+  background: rgba(56, 26, 92, 0.9);
+  border-color: #c084fc;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.5);
+  transform: scale(1.06);
+}
+
+/* --- 4. Left Minimalist Character Identity & Mood (Natural Floating Elven Style, Like Lele) --- */
+.hot-profile-sidebar {
+  position: absolute;
+  top: 4.8rem;
+  left: 1.5rem;
+  width: auto;
+  max-width: 380px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  z-index: 10;
+  color: #f3e8ff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+.hot-profile-sidebar:hover {
+  border: none;
+  box-shadow: none;
+}
+
+.hot-profile-main-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.hot-profile-avatar-wrap {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  padding: 2.5px;
+  background: linear-gradient(135deg, #c084fc, #34d399, #f472b6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), 0 0 16px rgba(192, 132, 252, 0.55);
+  flex-shrink: 0;
+}
+
+.hot-profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.hot-profile-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hot-profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hot-profile-name {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 0 14px rgba(192, 132, 252, 0.85), 0 2px 4px rgba(0, 0, 0, 0.7);
+  line-height: 1.2;
+}
+
+.hot-profile-race-title {
+  font-size: 0.75rem;
+  color: #34d399;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin: 0.15rem 0 0.25rem;
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.6), 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.hot-profile-status-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  color: #e2d4f8;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.hot-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: pulseStatus 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+@keyframes pulseStatus {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+.hot-pet-chip-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  background: rgba(52, 211, 153, 0.18);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: #a7f3d0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 0.2rem;
+  text-shadow: none;
+}
+
+.hot-pet-chip-inline:hover {
+  background: rgba(52, 211, 153, 0.35);
+  border-color: #34d399;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Minimalist Mood Selector (Like Lele SHADOW / Kidult) */
+.hot-mood-container {
+  display: flex;
+  align-items: center;
+  margin-top: 0.15rem;
+}
+
+.hot-mood-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+  flex-wrap: wrap;
+}
+
+.hot-mood-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.22rem 0.6rem;
+  background: rgba(22, 13, 44, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 9999px;
+  color: #e9d5ff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.hot-mood-pill:hover {
+  background: rgba(192, 132, 252, 0.25);
+  border-color: rgba(192, 132, 252, 0.8);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
+  transform: translateY(-1.5px);
+}
+
+.hot-mood-pill.active {
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.42), rgba(52, 211, 153, 0.3));
+  border-color: #c084fc;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.mood-pill-icon {
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.mood-pill-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+
+/* --- 5. Interactive Location Hotspots --- */
+.hot-hotspots-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hot-loc-btn {
+  position: absolute;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: rgba(18, 11, 35, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  color: #f3e8ff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(11, 7, 23, 0.7), 0 0 16px rgba(192, 132, 252, 0.25);
+  transform: translate(-50%, -50%);
+  outline: none;
+}
+
+.hot-loc-btn::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(192, 132, 252, 0.3);
+  opacity: 0.6;
+  animation: rotateHotspotDashed 12s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotateHotspotDashed {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hot-loc-btn:hover,
+.hot-loc-btn:focus-visible {
+  background: rgba(56, 26, 92, 0.92);
+  border-color: #c084fc;
+  color: #ffffff;
+  box-shadow: 0 8px 28px rgba(11, 7, 23, 0.8), 0 0 28px rgba(192, 132, 252, 0.6);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.hot-loc-icon {
+  font-size: 1.05rem;
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.6));
+}
+
+.hot-loc-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.6);
+  opacity: 0.7;
+  animation: hotspotPulse 2.8s infinite ease-out;
+  pointer-events: none;
+}
+
+@keyframes hotspotPulse {
+  0% { transform: scale(0.96); opacity: 0.8; }
+  50% { transform: scale(1.16); opacity: 0; }
+  100% { transform: scale(0.96); opacity: 0; }
+}
+
+/* Individual Hotspot Coords (matched to artwork features) */
+.btn-loc-hot-residence   { top: 46%; left: 18%; }
+.btn-loc-hot-observatory { top: 14%; left: 86%; }
+.btn-loc-hot-gazebo      { top: 66%; left: 82%; }
+.btn-loc-hot-mailbox     { top: 66%; left: 42%; }
+.btn-loc-hot-garden      { top: 66%; left: 24%; }
+.btn-loc-hot-gecko       { top: 72%; left: 10%; }
+.btn-loc-hot-pond        { top: 74%; left: 58%; }
+.btn-loc-hot-waterfall   { top: 42%; left: 62%; }
+
+/* --- 6. Bottom Interface Bar --- */
+.hot-bottom-bar {
+  position: absolute;
+  bottom: clamp(0.75rem, 2vh, 1.25rem);
+  left: clamp(1rem, 2vw, 1.5rem);
+  right: clamp(1rem, 2vw, 1.5rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.hot-bottom-bar > * {
+  pointer-events: auto;
+}
+
+/* Bottom Left: Web Audio API Music Player */
+.hot-music-player {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(18, 11, 35, 0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 9999px;
+  padding: 0.38rem 1rem 0.38rem 0.55rem;
+  box-shadow: 0 8px 32px rgba(11, 7, 23, 0.6), 0 0 16px rgba(192, 132, 252, 0.2);
+  min-width: 250px;
+  max-width: 310px;
+  flex-shrink: 0;
+}
+
+.hot-music-disc {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e1138, #3b1968);
+  border: 1.5px solid #c084fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
+  transition: transform 0.5s ease;
+}
+
+.hot-music-player.is-playing .hot-music-disc {
+  animation: spinMusicDisc 4s linear infinite;
+}
+
+@keyframes spinMusicDisc {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hot-music-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.hot-music-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hot-music-sub {
+  font-size: 0.68rem;
+  color: #c4b5fd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hot-music-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  margin-top: 0.35rem;
+  overflow: hidden;
+}
+
+.hot-music-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #c084fc, #34d399);
+  transition: width 0.3s linear;
+}
+
+.hot-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hot-music-ctrl-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: #e9d5ff;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hot-music-ctrl-btn:hover {
+  background: rgba(192, 132, 252, 0.25);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.hot-play-btn {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  border: 1px solid rgba(233, 213, 255, 0.5);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+}
+
+.hot-play-btn:hover {
+  background: linear-gradient(135deg, #c084fc, #9333ea);
+  transform: scale(1.12);
+}
+
+/* Bottom Center: Daily Quote Tagline */
+.hot-tagline-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(18, 11, 35, 0.68);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  padding: 0.38rem 1.15rem;
+  border-radius: 9999px;
+  box-shadow: 0 6px 24px rgba(11, 7, 23, 0.5);
+  max-width: clamp(260px, 32vw, 420px);
+  margin: 0 auto;
+}
+
+.hot-tagline-main {
+  font-family: 'Alex Brush', cursive;
+  font-size: clamp(1.15rem, 1.4vw, 1.35rem);
+  color: #fce7f3;
+  text-shadow: 0 0 12px rgba(244, 114, 182, 0.6);
+  line-height: 1.15;
+}
+
+.hot-tagline-sub {
+  font-size: 0.68rem;
+  color: #c4b5fd;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/* Bottom Right: Action Buttons (Gallery, Collection, Pet) */
+.hot-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.hot-big-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #e9d5ff;
+  transition: all 0.25s ease;
+}
+
+.hot-big-action-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(18, 11, 35, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 6px 20px rgba(11, 7, 23, 0.6), 0 0 14px rgba(192, 132, 252, 0.2);
+  transition: all 0.25s ease;
+}
+
+.hot-big-action-btn:hover .hot-big-action-circle {
+  background: rgba(56, 26, 92, 0.9);
+  border-color: #c084fc;
+  box-shadow: 0 8px 24px rgba(11, 7, 23, 0.8), 0 0 20px rgba(192, 132, 252, 0.5);
+  transform: translateY(-3px) scale(1.08);
+}
+
+.hot-big-action-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #d8b4fe;
+}
+
+/* --- 7. Sub-Modals & Interactive Dialogs --- */
+.hot-modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(7, 4, 15, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 1.5rem;
+}
+
+.hot-modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hot-modal-card {
+  width: 100%;
+  max-width: 580px;
+  background: linear-gradient(145deg, rgba(22, 13, 44, 0.94), rgba(13, 8, 27, 0.96));
+  border: 1px solid rgba(192, 132, 252, 0.45);
+  border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(7, 4, 15, 0.85), 0 0 40px rgba(192, 132, 252, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  transform: scale(0.94) translateY(12px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #f3e8ff;
+}
+
+.hot-modal-overlay.open .hot-modal-card {
+  transform: scale(1) translateY(0);
+}
+
+.hot-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.15rem 1.4rem;
+  border-bottom: 1px solid rgba(192, 132, 252, 0.2);
+  background: rgba(30, 18, 58, 0.45);
+}
+
+.hot-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.hot-modal-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.35), rgba(52, 211, 153, 0.3));
+  border: 1px solid rgba(233, 213, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.3);
+}
+
+.hot-modal-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #34d399;
+  text-transform: uppercase;
+}
+
+.hot-modal-title {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0.1rem 0 0;
+}
+
+.hot-modal-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #e9d5ff;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.hot-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+  color: #fff;
+}
+
+.hot-modal-body {
+  padding: 1.25rem 1.4rem;
+  overflow-y: auto;
+  line-height: 1.5;
+  font-size: 0.85rem;
+  color: #e2d4f8;
+}
+
+.hot-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.hot-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(192, 132, 252, 0.4);
+  border-radius: 9999px;
+}
+
+.hot-form-group {
+  margin-bottom: 1rem;
+}
+
+.hot-form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  margin-bottom: 0.4rem;
+}
+
+.hot-input,
+.hot-select,
+.hot-textarea {
+  width: 100%;
+  background: rgba(11, 7, 23, 0.6);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.hot-input:focus,
+.hot-select:focus,
+.hot-textarea:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.35);
+}
+
+.hot-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.65rem 1.2rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #9333ea, #6b21a8);
+  border: 1px solid rgba(233, 213, 255, 0.5);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 18px rgba(147, 51, 234, 0.4);
+  margin-top: 0.5rem;
+}
+
+.hot-primary-btn:hover {
+  background: linear-gradient(135deg, #a855f7, #7e22ce);
+  box-shadow: 0 6px 24px rgba(168, 85, 247, 0.6);
+  transform: translateY(-1px);
+}
+
+.hot-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(192, 132, 252, 0.18);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  color: #f3e8ff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hot-secondary-btn:hover {
+  background: rgba(192, 132, 252, 0.35);
+  border-color: #c084fc;
+}
+
+/* Feature Specific: Gecko Sanctuary */
+.hot-gecko-card {
+  background: rgba(22, 13, 44, 0.65);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hot-gecko-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.hot-gecko-stat-box {
+  background: rgba(11, 7, 23, 0.7);
+  border-radius: 8px;
+  padding: 0.45rem;
+  text-align: center;
+}
+
+.hot-gecko-stat-val {
+  font-weight: 700;
+  color: #34d399;
+  font-size: 0.82rem;
+}
+
+.hot-gecko-stat-lbl {
+  font-size: 0.65rem;
+  color: #c4b5fd;
+}
+
+.hot-gecko-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+/* Grid Collection Items */
+.hot-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+
+.hot-item-cell {
+  background: rgba(11, 7, 23, 0.65);
+  border: 1px solid rgba(192, 132, 252, 0.25);
+  border-radius: 12px;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.hot-item-cell:hover {
+  border-color: #c084fc;
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.3);
+  transform: translateY(-2px);
+}
+
+.hot-item-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.hot-item-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.hot-item-desc {
+  font-size: 0.62rem;
+  color: #c4b5fd;
+  margin-top: 0.15rem;
+}
+
+/* --- 8. Responsive Design Breakpoints --- */
+@media (max-width: 1024px) {
+  .hot-top-header {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+  }
+  .hot-profile-sidebar {
+    top: 4.5rem;
+    left: 1rem;
+    max-width: 340px;
+  }
+  .hot-bottom-bar {
+    bottom: 0.85rem;
+    left: 1rem;
+    right: 1rem;
+  }
+}
+
+/* Laptop and Low-Height Viewports (e.g. 1366x768, 1280x720, 1920x800) */
+@media (max-height: 800px) {
+  .hot-top-header {
+    top: 0.65rem;
+    left: 1rem;
+    right: 1rem;
+  }
+  .hot-profile-sidebar {
+    top: 3.8rem;
+    left: 1rem;
+  }
+  .hot-bottom-bar {
+    bottom: 0.65rem;
+    left: 1rem;
+    right: 1rem;
+    gap: 0.65rem;
+  }
+  .hot-music-player {
+    min-width: 230px;
+    max-width: 270px;
+    padding: 0.3rem 0.75rem 0.3rem 0.5rem;
+    gap: 0.5rem;
+  }
+  .hot-music-disc {
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
+  }
+  .hot-music-title {
+    font-size: 0.74rem;
+  }
+  .hot-music-sub {
+    font-size: 0.62rem;
+  }
+  .hot-music-ctrl-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 0.72rem;
+  }
+  .hot-tagline-panel {
+    padding: 0.25rem 0.85rem;
+    max-width: 340px;
+  }
+  .hot-tagline-main {
+    font-size: 1.15rem;
+  }
+  .hot-tagline-sub {
+    font-size: 0.62rem;
+  }
+  .hot-big-action-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+  .hot-big-action-label {
+    font-size: 0.62rem;
+  }
+  .hot-loc-btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hot-top-header {
+    top: 0.65rem;
+    left: 0.65rem;
+    right: 0.65rem;
+  }
+  .hot-header-left {
+    padding: 0.3rem 0.75rem 0.3rem 0.45rem;
+  }
+  .hot-header-icon-wrap {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+  .hot-world-title {
+    font-size: 0.8rem;
+  }
+  .hot-world-subtitle {
+    display: none;
+  }
+  .hot-back-universes-btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  .hot-circle-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+  .hot-profile-sidebar {
+    position: absolute;
+    top: 3.8rem;
+    left: 0.75rem;
+    right: auto;
+    width: auto;
+    max-width: calc(100vw - 1.5rem);
+    max-height: none;
+    overflow: visible;
+  }
+  .hot-profile-avatar-wrap {
+    width: 44px;
+    height: 44px;
+  }
+  .hot-profile-name {
+    font-size: 0.95rem;
+  }
+  .hot-profile-race-title {
+    font-size: 0.66rem;
+  }
+  .hot-profile-status-row {
+    font-size: 0.62rem;
+  }
+  .hot-mood-pills-row {
+    gap: 0.25rem;
+  }
+  .hot-mood-pill {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.62rem;
+  }
+  .hot-bottom-bar {
+    bottom: 0.6rem;
+    left: 0.6rem;
+    right: 0.6rem;
+    gap: 0.5rem;
+  }
+  .hot-tagline-panel {
+    display: none;
+  }
+  .hot-music-player {
+    min-width: 170px;
+    max-width: 220px;
+    padding: 0.25rem 0.6rem;
+    gap: 0.4rem;
+  }
+  .hot-music-disc {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+  .hot-music-title {
+    font-size: 0.7rem;
+  }
+  .hot-music-sub {
+    display: none;
+  }
+  .hot-big-action-circle {
+    width: 34px;
+    height: 34px;
+    font-size: 0.95rem;
+  }
+  .hot-big-action-label {
+    font-size: 0.58rem;
+  }
+  .hot-loc-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.68rem;
+  }
+}
+

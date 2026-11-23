@@ -14,6 +14,7 @@ import {
   updateElementState,
   onUniverseStateChange
 } from './universe_state.js';
+import { openSongsWeShareModal } from './songs_we_share.js';
 
 export function initShadowGazeboView({
   onShowToast,
@@ -1071,6 +1072,18 @@ export function initShadowGazeboView({
     sliderMusicVol.addEventListener('input', (e) => {
       setMusicVolume(e.target.value / 100);
       updateMusicUI();
+    });
+  }
+
+  // Songs We Share Universal Music Button
+  const btnShadowSongs = document.getElementById('btn-gazebo-songs-we-share');
+  if (btnShadowSongs) {
+    btnShadowSongs.addEventListener('click', () => {
+      openSongsWeShareModal({
+        activeChar: 'lele',
+        onShowToast,
+        onTriggerSparkle
+      });
     });
   }
 

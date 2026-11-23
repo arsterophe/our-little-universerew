@@ -1,0 +1,1041 @@
+/* ========================================================
+   OUR LITTLE UNIVERSE — BEHIND THE LOTUS
+   A Sacred Temple Manuscript & Memoir for Ela (US AGAIN 🌸)
+   "Some people become a place of peace."
+   Author: Lele 🌙
+   ======================================================== */
+
+/* Fullscreen Overlay Dialog */
+.lotus-behind-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: none;
+  background: radial-gradient(circle at 50% 15%, rgba(42, 18, 72, 0.98) 0%, rgba(22, 10, 42, 0.98) 50%, rgba(12, 5, 24, 0.99) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  animation: lotusBehindFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lotus-behind-overlay.active {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes lotusBehindFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Floating Magical Ambient Particles: Lotus Petals, Glowing Butterflies, Wisteria Sparks */
+.lotus-behind-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.lotus-behind-particles .particle {
+  position: absolute;
+  user-select: none;
+  animation: floatLotusParticle 10s ease-in-out infinite alternate;
+}
+
+.lotus-behind-particles .p1 { top: 10%; left: 7%; animation-delay: 0s; font-size: 1.5rem; color: rgba(244, 114, 182, 0.7); text-shadow: 0 0 12px rgba(244, 114, 182, 0.6); }
+.lotus-behind-particles .p2 { top: 22%; right: 8%; animation-delay: 1.6s; font-size: 1.3rem; color: rgba(192, 132, 252, 0.65); filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.6)); }
+.lotus-behind-particles .p3 { bottom: 18%; left: 9%; animation-delay: 3.2s; font-size: 1.6rem; color: rgba(251, 191, 36, 0.6); text-shadow: 0 0 14px rgba(251, 191, 36, 0.5); }
+.lotus-behind-particles .p4 { bottom: 25%; right: 12%; animation-delay: 4.5s; font-size: 1.4rem; color: rgba(244, 114, 182, 0.75); }
+.lotus-behind-particles .p5 { top: 55%; left: 4%; animation-delay: 2.2s; font-size: 1.3rem; color: rgba(232, 121, 249, 0.6); }
+.lotus-behind-particles .p6 { top: 65%; right: 6%; animation-delay: 3.8s; font-size: 1.5rem; color: rgba(251, 191, 36, 0.7); }
+
+@keyframes floatLotusParticle {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.35; }
+  50% { transform: translateY(-26px) rotate(25deg); opacity: 0.85; }
+  100% { transform: translateY(-52px) rotate(50deg); opacity: 0.35; }
+}
+
+/* Subtle Mist and Water Glow Background Effect */
+.lotus-behind-water-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(192, 132, 252, 0.15) 0%, rgba(244, 114, 182, 0.08) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Main Container */
+.lotus-behind-container {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 1140px;
+  height: 94vh;
+  margin: auto;
+  padding: 18px 26px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background: rgba(24, 11, 44, 0.92);
+  border: 1px solid rgba(244, 114, 182, 0.38);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(244, 114, 182, 0.25), inset 0 0 35px rgba(192, 132, 252, 0.12);
+  overflow: hidden;
+}
+
+/* Header Bar */
+.lotus-behind-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(244, 114, 182, 0.25);
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.lotus-behind-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(45, 20, 75, 0.85);
+  border: 1px solid rgba(244, 114, 182, 0.45);
+  color: #fdf4ff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.lotus-behind-back-btn:hover {
+  background: rgba(147, 51, 234, 0.85);
+  border-color: #fde047;
+  color: #ffffff;
+  transform: translateX(-3px);
+  box-shadow: 0 0 16px rgba(244, 114, 182, 0.55), 0 0 24px rgba(251, 191, 36, 0.35);
+}
+
+.lotus-behind-title-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.lotus-badge-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 10px rgba(244, 114, 182, 0.8)) drop-shadow(0 0 16px rgba(251, 191, 36, 0.5));
+  animation: gentleLotusBreathe 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes gentleLotusBreathe {
+  0% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.7)); }
+  100% { transform: scale(1.08); filter: drop-shadow(0 0 18px rgba(251, 191, 36, 0.85)); }
+}
+
+.lotus-badge-tag {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #fde047;
+  text-transform: uppercase;
+}
+
+.lotus-badge-title {
+  margin: 2px 0 0 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(244, 114, 182, 0.7), 0 0 28px rgba(192, 132, 252, 0.5);
+}
+
+.lotus-behind-close-btn {
+  background: transparent;
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  color: #cbd5e1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lotus-behind-close-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transform: scale(1.1);
+  border-color: #fde047;
+}
+
+/* 5-Chapter Stepper Tabs */
+.lotus-behind-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 0;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.lotus-behind-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(38, 16, 68, 0.7);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  color: #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.lotus-behind-tab-btn .tab-num {
+  font-weight: 800;
+  color: #fde047;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lotus-behind-tab-btn .tab-title {
+  font-weight: 600;
+}
+
+.lotus-behind-tab-btn:hover {
+  background: rgba(76, 29, 149, 0.85);
+  color: #fdf4ff;
+  border-color: rgba(251, 191, 36, 0.6);
+}
+
+.lotus-behind-tab-btn.active {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.95), rgba(76, 29, 149, 0.95));
+  border-color: #fde047;
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(244, 114, 182, 0.55), 0 0 24px rgba(251, 191, 36, 0.35);
+}
+
+.lotus-behind-tab-btn.active .tab-num {
+  color: #fef08a;
+}
+
+/* Reading Progress Bar */
+.lotus-behind-progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(244, 114, 182, 0.15);
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.lotus-behind-progress-bar {
+  height: 100%;
+  width: 20%;
+  background: linear-gradient(90deg, #f472b6, #c084fc, #fbbf24, #f43f5e);
+  box-shadow: 0 0 10px rgba(244, 114, 182, 0.8);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Book Deck & Chapter Panels */
+.lotus-behind-book-deck {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  margin: 8px 0 12px 0;
+  border-radius: 18px;
+  background: rgba(24, 12, 42, 0.75);
+  border: 1px solid rgba(244, 114, 182, 0.28);
+  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.7), 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.lotus-behind-chapter-panel {
+  display: none;
+  width: 100%;
+  height: 100%;
+  padding: 28px 36px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 114, 182, 0.4) transparent;
+}
+
+.lotus-behind-chapter-panel > * {
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Hero Banner in Chapter 1 */
+.lotus-hero-banner {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.45), rgba(244, 114, 182, 0.18));
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  margin-bottom: 24px;
+}
+
+.lotus-avatar-frame {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #f472b6, #c084fc, #fde047);
+  box-shadow: 0 0 16px rgba(244, 114, 182, 0.6);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lotus-avatar-frame img,
+.lotus-hero-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.lotus-banner-text h4 {
+  margin: 0 0 4px 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.lotus-banner-text p {
+  margin: 0;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: #fce7f3;
+  line-height: 1.55;
+}
+
+.lotus-behind-chapter-panel.active {
+  display: block;
+  animation: lotusPanelIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes lotusPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page Header */
+.lotus-behind-page-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.lotus-chapter-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(147, 51, 234, 0.25);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #fde047;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.lotus-chapter-main-title {
+  margin: 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 16px rgba(244, 114, 182, 0.65), 0 0 24px rgba(251, 191, 36, 0.4);
+}
+
+.lotus-chapter-sub-title {
+  margin: 6px 0 0 0;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #e2e8f0;
+  letter-spacing: 0.02em;
+}
+
+/* Journal Body & Drop-Cap */
+.lotus-journal-p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #f1f5f9;
+  margin: 0 0 16px 0;
+  text-align: justify;
+}
+
+.lotus-journal-p.drop-cap::first-letter {
+  float: left;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 2.8rem;
+  line-height: 0.85;
+  padding-top: 4px;
+  padding-right: 10px;
+  padding-bottom: 2px;
+  color: #fde047;
+  text-shadow: 0 0 14px rgba(251, 191, 36, 0.65);
+  font-weight: 700;
+}
+
+/* Feature Grid for Two-Column Narrative Cards */
+.lotus-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.lotus-feature-card {
+  background: linear-gradient(145deg, rgba(46, 22, 78, 0.75), rgba(28, 14, 52, 0.85));
+  border: 1px solid rgba(244, 114, 182, 0.28);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.lotus-feature-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(251, 191, 36, 0.6);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(244, 114, 182, 0.3);
+}
+
+.lotus-feature-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.lotus-feature-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+}
+
+.lotus-feature-card-title {
+  margin: 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 0.03em;
+}
+
+.lotus-feature-card-desc {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+/* Reflection / Quote Boxes */
+.lotus-journal-quote {
+  margin: 20px 0 10px 0;
+  padding: 16px 22px;
+  background: linear-gradient(135deg, rgba(76, 29, 149, 0.4), rgba(42, 18, 72, 0.6));
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: 12px;
+  font-style: italic;
+  color: #fdf4ff;
+  text-align: center;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.lotus-journal-highlight {
+  margin: 18px 0;
+  padding: 12px 18px;
+  border-left: 3px solid #fde047;
+  background: rgba(147, 51, 234, 0.22);
+  border-radius: 0 10px 10px 0;
+  font-weight: 600;
+  color: #fef08a;
+  font-style: italic;
+}
+
+/* Sacred Temple Manuscript Parchment (Chapter IV) */
+.usagain-manuscript-parchment {
+  max-width: 840px;
+  margin: 0 auto;
+  position: relative;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fae8ff 40%, #f3e8ff 70%, #fdf4ff 100%);
+  border: 1.5px solid rgba(244, 114, 182, 0.6);
+  border-radius: 18px;
+  padding: 38px 44px 44px 44px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), inset 0 0 36px rgba(192, 132, 252, 0.2);
+  color: #2e1065;
+}
+
+.lotus-wax-seal {
+  position: absolute;
+  top: -20px;
+  right: 44px;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #e11d48 0%, #9f1239 60%, #4c0519 100%);
+  border: 2px solid #fef08a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.75), 0 0 14px rgba(251, 191, 36, 0.6);
+  font-size: 1.4rem;
+}
+
+.lotus-date-stamp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #7e22ce;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  border-bottom: 1px solid rgba(147, 51, 234, 0.25);
+  padding-bottom: 8px;
+}
+
+.lotus-letter-salutation {
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.25rem;
+  color: #4c1d95;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-shadow: 0 0 10px rgba(192, 132, 252, 0.3);
+}
+
+.lotus-letter-body {
+  font-size: 0.96rem;
+  line-height: 1.85;
+  color: #3b0764;
+}
+
+.lotus-letter-body p {
+  margin: 0 0 14px 0;
+  text-align: justify;
+}
+
+.lotus-letter-emphasis {
+  font-style: italic;
+  font-weight: 700;
+  color: #6b21a8;
+  font-size: 1.02rem;
+  margin: 16px 0;
+  border-left: 3px solid #f472b6;
+  padding-left: 12px;
+}
+
+.lotus-letter-signoff {
+  margin-top: 26px;
+  text-align: right;
+  color: #4c1d95;
+}
+
+.lotus-letter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 34px;
+  flex-wrap: wrap;
+}
+
+.btn-lotus-letter-replay,
+.btn-lotus-letter-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-lotus-letter-replay {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(76, 29, 149, 0.95));
+  border: 1.5px solid #fde047;
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgba(147, 51, 234, 0.45);
+}
+
+.btn-lotus-letter-replay:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #a855f7, #6b21a8);
+  box-shadow: 0 8px 26px rgba(147, 51, 234, 0.6), 0 0 16px rgba(251, 191, 36, 0.5);
+}
+
+.btn-lotus-letter-seal {
+  background: rgba(46, 16, 101, 0.1);
+  border: 1.5px solid rgba(147, 51, 234, 0.4);
+  color: #4c1d95;
+}
+
+.btn-lotus-letter-seal:hover {
+  background: rgba(147, 51, 234, 0.2);
+  border-color: #7e22ce;
+  transform: translateY(-2px);
+}
+
+/* Epilogue (Chapter V) & Music Player Container */
+.lotus-epilogue-container {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.lotus-song-player-card {
+  background: linear-gradient(145deg, rgba(46, 20, 78, 0.88), rgba(24, 10, 44, 0.96));
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(244, 114, 182, 0.2);
+}
+
+.lotus-song-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.lotus-song-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lotus-song-disc {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ec4899 20%, #7e22ce 60%, #1e0938 100%);
+  border: 2px solid rgba(251, 191, 36, 0.7);
+  box-shadow: 0 0 16px rgba(244, 114, 182, 0.4), inset 0 0 10px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  animation: discSpinLotus 14s linear infinite;
+  animation-play-state: paused;
+}
+
+.lotus-song-disc.playing {
+  animation-play-state: running;
+}
+
+@keyframes discSpinLotus {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.lotus-song-titles h4 {
+  margin: 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 10px rgba(244, 114, 182, 0.5);
+}
+
+.lotus-song-titles p {
+  margin: 3px 0 0 0;
+  font-size: 0.8rem;
+  color: #fde047;
+}
+
+.btn-lotus-song-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.9), rgba(168, 85, 247, 0.9));
+  border: 1px solid #fef08a;
+  color: #1a082e;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(244, 114, 182, 0.4);
+}
+
+.btn-lotus-song-toggle:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #fbcfe8, #fde047);
+  box-shadow: 0 6px 22px rgba(244, 114, 182, 0.6);
+}
+
+/* YouTube Video Responsive Wrapper */
+.lotus-youtube-box {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
+  background: #000000;
+}
+
+.lotus-youtube-box iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.lotus-player-hint {
+  margin: 12px 0 0 0;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Song Meaning Card */
+.lotus-meaning-card {
+  background: linear-gradient(145deg, rgba(38, 18, 68, 0.88), rgba(20, 10, 38, 0.96));
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  border-radius: 18px;
+  padding: 24px 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+.lotus-meaning-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(244, 114, 182, 0.2);
+  padding-bottom: 12px;
+}
+
+.lotus-meaning-icon {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.7));
+}
+
+.lotus-meaning-title {
+  margin: 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.lotus-meaning-sub {
+  margin: 2px 0 0 0;
+  font-size: 0.76rem;
+  color: #fde047;
+}
+
+.lotus-meaning-body {
+  font-size: 0.94rem;
+  line-height: 1.75;
+  color: #e2e8f0;
+}
+
+.lotus-meaning-body p {
+  margin: 0 0 14px 0;
+  text-align: justify;
+}
+
+/* Epilogue Climax Quote Box */
+.lotus-epilogue-climax {
+  margin: 28px 0 10px 0;
+  padding: 26px 30px;
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.65), rgba(46, 16, 101, 0.85));
+  border: 1.5px solid rgba(251, 191, 36, 0.55);
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6), inset 0 0 24px rgba(244, 114, 182, 0.15);
+  text-align: center;
+}
+
+.lotus-epilogue-climax h3 {
+  margin: 0 0 14px 0;
+  font-family: 'Cinzel', serif, Georgia;
+  font-size: 1.25rem;
+  color: #fef08a;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 16px rgba(251, 191, 36, 0.6);
+}
+
+.lotus-epilogue-climax p {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.75;
+  color: #fdf4ff;
+  font-style: italic;
+}
+
+/* Bottom Navigation Bar between Chapters */
+.lotus-behind-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid rgba(244, 114, 182, 0.25);
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.lotus-behind-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(45, 20, 75, 0.85);
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  color: #fdf4ff;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.lotus-behind-nav-btn:hover:not(:disabled) {
+  background: rgba(147, 51, 234, 0.9);
+  border-color: #fde047;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px rgba(244, 114, 182, 0.5), 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+.lotus-behind-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.lotus-chapter-indicators {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lotus-indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(244, 114, 182, 0.3);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.lotus-indicator-dot:hover {
+  background: rgba(251, 191, 36, 0.7);
+  transform: scale(1.2);
+}
+
+.lotus-indicator-dot.active {
+  width: 28px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f472b6, #fde047);
+  border-color: #ffffff;
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.85);
+}
+
+/* HUD Pill Button in US AGAIN World */
+.usagain-behind-pill {
+  background: linear-gradient(135deg, rgba(62, 24, 100, 0.92), rgba(34, 14, 62, 0.95)) !important;
+  border: 1.5px solid rgba(244, 114, 182, 0.55) !important;
+  color: #fdf4ff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 12px rgba(244, 114, 182, 0.25) !important;
+}
+
+.usagain-behind-pill:hover {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.95), rgba(76, 29, 149, 0.95)) !important;
+  border-color: #fde047 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 0 18px rgba(244, 114, 182, 0.65), 0 0 24px rgba(251, 191, 36, 0.5) !important;
+}
+
+.usagain-behind-icon {
+  font-size: 1.25rem;
+  filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.7));
+}
+
+.usagain-behind-label {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.usagain-behind-main {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(244, 114, 182, 0.5);
+}
+
+.usagain-behind-sub {
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: #fde047;
+  font-style: italic;
+  max-width: 175px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive Rules */
+@media (max-width: 960px) {
+  .usagain-manuscript-parchment {
+    padding: 28px 24px;
+  }
+  .lotus-behind-container {
+    padding: 14px 16px;
+  }
+  .lotus-chapter-main-title {
+    font-size: 1.45rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .lotus-behind-container {
+    height: 100vh;
+    border-radius: 0;
+    padding: 12px 14px;
+    max-width: 100vw;
+  }
+  .lotus-behind-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 10px;
+  }
+  .lotus-behind-title-badge {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  .lotus-badge-title {
+    font-size: 1.1rem;
+  }
+  .lotus-behind-tab-btn {
+    padding: 5px 9px;
+    font-size: 0.72rem;
+  }
+  .lotus-behind-chapter-panel {
+    padding: 16px 12px;
+  }
+  .lotus-chapter-main-title {
+    font-size: 1.35rem;
+  }
+  .lotus-journal-p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    text-align: left;
+  }
+  .lotus-hero-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+    padding: 16px;
+  }
+  .lotus-feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .usagain-manuscript-parchment {
+    padding: 22px 16px;
+  }
+  .lotus-letter-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-lotus-letter-replay,
+  .btn-lotus-letter-seal {
+    width: 100%;
+    justify-content: center;
+  }
+  .lotus-behind-footer {
+    gap: 6px;
+    padding-top: 10px;
+  }
+  .lotus-behind-nav-btn {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+  .lotus-indicator-dot {
+    width: 8px;
+    height: 8px;
+  }
+  .lotus-indicator-dot.active {
+    width: 20px;
+  }
+  .usagain-behind-sub {
+    display: none;
+  }
+}

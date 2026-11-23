@@ -12,7 +12,8 @@ import {
   signOut,
   onAuthStateChanged,
   setPersistence,
-  browserLocalPersistence
+  indexedDBLocalPersistence,
+  inMemoryPersistence
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -28,7 +29,8 @@ import {
   where,
   orderBy,
   serverTimestamp,
-  connectFirestoreEmulator
+  connectFirestoreEmulator,
+  writeBatch
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -40,6 +42,12 @@ import {
   getBlob,
   connectStorageEmulator
 } from 'firebase/storage';
+import {
+  saveToIndexedDB,
+  OLU_STORE_BACKUPS,
+  safeLocalStorageSetItem,
+  preloadAllHouseStates
+} from './olu_indexeddb.js';
 
 // Helper to safely access environment variables in Vite and Node test environments
 const getEnv = (key) => {
@@ -58,8 +66,8 @@ const firebaseConfig = {
   authDomain: getEnv('VITE_FIREBASE_AUTH_DOMAIN'),
   projectId: getEnv('VITE_FIREBASE_PROJECT_ID'),
   storageBucket: getEnv('VITE_FIREBASE_STORAGE_BUCKET'),
-  messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-  appId: getEnv('VITE_FIREBASE_APP_ID')
+  ...(getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID') ? { messagingSenderId: getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID') } : {}),
+  ...(getEnv('VITE_FIREBASE_APP_ID') ? { appId: getEnv('VITE_FIREBASE_APP_ID') } : {})
 };
 
 // Check if Firebase credentials are fully configured
@@ -89,10 +97,20 @@ if (isFirebaseConfigured()) {
       }
     }
 
-    // Enforce local session persistence
-    setPersistence(auth, browserLocalPersistence).catch((err) => {
-      console.warn('Gagal mengatur persistensi sesi auth:', err);
+    // Enforce robust session persistence using IndexedDB (immune to localStorage quota)
+    setPersistence(auth, indexedDBLocalPersistence).then(() => {
+      console.log('[Firebase Auth] Persistensi sesi aktif: indexedDBLocalPersistence ✧');
+    }).catch((err) => {
+      console.warn('[Firebase Auth] IndexedDB tidak tersedia, beralih ke inMemoryPersistence:', err);
+      return setPersistence(auth, inMemoryPersistence).then(() => {
+        console.log('[Firebase Auth] Persistensi sesi aktif: inMemoryPersistence');
+      }).catch((sessionErr) => {
+        console.error('[Firebase Auth] Persistensi inMemoryPersistence terkendala:', sessionErr);
+      });
     });
+
+    // Preload house states from IndexedDB into memory cache
+    preloadAllHouseStates().catch(() => { });
   } catch (err) {
     console.error('Inisialisasi Firebase gagal:', err);
   }
@@ -141,10 +159,10 @@ export const CANONICAL_CHARACTERS = {
   },
   abil: {
     id: 'abil',
-    name: 'Abil',
+    name: 'Syma',
     role: 'PINWHEEL ☁️',
     universe: 'PINWHEEL',
-    ownerName: 'Abil',
+    ownerName: 'Syma',
     symbol: '☁️',
     avatar: '/assets/avatar_abil_hd.jpg',
     email: 'abil@ourlittleuniverse.com',
@@ -182,6 +200,17 @@ export const CANONICAL_CHARACTERS = {
     avatar: '/assets/avatar_ruben_hd.jpg',
     email: 'ruben@ourlittleuniverse.com',
     uid: '9PMychPZ4rZ4PBCtZB9GiASttc52'
+  },
+  royan: {
+    id: 'royan',
+    name: 'Royan',
+    role: 'HOT 🎆',
+    universe: 'HOT',
+    ownerName: 'Royan',
+    symbol: '🎆',
+    avatar: '/assets/avatar_royan_hd.jpg',
+    email: 'royan@ourlittleuniverse.com',
+    uid: 'swBN9XodDWRuHE5YbYmeoytrcAx2'
   }
 };
 
@@ -220,8 +249,16 @@ export const CHARACTER_AUTH_RULES = {
     ...CANONICAL_CHARACTERS.ruben,
     expectedEmail: (getEnv('VITE_RUBEN_EMAIL') || CANONICAL_CHARACTERS.ruben.email).toLowerCase(),
     expectedUid: getEnv('VITE_RUBEN_UID') || CANONICAL_CHARACTERS.ruben.uid
+  },
+  royan: {
+    ...CANONICAL_CHARACTERS.royan,
+    expectedEmail: (getEnv('VITE_ROYAN_EMAIL') || CANONICAL_CHARACTERS.royan.email).toLowerCase(),
+    expectedUid: getEnv('VITE_ROYAN_UID') || CANONICAL_CHARACTERS.royan.uid
   }
 };
+
+// Recognize Syma <-> abil alias equally across character auth lookups
+CHARACTER_AUTH_RULES.syma = CHARACTER_AUTH_RULES.abil;
 
 /**
  * Determine which character an authenticated user belongs to
@@ -236,14 +273,18 @@ export function identifyUserCharacter(user) {
   // 1. Strict check by verified Firebase UID (Primary Source of Truth)
   for (const [key, rules] of Object.entries(CHARACTER_AUTH_RULES)) {
     if (rules.expectedUid && rules.expectedUid === uid) {
-      return key;
+      return key === 'syma' ? 'abil' : key;
     }
   }
 
   // 2. Fallback check by verified canonical email (supports test suites / mock users)
+  if (email === 'syma@ourlittleuniverse.com') {
+    return 'abil';
+  }
+
   for (const [key, rules] of Object.entries(CHARACTER_AUTH_RULES)) {
     if (rules.expectedEmail && rules.expectedEmail === email) {
-      return key;
+      return key === 'syma' ? 'abil' : key;
     }
   }
 
@@ -331,7 +372,7 @@ export async function loginWithFirebase(selectedCharacterKey, email, password) {
     if (existingChar !== selectedCharacterKey) {
       try {
         await signOut(auth);
-      } catch (_) {}
+      } catch (_) { }
     }
   }
 
@@ -401,7 +442,7 @@ export function subscribeDatabaseStatus(listener) {
   statusListeners.push(listener);
   try {
     listener({ ...dbStatus });
-  } catch (_) {}
+  } catch (_) { }
   return () => {
     const idx = statusListeners.indexOf(listener);
     if (idx > -1) statusListeners.splice(idx, 1);
@@ -437,7 +478,7 @@ export function updateDatabaseStatus(state, message = '', error = null, details 
   statusListeners.forEach((fn) => {
     try {
       fn({ ...dbStatus });
-    } catch (_) {}
+    } catch (_) { }
   });
 }
 
@@ -461,13 +502,22 @@ export function backupLocalStorageKey(key) {
     const timestamp = Date.now();
     const backupKeyTimestamped = `${key}_backup_${timestamp}`;
     const backupKeyLatest = `${key}_backup_latest`;
-    window.localStorage.setItem(backupKeyTimestamped, raw);
-    window.localStorage.setItem(backupKeyLatest, raw);
+
+    let parsed = null;
     let count = 1;
     try {
-      const parsed = JSON.parse(raw);
+      parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) count = parsed.length;
-    } catch (_) {}
+    } catch (_) {
+      parsed = raw;
+    }
+
+    // Always back up to persistent IndexedDB
+    saveToIndexedDB(OLU_STORE_BACKUPS, backupKeyTimestamped, { originalKey: key, raw: parsed, timestamp });
+    saveToIndexedDB(OLU_STORE_BACKUPS, backupKeyLatest, { originalKey: key, raw: parsed, timestamp });
+
+    // Safe write to localStorage (will not crash if quota exceeded)
+    safeLocalStorageSetItem(backupKeyLatest, JSON.stringify({ _migratedToIdb: true, key, timestamp, count }));
 
     return {
       backedUp: true,
@@ -546,22 +596,56 @@ export async function dbSaveOrbitEvent(eventData, authUser) {
     }
     const verifiedCharConfig = CHARACTER_AUTH_RULES[verifiedChar];
 
-    const initialResponses = {
-      nyanya: { status: verifiedChar === 'nyanya' ? 'accepted' : 'pending' },
-      lala: { status: verifiedChar === 'lala' ? 'accepted' : 'pending' },
-      lele: { status: verifiedChar === 'lele' ? 'accepted' : 'pending' }
-    };
+    // Normalize participants list for equal access across all 8 characters
+    const validCanonicalKeys = ['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'];
+    const participants = Array.isArray(eventData.participants) && eventData.participants.length > 0
+      ? [...new Set(eventData.participants.map(p => p === 'syma' ? 'abil' : p).filter(p => validCanonicalKeys.includes(p)))]
+      : (eventData.category === 'meeting' ? [verifiedChar] : validCanonicalKeys);
+
+    // Ensure host/creator is in participants
+    if (!participants.includes(verifiedChar)) {
+      participants.unshift(verifiedChar);
+    }
+
+    const initialResponses = {};
+    participants.forEach(charKey => {
+      initialResponses[charKey] = {
+        status: charKey === verifiedChar ? 'accepted' : 'pending',
+        note: charKey === verifiedChar ? 'Pembuat meeting (Host)' : 'Menunggu konfirmasi',
+        respondedAt: charKey === verifiedChar ? new Date().toISOString() : null
+      };
+    });
+
     const mergedResponses = eventData.responses ? { ...initialResponses, ...eventData.responses } : initialResponses;
     if (mergedResponses[verifiedChar]) {
       mergedResponses[verifiedChar].status = 'accepted';
+      if (!mergedResponses[verifiedChar].note) {
+        mergedResponses[verifiedChar].note = 'Pembuat meeting (Host)';
+      }
     }
+
+    const participantUids = participants
+      .map(k => CANONICAL_CHARACTERS[k]?.uid)
+      .filter(Boolean);
+
+    const invitedParticipants = participants.filter(k => k !== verifiedChar);
+    const invitedParticipantUids = invitedParticipants
+      .map(k => CANONICAL_CHARACTERS[k]?.uid)
+      .filter(Boolean);
+
+    const normDate = (() => {
+      const d = String(eventData.date || '').trim();
+      const dmy = d.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+      return d;
+    })();
 
     // Payload strictly attached to verified UID
     const payload = {
       id: eventId,
       title: (eventData.title || '').trim(),
       category: eventData.category || 'together',
-      date: eventData.date,
+      date: normDate,
       time: eventData.time || '19:00',
       location: (eventData.location || 'Our Little Universe').trim(),
       description: (eventData.description || '').trim(),
@@ -569,7 +653,10 @@ export async function dbSaveOrbitEvent(eventData, authUser) {
       proposerName: verifiedCharConfig ? `${verifiedCharConfig.name} (${verifiedCharConfig.role})` : verifiedChar,
       proposerUid: authUser.uid,
       proposerEmail: (authUser.email || '').toLowerCase().trim(),
-      participants: eventData.participants || ['nyanya', 'lala', 'lele'],
+      participants,
+      participantUids,
+      invitedParticipants,
+      invitedParticipantUids,
       status: eventData.category === 'meeting' ? (eventData.status || 'pending') : 'confirmed',
       responses: mergedResponses,
       updatedAt: new Date().toISOString()
@@ -580,7 +667,43 @@ export async function dbSaveOrbitEvent(eventData, authUser) {
     }
 
     const docRef = doc(db, ORBIT_COLLECTION, eventId);
-    await setDoc(docRef, payload, { merge: true });
+
+    // Atomically commit meeting and selective participant notifications to prevent partial failure
+    if (payload.category === 'meeting' && Array.isArray(invitedParticipants) && invitedParticipants.length > 0) {
+      const batch = writeBatch(db);
+      batch.set(docRef, payload, { merge: true });
+
+      invitedParticipants.forEach(targetChar => {
+        const targetConfig = CANONICAL_CHARACTERS ? CANONICAL_CHARACTERS[targetChar] : null;
+        const targetUid = targetConfig?.uid;
+        if (targetUid) {
+          const notifId = `notif-meet-${eventId}-${targetChar}`;
+          const notifRef = doc(db, 'orbit_notifications', notifId);
+          batch.set(notifRef, {
+            id: notifId,
+            meetingId: eventId,
+            meetingTitle: payload.title,
+            meetingDate: payload.date,
+            meetingTime: payload.time,
+            location: payload.location,
+            senderUid: authUser.uid,
+            senderCharacter: verifiedChar,
+            senderName: verifiedCharConfig?.name || 'Sahabat',
+            recipientUid: targetUid,
+            targetUid: targetUid,
+            recipientCharacter: targetChar,
+            type: 'meeting_invitation',
+            message: `${verifiedCharConfig?.name || 'Sahabat'} mengundangmu ke meeting "${payload.title}" pada ${payload.date} pukul ${payload.time} WIB.`,
+            read: false,
+            createdAt: new Date().toISOString()
+          }, { merge: true });
+        }
+      });
+
+      await batch.commit();
+    } else {
+      await setDoc(docRef, payload, { merge: true });
+    }
 
     updateDatabaseStatus('synced', `Kegiatan "${payload.title}" berhasil disimpan di Cloud ☁️`);
     return payload;
@@ -731,8 +854,12 @@ export async function dbRespondToMeeting(eventId, authUser, responseType, note =
 
     currentResponses[userChar] = myResponse;
 
-    // Check if all 3 friends accepted
-    const allAccepted = ['nyanya', 'lala', 'lele'].every(
+    // Check if all designated participants accepted
+    const participantsList = Array.isArray(evt.participants) && evt.participants.length > 0
+      ? evt.participants
+      : Object.keys(currentResponses);
+
+    const allAccepted = participantsList.length > 0 && participantsList.every(
       (c) => currentResponses[c] && currentResponses[c].status === 'accepted'
     );
 
@@ -803,17 +930,48 @@ export async function dbFetchOrbitEvents(authUser) {
     const colRef = collection(db, ORBIT_COLLECTION);
     const eventsMap = new Map();
 
-    // 1. Query shared calendar events (category in ['together', 'meeting', 'birthday', 'reminder'])
-    // This strictly aligns with `resource.data.category != 'personal'` in firestore.rules
-    const sharedQuery = query(colRef, where('category', 'in', ['together', 'meeting', 'birthday', 'reminder']));
+    // 1. Query shared calendar events (category in ['together', 'birthday', 'reminder'])
+    // Permitted to all verified universe members under firestore.rules
+    const sharedQuery = query(colRef, where('category', 'in', ['together', 'birthday', 'reminder']));
     const sharedSnap = await getDocs(sharedQuery);
     sharedSnap.forEach((d) => {
       eventsMap.set(d.id, d.data());
     });
 
-    // 2. Query personal events only for the verified authenticated user
-    // This strictly aligns with `resource.data.proposerUid == request.auth.uid` in firestore.rules
+    // 2. Query user-specific meetings and personal events
+    // Aligns with strict read isolation in firestore.rules
     if (authUser && authUser.uid) {
+      // 2a. Meetings hosted by the authenticated user
+      try {
+        const myMeetingsQuery = query(
+          colRef,
+          where('category', '==', 'meeting'),
+          where('proposerUid', '==', authUser.uid)
+        );
+        const myMeetingsSnap = await getDocs(myMeetingsQuery);
+        myMeetingsSnap.forEach((d) => {
+          eventsMap.set(d.id, d.data());
+        });
+      } catch (mErr) {
+        console.warn('Notice querying hosted meetings:', mErr);
+      }
+
+      // 2b. Meetings where the user is an invited participant
+      try {
+        const invitedMeetingsQuery = query(
+          colRef,
+          where('category', '==', 'meeting'),
+          where('participantUids', 'array-contains', authUser.uid)
+        );
+        const invitedMeetingsSnap = await getDocs(invitedMeetingsQuery);
+        invitedMeetingsSnap.forEach((d) => {
+          eventsMap.set(d.id, d.data());
+        });
+      } catch (invErr) {
+        console.warn('Notice querying invited meetings:', invErr);
+      }
+
+      // 2c. Personal events only for the verified authenticated user
       try {
         const personalQuery = query(
           colRef,
@@ -851,7 +1009,7 @@ export async function dbFetchOrbitEvents(authUser) {
 export function dbSubscribeOrbitEvents(authUser, onUpdate, onError) {
   if (!db) {
     if (onError) onError(new Error('Firestore belum terinisialisasi.'));
-    return () => {};
+    return () => { };
   }
 
   if (!authUser || !authUser.uid) {
@@ -860,7 +1018,7 @@ export function dbSubscribeOrbitEvents(authUser, onUpdate, onError) {
       operation: 'dbSubscribeOrbitEvents (guest view)',
       targetPath: 'orbit_events'
     });
-    return () => {};
+    return () => { };
   }
 
   // Pre-validate that Firebase Auth token is actively available before attaching listener
@@ -878,17 +1036,24 @@ export function dbSubscribeOrbitEvents(authUser, onUpdate, onError) {
 
   const colRef = collection(db, ORBIT_COLLECTION);
   const sharedEventsMap = new Map();
+  const myMeetingsMap = new Map();
+  const invitedMeetingsMap = new Map();
   const personalEventsMap = new Map();
 
   function emitMerged() {
-    const merged = new Map([...sharedEventsMap, ...personalEventsMap]);
+    const merged = new Map([
+      ...sharedEventsMap,
+      ...myMeetingsMap,
+      ...invitedMeetingsMap,
+      ...personalEventsMap
+    ]);
     const list = Array.from(merged.values());
     updateDatabaseStatus('synced', `${list.length} kegiatan tersinkronisasi real-time ☁️`);
     if (onUpdate) onUpdate(list);
   }
 
-  // 1. Subscribe to shared events
-  const sharedQuery = query(colRef, where('category', 'in', ['together', 'meeting', 'birthday', 'reminder']));
+  // 1. Subscribe to shared non-meeting events (together, birthday, reminder)
+  const sharedQuery = query(colRef, where('category', 'in', ['together', 'birthday', 'reminder']));
   const unsubShared = onSnapshot(
     sharedQuery,
     (snapshot) => {
@@ -903,16 +1068,59 @@ export function dbSubscribeOrbitEvents(authUser, onUpdate, onError) {
       updateDatabaseStatus('error', `Koneksi real-time terputus: ${err.message}`, err, {
         category: 'READ_FIRESTORE',
         operation: 'onSnapshot (real-time shared query)',
-        targetPath: 'orbit_events?category=together,meeting,birthday,reminder',
+        targetPath: 'orbit_events?category=together,birthday,reminder',
         errorCode: err.code || 'subscription-failed'
       });
       if (onError) onError(err);
     }
   );
 
-  // 2. Subscribe to personal events if authenticated
-  let unsubPersonal = () => {};
+  let unsubMyMeetings = () => { };
+  let unsubInvitedMeetings = () => { };
+  let unsubPersonal = () => { };
+
   if (authUser && authUser.uid) {
+    // 2. Subscribe to user-hosted meetings
+    const myMeetingsQuery = query(
+      colRef,
+      where('category', '==', 'meeting'),
+      where('proposerUid', '==', authUser.uid)
+    );
+    unsubMyMeetings = onSnapshot(
+      myMeetingsQuery,
+      (snapshot) => {
+        myMeetingsMap.clear();
+        snapshot.forEach((d) => {
+          myMeetingsMap.set(d.id, d.data());
+        });
+        emitMerged();
+      },
+      (err) => {
+        console.warn('Firestore onSnapshot my meetings notice:', err);
+      }
+    );
+
+    // 3. Subscribe to meetings where user is an invited participant
+    const invitedMeetingsQuery = query(
+      colRef,
+      where('category', '==', 'meeting'),
+      where('participantUids', 'array-contains', authUser.uid)
+    );
+    unsubInvitedMeetings = onSnapshot(
+      invitedMeetingsQuery,
+      (snapshot) => {
+        invitedMeetingsMap.clear();
+        snapshot.forEach((d) => {
+          invitedMeetingsMap.set(d.id, d.data());
+        });
+        emitMerged();
+      },
+      (err) => {
+        console.warn('Firestore onSnapshot invited meetings notice:', err);
+      }
+    );
+
+    // 4. Subscribe to personal events
     const personalQuery = query(
       colRef,
       where('category', '==', 'personal'),
@@ -935,8 +1143,31 @@ export function dbSubscribeOrbitEvents(authUser, onUpdate, onError) {
 
   return () => {
     unsubShared();
+    unsubMyMeetings();
+    unsubInvitedMeetings();
     unsubPersonal();
   };
+}
+
+/**
+ * Subscribe to real-time meeting and calendar notifications for current user from Firestore
+ */
+export function dbSubscribeOrbitNotifications(authUser, onUpdate, onError) {
+  if (!db || !authUser || !authUser.uid) return () => { };
+  const colRef = collection(db, 'orbit_notifications');
+  const q = query(colRef, where('recipientUid', '==', authUser.uid));
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list = [];
+      snapshot.forEach((d) => list.push(d.data()));
+      if (onUpdate) onUpdate(list);
+    },
+    (err) => {
+      console.warn('Firestore onSnapshot orbit_notifications notice:', err);
+      if (onError) onError(err);
+    }
+  );
 }
 
 /**
@@ -1187,7 +1418,9 @@ export function normalizeStoryDocument(story) {
                 ? 'us_again'
                 : canonicalChar === 'ruben'
                   ? 'ash'
-                  : (story.universeId || null);
+                  : canonicalChar === 'royan'
+                    ? 'hot'
+                    : (story.universeId || null);
 
   return {
     ...story,
@@ -1298,8 +1531,7 @@ export async function dbDeleteStory(storyId, authUser) {
 }
 
 /**
- * Fetch all stories strictly belonging to the authenticated user's UID
- * (Both published and draft stories of authUser.uid ONLY)
+ * Fetch all stories: all Published stories across 8 characters + own Drafts strictly belonging to authUser.uid
  */
 export async function dbFetchStories(authUser) {
   if (!db) throw new Error('Firestore belum terinisialisasi.');
@@ -1312,6 +1544,21 @@ export async function dbFetchStories(authUser) {
     const colRef = collection(db, STORIES_COLLECTION);
     const storiesMap = new Map();
 
+    // 1. Fetch all Published stories (open to all 8 characters)
+    try {
+      const pubQuery = query(colRef, where('status', '==', 'published'));
+      const pubSnap = await getDocs(pubQuery);
+      pubSnap.forEach((d) => {
+        const normalized = normalizeStoryDocument(d.data());
+        if (normalized && normalized.status === 'published') {
+          storiesMap.set(d.id, normalized);
+        }
+      });
+    } catch (e) {
+      console.warn('Notice on fetching published stories:', e);
+    }
+
+    // 2. Fetch own stories (including private drafts) strictly for this user UID
     const ownQuery = query(colRef, where('authorUid', '==', authUser.uid));
     const ownSnap = await getDocs(ownQuery);
     ownSnap.forEach((d) => {
@@ -1329,48 +1576,84 @@ export async function dbFetchStories(authUser) {
 }
 
 /**
- * Real-time listener for stories strictly isolated to authUser.uid
- * Ensures Nyanya only receives Nyanya's stories, Lala only Lala's, Lele only Lele's.
+ * Real-time listener for stories:
+ * - Emits all Published stories from all 8 characters
+ * - Emits own Drafts strictly isolated to authUser.uid
  */
 export function dbSubscribeStories(authUser, onUpdate, onError) {
   if (!db) {
     if (onError) onError(new Error('Firestore belum terinisialisasi.'));
-    return () => {};
+    return () => { };
   }
 
   if (!authUser || !authUser.uid) {
     if (onUpdate) onUpdate([]);
-    return () => {};
+    return () => { };
   }
 
   const verifiedChar = identifyUserCharacter(authUser);
   if (!verifiedChar) {
     if (onUpdate) onUpdate([]);
-    return () => {};
+    return () => { };
   }
 
   const colRef = collection(db, STORIES_COLLECTION);
-  const ownQuery = query(colRef, where('authorUid', '==', authUser.uid));
+  let publishedList = [];
+  let ownList = [];
 
-  const unsubscribe = onSnapshot(
-    ownQuery,
+  const emit = () => {
+    const map = new Map();
+    publishedList.forEach((s) => map.set(s.id, s));
+    ownList.forEach((s) => map.set(s.id, s));
+    if (onUpdate) onUpdate(Array.from(map.values()));
+  };
+
+  // 1. Subscribe to all Published stories
+  const pubQuery = query(colRef, where('status', '==', 'published'));
+  const unsubPub = onSnapshot(
+    pubQuery,
     (snapshot) => {
-      const list = [];
+      publishedList = [];
       snapshot.forEach((d) => {
         const normalized = normalizeStoryDocument(d.data());
-        if (normalized && normalized.authorUid === authUser.uid) {
-          list.push(normalized);
+        if (normalized && normalized.status === 'published') {
+          publishedList.push(normalized);
         }
       });
-      if (onUpdate) onUpdate(list);
+      emit();
     },
     (err) => {
-      console.error('Firestore onSnapshot error on stories:', err);
+      console.warn('Firestore onSnapshot notice on published stories:', err);
+      // Still emit ownList so author's works are accessible even if cloud published query encounters a rule restriction
+      emit();
       if (onError) onError(err);
     }
   );
 
-  return unsubscribe;
+  // 2. Subscribe to user's own stories (including private drafts)
+  const ownQuery = query(colRef, where('authorUid', '==', authUser.uid));
+  const unsubOwn = onSnapshot(
+    ownQuery,
+    (snapshot) => {
+      ownList = [];
+      snapshot.forEach((d) => {
+        const normalized = normalizeStoryDocument(d.data());
+        if (normalized && normalized.authorUid === authUser.uid) {
+          ownList.push(normalized);
+        }
+      });
+      emit();
+    },
+    (err) => {
+      console.error('Firestore onSnapshot error on own stories:', err);
+      if (onError) onError(err);
+    }
+  );
+
+  return () => {
+    unsubPub();
+    unsubOwn();
+  };
 }
 
 /**
@@ -1422,14 +1705,14 @@ export async function dbMigrateStories(authUser, localStories = []) {
 
       // Check author match
       const storyAuthor = story.authorChar || story.authorId || story.author;
-      if (!storyAuthor || !['nyanya', 'lala', 'lele'].includes(storyAuthor)) {
+      if (!storyAuthor || !['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'].includes(storyAuthor)) {
         ambiguousCount++;
         ambiguousItems.push(story);
         continue;
       }
 
       // Detect contradictory story ID prefix vs author label (e.g. story-lele-... claiming nyanya)
-      const idPrefixMatch = /^story-(nyanya|lala|lele)-/.exec(String(story.id));
+      const idPrefixMatch = /^story-(nyanya|lala|lele|abil|akhira|ela|ruben|royan)-/.exec(String(story.id));
       if (idPrefixMatch && idPrefixMatch[1] !== storyAuthor) {
         ambiguousCount++;
         ambiguousItems.push({ ...story, ambiguityReason: 'id_prefix_author_mismatch' });
@@ -1488,7 +1771,7 @@ export async function dbMigrateStories(authUser, localStories = []) {
     if (ambiguousItems.length > 0 && typeof window !== 'undefined' && window.localStorage) {
       try {
         window.localStorage.setItem('olu_stories_ambiguous_log', JSON.stringify(ambiguousItems));
-      } catch (_) {}
+      } catch (_) { }
     }
 
     const report = {
@@ -1747,19 +2030,19 @@ export function dbRevokeMomentObjectURL(objectUrlOrPath) {
   if (!objectUrlOrPath || typeof URL === 'undefined' || !URL.revokeObjectURL) return;
   if (activeMomentObjectURLs.has(objectUrlOrPath)) {
     const url = activeMomentObjectURLs.get(objectUrlOrPath);
-    try { URL.revokeObjectURL(url); } catch (_) {}
+    try { URL.revokeObjectURL(url); } catch (_) { }
     activeMomentObjectURLs.delete(objectUrlOrPath);
     return;
   }
   for (const [path, url] of activeMomentObjectURLs.entries()) {
     if (url === objectUrlOrPath) {
-      try { URL.revokeObjectURL(url); } catch (_) {}
+      try { URL.revokeObjectURL(url); } catch (_) { }
       activeMomentObjectURLs.delete(path);
       return;
     }
   }
   if (typeof objectUrlOrPath === 'string' && objectUrlOrPath.startsWith('blob:')) {
-    try { URL.revokeObjectURL(objectUrlOrPath); } catch (_) {}
+    try { URL.revokeObjectURL(objectUrlOrPath); } catch (_) { }
   }
 }
 
@@ -1769,7 +2052,7 @@ export function dbRevokeMomentObjectURL(objectUrlOrPath) {
 export function dbRevokeAllMomentObjectURLs() {
   if (typeof URL === 'undefined' || !URL.revokeObjectURL) return;
   for (const url of activeMomentObjectURLs.values()) {
-    try { URL.revokeObjectURL(url); } catch (_) {}
+    try { URL.revokeObjectURL(url); } catch (_) { }
   }
   activeMomentObjectURLs.clear();
 }
@@ -1833,7 +2116,16 @@ export async function dbSaveMoment(momentInput, authUser) {
     isStory: momentInput.isStory !== undefined ? Boolean(momentInput.isStory) : true,
     visibility,
     isArchived: Boolean(momentInput.isArchived),
-    viewedBy: momentInput.viewedBy || { nyanya: verifiedChar === 'nyanya', lala: verifiedChar === 'lala', lele: verifiedChar === 'lele' },
+    viewedBy: momentInput.viewedBy || {
+      nyanya: verifiedChar === 'nyanya',
+      lala: verifiedChar === 'lala',
+      lele: verifiedChar === 'lele',
+      abil: verifiedChar === 'abil' || verifiedChar === 'syma',
+      akhira: verifiedChar === 'akhira',
+      ela: verifiedChar === 'ela',
+      ruben: verifiedChar === 'ruben',
+      royan: verifiedChar === 'royan'
+    },
     likedBy: momentInput.likedBy || {},
     likes: typeof momentInput.likes === 'number' ? momentInput.likes : 0,
     isDeleted: false,
@@ -1984,10 +2276,12 @@ export async function dbFetchMoments(authUser, filter = 'all') {
 
   if (filter === 'archive') {
     list = list.filter((m) => m.isArchived || (m.author === verifiedChar && m.expiresAt <= Date.now()));
-  } else if (filter === 'nyanya' || filter === 'lala' || filter === 'lele') {
+  } else if (filter && filter !== 'all') {
+    const isOwnerTarget = (filter === verifiedChar) || (filter in ['abil', 'syma'] && (verifiedChar === 'abil' || verifiedChar === 'syma'));
     list = list.filter((m) => {
-      if (m.author !== filter) return false;
-      if (filter !== verifiedChar && m.visibility === 'private') return false;
+      const matchAuthor = m.author === filter || (filter in ['abil', 'syma'] && (m.author === 'abil' || m.author === 'syma'));
+      if (!matchAuthor) return false;
+      if (!isOwnerTarget && m.visibility === 'private') return false;
       return true;
     });
   }
@@ -2001,7 +2295,7 @@ export async function dbFetchMoments(authUser, filter = 'all') {
 export function dbSubscribeMoments(authUser, onUpdate, onError) {
   if (!db || !authUser || !authUser.uid) {
     if (typeof onUpdate === 'function') onUpdate([]);
-    return () => {};
+    return () => { };
   }
 
   const momentsMap = new Map();
@@ -2155,7 +2449,7 @@ export async function dbMigrateMoments(authUser, localMoments = [], idbRecords =
   if (ambiguousItems.length > 0 && typeof window !== 'undefined' && window.localStorage) {
     try {
       window.localStorage.setItem('olu_moments_ambiguous_log', JSON.stringify(ambiguousItems));
-    } catch (_) {}
+    } catch (_) { }
   }
 
   return {
@@ -2285,17 +2579,28 @@ export const MESSAGES_COLLECTION = 'messages';
 export const CONVERSATIONS_COLLECTION = 'conversations';
 export const MAX_MESSAGE_MEDIA_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 
+const CANONICAL_KEYS_MSG = ['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'];
 export const CONVERSATION_PARTICIPANTS = {
-  lala_lele: ['lala', 'lele'],
-  lala_nyanya: ['lala', 'nyanya'],
-  lele_nyanya: ['lele', 'nyanya'],
-  all_friends: ['lala', 'lele', 'nyanya']
+  all_friends: [...CANONICAL_KEYS_MSG]
 };
+for (let i = 0; i < CANONICAL_KEYS_MSG.length; i++) {
+  for (let j = i + 1; j < CANONICAL_KEYS_MSG.length; j++) {
+    const pairKey = [CANONICAL_KEYS_MSG[i], CANONICAL_KEYS_MSG[j]].sort().join('_');
+    CONVERSATION_PARTICIPANTS[pairKey] = [CANONICAL_KEYS_MSG[i], CANONICAL_KEYS_MSG[j]];
+  }
+}
+// Support legacy aliases
+['nyanya', 'lala', 'lele', 'akhira', 'ela', 'ruben', 'royan'].forEach(k => {
+  const symaKey = [k, 'syma'].sort().join('_');
+  CONVERSATION_PARTICIPANTS[symaKey] = [k, 'syma'];
+});
 
 export function getConversationId(charA, charB) {
   if (!charA || !charB) return 'all_friends';
   if (charA === 'all' || charB === 'all' || charA === 'all_friends' || charB === 'all_friends') return 'all_friends';
-  return [charA, charB].sort().join('_');
+  const normA = charA === 'syma' ? 'abil' : charA;
+  const normB = charB === 'syma' ? 'abil' : charB;
+  return [normA, normB].sort().join('_');
 }
 
 // Active Object URL registry for message media leak prevention
@@ -2466,7 +2771,7 @@ export function dbRevokeMessageObjectURLs() {
   activeMessageObjectURLs.forEach((url) => {
     try {
       URL.revokeObjectURL(url);
-    } catch (_) {}
+    } catch (_) { }
   });
   activeMessageObjectURLs.clear();
 }
@@ -2515,7 +2820,11 @@ export async function dbSendMessage({
     throw new Error(`ID percakapan tidak valid: ${convId}`);
   }
 
-  if (!participants.includes(verifiedChar)) {
+  const isSenderParticipant = participants.includes(verifiedChar) ||
+    (verifiedChar === 'abil' && participants.includes('syma')) ||
+    (verifiedChar === 'syma' && participants.includes('abil'));
+
+  if (!isSenderParticipant) {
     throw new Error(`Akses ditolak: Anda bukan partisipan dalam percakapan ${convId}.`);
   }
 
@@ -2550,6 +2859,25 @@ export async function dbSendMessage({
   const messageId = `msg-${now}-${Math.random().toString(36).slice(2, 8)}`;
   const charConfig = CHARACTER_AUTH_RULES[verifiedChar];
 
+  // Resolve recipient character and UID for 1-on-1 direct conversations
+  let resolvedRecipientChar = recipientCharacter || null;
+  if (!resolvedRecipientChar && convId !== 'all_friends' && Array.isArray(participants)) {
+    resolvedRecipientChar = participants.find(p => p !== verifiedChar && !(verifiedChar === 'abil' && p === 'syma') && !(verifiedChar === 'syma' && p === 'abil')) || null;
+  }
+
+  let resolvedRecipientUid = null;
+  let resolvedRecipientName = null;
+  let resolvedRecipientAvatar = null;
+
+  if (resolvedRecipientChar) {
+    const targetConfig = CANONICAL_CHARACTERS[resolvedRecipientChar] || CHARACTER_AUTH_RULES[resolvedRecipientChar];
+    if (targetConfig) {
+      resolvedRecipientUid = targetConfig.uid || targetConfig.expectedUid || null;
+      resolvedRecipientName = targetConfig.name || resolvedRecipientChar;
+      resolvedRecipientAvatar = targetConfig.avatar || '';
+    }
+  }
+
   const messagePayload = {
     id: messageId,
     conversationId: convId,
@@ -2566,6 +2894,11 @@ export async function dbSendMessage({
     }
   };
 
+  if (resolvedRecipientUid) messagePayload.recipientUid = resolvedRecipientUid;
+  if (resolvedRecipientChar) messagePayload.recipientCharacter = resolvedRecipientChar;
+  if (resolvedRecipientName) messagePayload.recipientName = resolvedRecipientName;
+  if (resolvedRecipientAvatar) messagePayload.recipientAvatar = resolvedRecipientAvatar;
+
   if (storagePath) messagePayload.storagePath = storagePath;
   if (mediaUrl) messagePayload.mediaUrl = mediaUrl;
   if (fileName) messagePayload.fileName = fileName;
@@ -2574,11 +2907,6 @@ export async function dbSendMessage({
   if (duration != null) messagePayload.duration = duration;
   if (waveform) messagePayload.waveform = waveform;
 
-  // 1. Write message to messages collection
-  const messageRef = doc(db, MESSAGES_COLLECTION, messageId);
-  await setDoc(messageRef, messagePayload);
-
-  // 2. Update conversation summary document
   let snippet = trimmedText.slice(0, 100);
   if (!snippet) {
     if (msgType === 'image') snippet = '📷 Foto';
@@ -2588,20 +2916,123 @@ export async function dbSendMessage({
     else if (msgType === 'file') snippet = `📎 ${fileName || 'Dokumen'}`;
   }
 
-  try {
+  const convPayload = {
+    id: convId,
+    participants,
+    lastMessage: snippet,
+    lastMessageType: msgType,
+    lastSender: verifiedChar,
+    lastSenderUid: authUser.uid,
+    lastMessageAt: now,
+    updatedAt: now,
+    createdAt: now
+  };
+  if (resolvedRecipientUid) convPayload.recipientUid = resolvedRecipientUid;
+  if (resolvedRecipientChar) convPayload.recipientCharacter = resolvedRecipientChar;
+
+  // Notification payload if direct message to recipient
+  let notifPayload = null;
+  let notifId = null;
+  if (resolvedRecipientUid && resolvedRecipientChar) {
+    notifId = `notif-msg-${messageId}-${resolvedRecipientChar}`;
+    notifPayload = {
+      id: notifId,
+      type: 'message',
+      senderUid: authUser.uid,
+      senderCharacter: verifiedChar,
+      senderName: charConfig?.name || verifiedChar,
+      recipientUid: resolvedRecipientUid,
+      targetUid: resolvedRecipientUid,
+      recipientCharacter: resolvedRecipientChar,
+      conversationId: convId,
+      messageId: messageId,
+      title: `Pesan baru dari ${charConfig?.name || verifiedChar}`,
+      message: snippet,
+      text: snippet,
+      read: false,
+      createdAt: now
+    };
+  }
+
+  // Diagnostic logging before commit for auditing payload and permissions
+  const inspectTypes = (obj) => {
+    if (!obj || typeof obj !== 'object') return {};
+    const res = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (v === null) res[k] = 'null';
+      else if (Array.isArray(v)) res[k] = `Array(${v.length}) [${v.map(i => typeof i).join(', ')}]`;
+      else if (typeof v === 'object') res[k] = `Object(${Object.keys(v).join(', ')})`;
+      else res[k] = typeof v;
+    }
+    return res;
+  };
+
+  console.log('[OUR LITTLE MESSAGES DIAGNOSTIC AUDIT]', {
+    projectId: app?.options?.projectId || firebaseConfig?.projectId,
+    currentUserUid: authUser.uid,
+    conversationId: convId,
+    sender: {
+      character: verifiedChar,
+      uid: authUser.uid
+    },
+    recipient: {
+      character: resolvedRecipientChar,
+      uid: resolvedRecipientUid
+    },
+    operations: [
+      {
+        operation: 'set',
+        collection: MESSAGES_COLLECTION,
+        path: `${MESSAGES_COLLECTION}/${messageId}`,
+        fields: Object.keys(messagePayload),
+        fieldTypes: inspectTypes(messagePayload)
+      },
+      {
+        operation: 'set(merge:true)',
+        collection: CONVERSATIONS_COLLECTION,
+        path: `${CONVERSATIONS_COLLECTION}/${convId}`,
+        fields: Object.keys(convPayload),
+        fieldTypes: inspectTypes(convPayload)
+      },
+      ...(notifPayload && notifId ? [{
+        operation: 'set',
+        collection: 'orbit_notifications',
+        path: `orbit_notifications/${notifId}`,
+        fields: Object.keys(notifPayload),
+        fieldTypes: inspectTypes(notifPayload)
+      }] : [])
+    ]
+  });
+
+  // Atomically write message, update conversation summary, and create recipient notification
+  if (typeof writeBatch === 'function') {
+    const batch = writeBatch(db);
+    const messageRef = doc(db, MESSAGES_COLLECTION, messageId);
+    batch.set(messageRef, messagePayload);
+
     const convRef = doc(db, CONVERSATIONS_COLLECTION, convId);
-    await setDoc(convRef, {
-      id: convId,
-      participants,
-      lastMessage: snippet,
-      lastMessageType: msgType,
-      lastSender: verifiedChar,
-      lastSenderUid: authUser.uid,
-      lastMessageAt: now,
-      updatedAt: now
-    }, { merge: true });
-  } catch (convErr) {
-    console.warn('Gagal memperbarui ringkasan percakapan (non-fatal):', convErr);
+    batch.set(convRef, convPayload, { merge: true });
+
+    if (notifPayload && notifId) {
+      const notifRef = doc(db, 'orbit_notifications', notifId);
+      batch.set(notifRef, notifPayload);
+    }
+
+    // Atomic commit guarantees all documents succeed or none are written
+    await batch.commit();
+  } else {
+    // Sequential fallback ONLY if writeBatch is not supported in mock/test runtime.
+    // Throws immediately on any failure to guarantee no inconsistent partial state.
+    const messageRef = doc(db, MESSAGES_COLLECTION, messageId);
+    await setDoc(messageRef, messagePayload);
+
+    const convRef = doc(db, CONVERSATIONS_COLLECTION, convId);
+    await setDoc(convRef, convPayload, { merge: true });
+
+    if (notifPayload && notifId) {
+      const notifRef = doc(db, 'orbit_notifications', notifId);
+      await setDoc(notifRef, notifPayload);
+    }
   }
 
   return messagePayload;
@@ -2676,9 +3107,9 @@ export function dbSubscribeMessages(conversationId, authUser, onUpdate, onError)
   // Ensure latest token claims (including email_verified) in background
   if (typeof authUser.getIdToken === 'function' && !authUser.emailVerified) {
     if (typeof authUser.reload === 'function') {
-      authUser.reload().then(() => authUser.getIdToken(true)).catch(() => {});
+      authUser.reload().then(() => authUser.getIdToken(true)).catch(() => { });
     } else {
-      authUser.getIdToken(true).catch(() => {});
+      authUser.getIdToken(true).catch(() => { });
     }
   }
 
@@ -2791,6 +3222,121 @@ export async function dbMarkMessageRead(messageId, authUser) {
     await updateDoc(msgRef, {
       [`readBy.${verifiedChar}`]: true
     });
+  } catch (err) {
+    // Non-fatal if update fails
+  }
+}
+
+/**
+ * Real-time subscription to conversations involving the authenticated user.
+ * Implements WhatsApp-like inbox synchronization.
+ */
+export function dbSubscribeConversations(authUser, onUpdate, onError) {
+  if (!db || !authUser || !authUser.uid) return () => { };
+  const verifiedChar = getVerifiedCharacterKey(authUser);
+  if (!verifiedChar) return () => { };
+
+  const colRef = collection(db, CONVERSATIONS_COLLECTION);
+  const convsMap = new Map();
+
+  function emitMerged() {
+    const list = Array.from(convsMap.values());
+    list.sort((a, b) => (b.lastMessageAt || b.updatedAt || 0) - (a.lastMessageAt || a.updatedAt || 0));
+    if (typeof onUpdate === 'function') onUpdate(list);
+  }
+
+  const q1 = query(colRef, where('participants', 'array-contains', verifiedChar));
+  const unsub1 = onSnapshot(
+    q1,
+    (snapshot) => {
+      snapshot.forEach((d) => convsMap.set(d.id, d.data()));
+      emitMerged();
+    },
+    (err) => {
+      console.warn('Firestore onSnapshot conversations notice:', err);
+      if (typeof onError === 'function') onError(err);
+    }
+  );
+
+  let unsub2 = () => { };
+  if (verifiedChar === 'abil') {
+    const q2 = query(colRef, where('participants', 'array-contains', 'syma'));
+    unsub2 = onSnapshot(
+      q2,
+      (snapshot) => {
+        snapshot.forEach((d) => convsMap.set(d.id, d.data()));
+        emitMerged();
+      },
+      () => { }
+    );
+  }
+
+  return () => {
+    unsub1();
+    unsub2();
+  };
+}
+
+/**
+ * Real-time subscription to incoming messages across all conversations for current user.
+ * Generates WhatsApp-style notifications when a friend sends a message.
+ */
+export function dbSubscribeUserMessages(authUser, onNewMessage, onError) {
+  if (!db || !authUser || !authUser.uid) return () => { };
+  const verifiedChar = getVerifiedCharacterKey(authUser);
+  if (!verifiedChar) return () => { };
+
+  const colRef = collection(db, MESSAGES_COLLECTION);
+  const q = query(colRef, where('participants', 'array-contains', verifiedChar));
+
+  let isFirstLoad = true;
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      if (isFirstLoad) {
+        isFirstLoad = false;
+        return;
+      }
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const msg = change.doc.data();
+          if (msg && msg.senderCharacter !== verifiedChar && (!msg.readBy || !msg.readBy[verifiedChar])) {
+            if (typeof onNewMessage === 'function') {
+              onNewMessage(msg);
+            }
+          }
+        }
+      });
+    },
+    (err) => {
+      console.warn('Firestore onSnapshot user messages notice:', err);
+      if (typeof onError === 'function') onError(err);
+    }
+  );
+}
+
+/**
+ * Marks all messages in a conversation as read by the active user.
+ */
+export async function dbMarkConversationMessagesRead(conversationId, authUser) {
+  if (!db || !authUser || !authUser.uid || !conversationId) return;
+  const verifiedChar = getVerifiedCharacterKey(authUser);
+  if (!verifiedChar) return;
+
+  try {
+    const colRef = collection(db, MESSAGES_COLLECTION);
+    const q = query(colRef, where('conversationId', '==', conversationId));
+    const snap = await getDocs(q);
+    const updates = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      if (data && data.senderCharacter !== verifiedChar && (!data.readBy || !data.readBy[verifiedChar])) {
+        updates.push(updateDoc(d.ref, { [`readBy.${verifiedChar}`]: true }));
+      }
+    });
+    if (updates.length > 0) {
+      await Promise.all(updates);
+    }
   } catch (err) {
     // Non-fatal if update fails
   }
@@ -2936,7 +3482,7 @@ export async function dbFetchGameSession(sessionId) {
  */
 export function dbSubscribeGameSession(sessionId, callback) {
   if (!db || !sessionId || typeof callback !== 'function') {
-    return () => {};
+    return () => { };
   }
   const sessionRef = doc(db, GAME_SESSIONS_COLLECTION, sessionId);
   return onSnapshot(sessionRef, (snap) => {
@@ -2963,7 +3509,8 @@ export const UNIVERSE_MAPPINGS = {
   abil: 'PINWHEEL',
   akhira: 'YAWN',
   ela: 'US AGAIN',
-  ruben: 'ASH'
+  ruben: 'ASH',
+  royan: 'HOT'
 };
 
 // Helper to serialize Firestore REST fields for Node emulator test runner
@@ -3074,7 +3621,7 @@ export async function dbSaveUniverseState(stateData, authUser) {
       if (res.status === 200) {
         return payload;
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   if (!db) {
@@ -3097,7 +3644,7 @@ export async function dbFetchUniverseState(targetUid, authUser = null) {
     try {
       const email = authUser?.email || (
         targetUid === 'uid-nyanya-moonlit-star-2026' ? 'nyanya@ourlittleuniverse.com' :
-        (targetUid === 'uid-lala-to-you-sunshine-2026' ? 'lala@ourlittleuniverse.com' : 'lele@ourlittleuniverse.com')
+          (targetUid === 'uid-lala-to-you-sunshine-2026' ? 'lala@ourlittleuniverse.com' : 'lele@ourlittleuniverse.com')
       );
       const token = makeNodeEmulatorJwt(authUser?.uid || targetUid, email);
       const res = await fetch(`http://127.0.0.1:8080/v1/projects/our-little-universe-dcd75/databases/(default)/documents/${UNIVERSE_STATES_COLLECTION}/${targetUid}`, {
@@ -3108,7 +3655,7 @@ export async function dbFetchUniverseState(targetUid, authUser = null) {
         return parseFsRestFields(json.fields);
       }
       return null;
-    } catch (_) {}
+    } catch (_) { }
   }
 
   if (!db) return null;
@@ -3126,7 +3673,7 @@ export async function dbFetchUniverseState(targetUid, authUser = null) {
  */
 export function dbSubscribeUniverseState(targetUid, callback) {
   if (!db || !targetUid || typeof callback !== 'function') {
-    return () => {};
+    return () => { };
   }
   const stateRef = doc(db, UNIVERSE_STATES_COLLECTION, targetUid);
   return onSnapshot(stateRef, (snap) => {
@@ -3198,13 +3745,13 @@ export async function dbMigrateUniverseState(authUser) {
           ambiguousItems.push(parsedState);
         }
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   if (ambiguousItems.length > 0 && typeof window !== 'undefined' && window.localStorage) {
     try {
       window.localStorage.setItem('olu_universe_ambiguous_log', JSON.stringify(ambiguousItems));
-    } catch (_) {}
+    } catch (_) { }
   }
 
   // 4. Save to Cloud
@@ -3267,7 +3814,7 @@ export async function dbSendStarMessage({
         await currentUser.reload();
       }
       await currentUser.getIdToken(true);
-    } catch (_) {}
+    } catch (_) { }
   }
 
   const verifiedSenderChar = getVerifiedCharacterKey(currentUser);
@@ -3275,9 +3822,10 @@ export async function dbSendStarMessage({
     throw new Error('Akun belum terverifikasi sebagai karakter sah Our Little Universe.');
   }
 
-  const targetChar = String(recipientCharacter || '').toLowerCase().trim();
-  if (!['nyanya', 'lala', 'lele'].includes(targetChar)) {
-    throw new Error('Penerima pesan bintang tidak valid.');
+  let targetChar = String(recipientCharacter || '').toLowerCase().trim();
+  if (targetChar === 'syma') targetChar = 'abil';
+  if (!Object.keys(CANONICAL_CHARACTERS).includes(targetChar)) {
+    throw new Error(`Penerima pesan bintang tidak valid. Harus salah satu dari: ${Object.keys(CANONICAL_CHARACTERS).join(', ')}.`);
   }
 
   if (targetChar === verifiedSenderChar) {
@@ -3311,7 +3859,8 @@ export async function dbSendStarMessage({
     abil: 'pinwheel',
     akhira: 'yawn',
     ela: 'us_again',
-    ruben: 'ash'
+    ruben: 'ash',
+    royan: 'hot'
   };
   const origin = universeOrigin || UNIVERSE_BY_CHAR[verifiedSenderChar];
   if (!origin) {
@@ -3356,7 +3905,7 @@ export async function dbSendStarMessage({
     const cached = JSON.parse(localStorage.getItem(cacheKey) || '[]');
     cached.unshift(payload);
     localStorage.setItem(cacheKey, JSON.stringify(cached.slice(0, 100)));
-  } catch (_) {}
+  } catch (_) { }
 
   return payload;
 }
@@ -3383,7 +3932,7 @@ export async function dbFetchStarMessages(authUser) {
     // Cache locally
     try {
       localStorage.setItem(`olu_star_messages_${authUser.uid}`, JSON.stringify(list.slice(0, 100)));
-    } catch (_) {}
+    } catch (_) { }
 
     return list;
   } catch (err) {
@@ -3403,7 +3952,7 @@ export async function dbFetchStarMessages(authUser) {
  */
 export function dbSubscribeStarMessages(authUser, onUpdate, onError) {
   if (!authUser || !authUser.uid || !db) {
-    return () => {};
+    return () => { };
   }
 
   const colRef = collection(db, 'star_messages');
@@ -3418,7 +3967,7 @@ export function dbSubscribeStarMessages(authUser, onUpdate, onError) {
     const list = Array.from(merged.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     try {
       localStorage.setItem(`olu_star_messages_${authUser.uid}`, JSON.stringify(list.slice(0, 100)));
-    } catch (_) {}
+    } catch (_) { }
     if (typeof onUpdate === 'function') onUpdate(list);
   }
 
@@ -3514,6 +4063,14 @@ export const LETTER_PAPER_THEMES = {
     bgGradient: 'linear-gradient(135deg, rgba(238, 242, 255, 0.95), rgba(245, 243, 255, 0.95))',
     border: 'rgba(129, 140, 248, 0.4)'
   },
+  pinwheel: {
+    id: 'pinwheel',
+    name: 'Angin Surgawi (PINWHEEL)',
+    icon: '🎐',
+    accentColor: '#93c5fd',
+    bgGradient: 'linear-gradient(135deg, rgba(238, 242, 255, 0.95), rgba(243, 232, 255, 0.95))',
+    border: 'rgba(147, 197, 253, 0.5)'
+  },
   parchment: {
     id: 'parchment',
     name: 'Perkamen Klasik Emas',
@@ -3546,8 +4103,9 @@ export async function dbSendLetter({
   }
 
   const targetChar = (recipientCharacter || '').toLowerCase().trim();
-  if (!targetChar || !['nyanya', 'lala', 'lele'].includes(targetChar)) {
-    throw new Error('Penerima surat harus salah satu dari: Nyanya, Lala, atau Lele.');
+  const validChars = Object.keys(CANONICAL_CHARACTERS);
+  if (!targetChar || !validChars.includes(targetChar)) {
+    throw new Error(`Penerima surat tidak valid. Karakter harus salah satu dari: ${validChars.join(', ')}.`);
   }
 
   if (targetChar === verifiedSenderChar) {
@@ -3614,7 +4172,7 @@ export async function dbSendLetter({
     const cached = JSON.parse(localStorage.getItem(cacheKey) || '[]');
     cached.unshift(payload);
     localStorage.setItem(cacheKey, JSON.stringify(cached.slice(0, 100)));
-  } catch (_) {}
+  } catch (_) { }
 
   return payload;
 }
@@ -3641,7 +4199,7 @@ export async function dbFetchLetters(authUser) {
     // Cache locally
     try {
       localStorage.setItem(`olu_letters_${authUser.uid}`, JSON.stringify(list.slice(0, 100)));
-    } catch (_) {}
+    } catch (_) { }
 
     return list;
   } catch (err) {
@@ -3661,7 +4219,7 @@ export async function dbFetchLetters(authUser) {
  */
 export function dbSubscribeLetters(authUser, onUpdate, onError) {
   if (!authUser || !authUser.uid || !db) {
-    return () => {};
+    return () => { };
   }
 
   const colRef = collection(db, 'letters');
@@ -3676,7 +4234,7 @@ export function dbSubscribeLetters(authUser, onUpdate, onError) {
     const list = Array.from(merged.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     try {
       localStorage.setItem(`olu_letters_${authUser.uid}`, JSON.stringify(list.slice(0, 100)));
-    } catch (_) {}
+    } catch (_) { }
     if (typeof onUpdate === 'function') onUpdate(list);
   }
 
@@ -3699,8 +4257,8 @@ export function dbSubscribeLetters(authUser, onUpdate, onError) {
   });
 
   return () => {
-    try { unsubRec(); } catch (_) {}
-    try { unsubSent(); } catch (_) {}
+    try { unsubRec(); } catch (_) { }
+    try { unsubSent(); } catch (_) { }
   };
 }
 
@@ -3728,7 +4286,7 @@ export async function dbMarkLetterRead(letterId, authUser) {
         cached[idx].readAt = Date.now();
         localStorage.setItem(cacheKey, JSON.stringify(cached));
       }
-    } catch (_) {}
+    } catch (_) { }
   } catch (err) {
     console.warn('Notice marking letter as read:', err);
   }
@@ -3771,7 +4329,7 @@ export async function dbDeleteLetter(letterId, authUser) {
         if (isRecipient) cached[idx].deletedByRecipient = true;
         localStorage.setItem(cacheKey, JSON.stringify(cached));
       }
-    } catch (_) {}
+    } catch (_) { }
   } catch (err) {
     console.warn('Notice deleting letter:', err);
     throw err;
@@ -3961,7 +4519,7 @@ export async function dbDeleteArtworkSafe(artworkId, authUser) {
   try {
     const noteDocRef = doc(db, ARTWORK_NOTES_COLLECTION, artworkId);
     await deleteDoc(noteDocRef);
-  } catch (_) {}
+  } catch (_) { }
 
   return { success: true, artworkId };
 }

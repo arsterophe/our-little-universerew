@@ -30,7 +30,8 @@ export const CANONICAL_UIDS = {
   abil: 'uid-abil-pinwheel-cloud-2026',
   akhira: 'uid-akhira-yawn-spark-2026',
   ela: 'uid-ela-us-again-blossom-2026',
-  ruben: 'uid-ruben-ash-snow-2026'
+  ruben: 'uid-ruben-ash-snow-2026',
+  royan: 'swBN9XodDWRuHE5YbYmeoytrcAx2'
 };
 
 // Themed decoration catalogs for each universe
@@ -93,6 +94,7 @@ export const DEFAULT_UNIVERSE_ELEMENTS = {
   akhira: {},
   ela: {},
   ruben: {},
+  royan: {},
   kidult: {
     greenhouse: { watered: false, count: 2, plant: 'Lavender Bintang & Mawar Senja', status: 'Mekar Indah 🌸', lastWatered: null },
     river: { lanterns: 3, lastWish: 'Semoga harimu penuh kebahagiaan ✦', lastFloated: null },
@@ -118,7 +120,8 @@ export const DEFAULT_UNIVERSE_ELEMENTS = {
   pinwheel: {},
   yawn: {},
   us_again: {},
-  ash: {}
+  ash: {},
+  hot: {}
 };
 
 // In-memory module state
@@ -147,6 +150,7 @@ export function normalizeCharacterKey(rawKey) {
   if (k.includes('akhira') || k.includes('yawn')) return 'akhira';
   if (k.includes('ela') || k.includes('us_again') || k.includes('us again')) return 'ela';
   if (k.includes('ruben') || k.includes('ash')) return 'ruben';
+  if (k.includes('royan') || k.includes('hot')) return 'royan';
   return 'nyanya';
 }
 

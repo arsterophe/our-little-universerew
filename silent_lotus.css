@@ -1,0 +1,615 @@
+/**
+ * THE SILENT LOTUS HOUSE — ELA 🌸 (UNIVERSE US AGAIN)
+ * 2D Interactive Simulation Stylesheet
+ * Soft Lavender, Dusty Violet, Pearl White, Muted Blush Pink, Rose Gold Accents
+ * =============================================================================
+ */
+
+/* 1. Main View Section */
+.view-silent-lotus {
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  background-color: #1e112a;
+  background: radial-gradient(circle at 50% 30%, #2e1065 0%, #0f051d 100%);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #fdf4ff;
+}
+
+.view-silent-lotus.active {
+  display: flex !important;
+}
+
+/* 2. Responsive 16:9 Stage Container */
+.silent-lotus-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.silent-lotus-stage {
+  position: relative;
+  width: 100%;
+  max-width: 177.78vh; /* 16:9 ratio */
+  height: 100%;
+  max-height: 56.25vw;
+  background-color: #0f051d;
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.25);
+  overflow: hidden;
+}
+
+/* Background Scene Image */
+.silent-lotus-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: opacity 0.4s ease-in-out;
+}
+
+/* Atmosphere Dynamic Lighting Overlay */
+.silent-lotus-atmo-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: background 0.8s ease;
+}
+
+/* Drifting Petals & Butterflies Canvas / Overlay */
+.silent-lotus-fx-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.lotus-petal {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.85), rgba(192, 132, 252, 0.6));
+  border-radius: 60% 0 60% 0;
+  pointer-events: none;
+  animation: petalFall linear infinite;
+  box-shadow: 0 0 8px rgba(244, 114, 182, 0.4);
+}
+
+@keyframes petalFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(105vh) translateX(60px) rotate(360deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.lotus-butterfly {
+  position: absolute;
+  font-size: 1.1rem;
+  pointer-events: none;
+  animation: butterflyFlutter 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
+}
+
+@keyframes butterflyFlutter {
+  0%, 100% {
+    transform: translate(0, 0) scaleX(1);
+  }
+  25% {
+    transform: translate(30px, -20px) scaleX(-1);
+  }
+  50% {
+    transform: translate(60px, 10px) scaleX(1);
+  }
+  75% {
+    transform: translate(25px, 30px) scaleX(-1);
+  }
+}
+
+/* 3. Interactive Hotspots Layer */
+.silent-lotus-hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.silent-lotus-hotspot-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.silent-lotus-hotspot-item:hover {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.silent-lotus-beacon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.85) 0%, rgba(126, 34, 206, 0.9) 70%, rgba(88, 28, 135, 1) 100%);
+  border: 2px solid #fdf4ff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.75), 0 0 25px rgba(244, 114, 182, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  color: #fff;
+  animation: beaconPulse 2.4s infinite ease-in-out;
+}
+
+@keyframes beaconPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.6), 0 0 20px rgba(244, 114, 182, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(168, 85, 247, 0.95), 0 0 35px rgba(244, 114, 182, 0.65);
+    border-color: #fbcfe8;
+  }
+}
+
+.silent-lotus-beacon-label {
+  margin-top: 5px;
+  padding: 2px 8px;
+  background: rgba(15, 5, 29, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fdf4ff;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+/* 4. 2D Player Avatar */
+.silent-lotus-player {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  pointer-events: none;
+  transition: left 0.12s linear, top 0.12s linear;
+}
+
+.silent-lotus-player-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.silent-lotus-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fdf4ff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.75), 0 4px 12px rgba(0, 0, 0, 0.5);
+  background: #2e1065;
+}
+
+.silent-lotus-player.facing-left .silent-lotus-avatar-img {
+  transform: scaleX(-1);
+}
+
+.silent-lotus-player.is-walking .silent-lotus-avatar-img {
+  animation: avatarBob 0.35s infinite alternate ease-in-out;
+}
+
+.silent-lotus-player.is-sitting .silent-lotus-avatar-img {
+  transform: scale(0.92) translateY(5px);
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.8));
+}
+
+@keyframes avatarBob {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+
+.silent-lotus-avatar-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #a855f7, #f472b6);
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  box-shadow: 0 0 6px rgba(244, 114, 182, 0.8);
+}
+
+/* Proximity Interaction Prompt Bubble */
+.silent-lotus-prompt {
+  position: absolute;
+  top: -42px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 5, 29, 0.92);
+  border: 1px solid rgba(244, 114, 182, 0.7);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fdf4ff;
+  white-space: nowrap;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.6), 0 4px 12px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: promptFloat 1.8s infinite ease-in-out;
+  display: none;
+  z-index: 25;
+}
+
+.silent-lotus-prompt.active {
+  display: block;
+}
+
+@keyframes promptFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+/* 5. Navigation & Room Switch HUD (Top Center) */
+.silent-lotus-nav-bar {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 5, 29, 0.75);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  padding: 6px 14px;
+  border-radius: 30px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.lotus-nav-btn {
+  background: transparent;
+  border: none;
+  color: #e9d5ff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.lotus-nav-btn:hover {
+  background: rgba(168, 85, 247, 0.25);
+  color: #fff;
+}
+
+.lotus-nav-btn.active {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+}
+
+/* 6. Top Left Info Card & Back Button */
+.silent-lotus-header-left {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-silent-lotus-back {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(15, 5, 29, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #fdf4ff;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-silent-lotus-back:hover {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff;
+  transform: scale(1.06);
+}
+
+.silent-lotus-title-badge {
+  background: rgba(15, 5, 29, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  padding: 6px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.silent-lotus-room-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fdf4ff;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.silent-lotus-room-subtitle {
+  font-size: 0.72rem;
+  color: #d8b4fe;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 7. Top Right Tools & HUD */
+.silent-lotus-header-right {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.silent-lotus-tool-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(15, 5, 29, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #fdf4ff;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.silent-lotus-tool-btn:hover {
+  background: rgba(168, 85, 247, 0.35);
+  border-color: #f472b6;
+  transform: scale(1.08);
+}
+
+/* 8. Interactive Modals & Dialogs */
+.silent-lotus-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 3, 20, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 90;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.silent-lotus-modal-backdrop.active {
+  display: flex !important;
+}
+
+.silent-lotus-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  background: linear-gradient(145deg, #1f0b35 0%, #120422 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(168, 85, 247, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.silent-lotus-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(46, 16, 101, 0.4);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.silent-lotus-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fdf4ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-silent-lotus-modal-close {
+  background: transparent;
+  border: none;
+  color: #c084fc;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.btn-silent-lotus-modal-close:hover {
+  color: #fff;
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.silent-lotus-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  color: #e9d5ff;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.silent-lotus-btn-primary {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.silent-lotus-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+}
+
+/* Sleep Fade Overlay */
+.silent-lotus-sleep-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 85;
+  transition: opacity 1.2s ease;
+}
+
+.silent-lotus-sleep-overlay.active {
+  opacity: 0.92;
+  pointer-events: auto;
+}
+
+/* 9. Mobile Touch D-Pad Controls */
+.silent-lotus-touch-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 50;
+  display: none;
+}
+
+.silent-lotus-dpad {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  background: rgba(15, 5, 29, 0.65);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+}
+
+.silent-lotus-dpad-btn {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: rgba(46, 16, 101, 0.8);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.silent-lotus-dpad-up { top: 4px; left: 42px; }
+.silent-lotus-dpad-down { bottom: 4px; left: 42px; }
+.silent-lotus-dpad-left { top: 42px; left: 4px; }
+.silent-lotus-dpad-right { top: 42px; right: 4px; }
+
+.silent-lotus-touch-action {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  display: none;
+}
+
+.silent-lotus-action-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(168, 85, 247, 0.6);
+  cursor: pointer;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .silent-lotus-touch-controls {
+    display: block;
+  }
+  .silent-lotus-touch-action {
+    display: block;
+  }
+  .silent-lotus-nav-bar {
+    top: 62px;
+    padding: 4px 10px;
+    gap: 4px;
+  }
+  .lotus-nav-btn {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+}

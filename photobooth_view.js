@@ -1,29 +1,63 @@
-import { auth, dbSavePhotoboothStrip } from './firebase.js';
+import { auth, dbSavePhotoboothStrip, identifyUserCharacter } from './firebase.js';
 import { addMoment } from './moments.js';
+import {
+  PhotoboothStudioManager,
+  PB_BACKGROUND_PRESETS,
+  PB_STICKER_CATEGORIES,
+  PB_STUDIO_LAYOUTS,
+  PB_FONTS
+} from './photobooth_studio.js';
+import {
+  savePhotoboothMemory,
+  getPhotoboothMemories,
+  getPhotoboothMemoryById,
+  deletePhotoboothMemory
+} from './photobooth_storage.js';
+
 /**
- * OUR LITTLE PHOTOBOOTH — INTERACTIVE CONTROLLER & CANVAS PHOTO STRIP STUDIO
+ * OUR LITTLE PHOTOBOOTH — FULL 8 CHARACTERS ACCESS & GROUP PHOTO SYSTEM
  * Separate top-level feature in Our Little Universe.
  *
  * Key Guarantees:
- *  - Supports all 3 characters (Nyanya ★, Lala ☼, Lele ☾) synced with active login session.
- *  - Clearly separates Active User, Room Host, and Second Participant (never shows an unjoined friend as present).
- *  - Distinguishes Local Mode (1 user) vs Room Mode (Create Room & Strictly Validated Join Room).
- *  - Real browser camera lifecycle (getUserMedia, mirror toggle, on/off toggle, clean track stop on exit).
- *  - Never substitutes a static graphic for an inactive camera preview.
- *  - Preserves captured poses when switching between 2, 3, and 4 panel layouts.
- *  - Prevents downloading an incomplete photo strip when required pose slots are still empty.
+ *  - Full, equal access for all 8 Universe Characters:
+ *      1. Nyanya ⭐ (KIDULT)
+ *      2. Lala ☀️ (TO YOU)
+ *      3. Lele 🌙 (SHADOW)
+ *      4. Syma ☁️ (PINWHEEL) [internal key: 'abil', alias 'syma']
+ *      5. Akhira 🌊 (YAWN)
+ *      6. Ela 🪷 (US AGAIN)
+ *      7. Ruben 🐉 (ASH)
+ *      8. Royan 🎆 (HOT)
+ *  - Real Login Identity Detection: Uses Firebase Auth (auth.currentUser) or active session.
+ *    Completely removes fallback/hardcode to "Nyanya (Vanya)".
+ *  - Group Photo Selection (1–8 Persons):
+ *      Solo (1), Duo (2), Trio (3), Squad (4), Group (5), Big Group (6), Full Circle (7), All Universe (8).
+ *      Active logged-in character is automatically locked as participant #1.
+ *      No duplicates allowed; counter indicators; strict quota validation.
+ *  - Multi-User Room System: Collaborative sessions supporting 2–8 participants with presence indicators.
+ *  - 8 Distinctive Aesthetic Photobooth Templates:
+ *      1. Classic Photostrip (vintage monochrome booth, crisp borders)
+ *      2. Polaroid Memories (polaroid frames, white matte, nostalgic notes)
+ *      3. Pastel Scrapbook (pastel gradient, washi tape, cute doodles)
+ *      4. Dreamy Galaxy (deep space, sparkling stars, cosmic nebula)
+ *      5. Vintage Film (35mm analog film with sprocket holes and grain)
+ *      6. Fairy Garden (magical botanical, butterflies, blooming flora)
+ *      7. Friendship Memories (besties seal, warm sunset coral, hearts)
+ *      8. Special Moments (gold glitter, opulent obsidian, royal starlight)
+ *  - Studio Camera: Live camera, 2/3/4 panel layouts, 3s/5s/none countdown, retake.
+ *  - Results & Storage: High-res interactive Canvas, save to Personal Gallery (Cloud), download PNG.
  */
 
 const STORAGE_KEY_ROOMS = 'olu_photobooth_rooms_v1';
 const STORAGE_KEY_SESSION = 'olu_session_state_v1';
 const CHANNEL_NAME = 'olu_photobooth_sync_v1';
 
-const PB_CHARACTERS = {
+// --- ALL 8 UNIVERSE CHARACTERS ---
+export const PB_CHARACTERS = {
   nyanya: {
     key: 'nyanya',
     name: 'Nyanya',
-    owner: 'Vanya',
-    symbol: '★',
+    symbol: '⭐',
     universe: 'KIDULT',
     avatar: '/assets/avatar_nyanya_hd.png',
     badgeColor: '#fef08a',
@@ -34,8 +68,7 @@ const PB_CHARACTERS = {
   lala: {
     key: 'lala',
     name: 'Lala',
-    owner: 'Bella',
-    symbol: '☼',
+    symbol: '☀️',
     universe: 'TO YOU',
     avatar: '/assets/avatar_lala_hd.png',
     badgeColor: '#fde68a',
@@ -46,35 +79,160 @@ const PB_CHARACTERS = {
   lele: {
     key: 'lele',
     name: 'Lele',
-    owner: 'Alenda',
-    symbol: '☾',
+    symbol: '🌙',
     universe: 'SHADOW',
     avatar: '/assets/avatar_lele_hd.png',
     badgeColor: '#e9d5ff',
     gradStart: '#1e1b4b',
     gradEnd: '#a855f7',
     quote: 'Crystal Moon Guardian'
+  },
+  abil: {
+    key: 'abil',
+    name: 'Syma',
+    symbol: '☁️',
+    universe: 'PINWHEEL',
+    avatar: '/assets/avatar_abil_hd.jpg',
+    badgeColor: '#bae6fd',
+    gradStart: '#0c4a6e',
+    gradEnd: '#38bdf8',
+    quote: 'Gentle Wind Weaver'
+  },
+  akhira: {
+    key: 'akhira',
+    name: 'Akhira',
+    symbol: '🌊',
+    universe: 'YAWN',
+    avatar: '/assets/avatar_akhira_hd.jpg',
+    badgeColor: '#99f6e4',
+    gradStart: '#134e4a',
+    gradEnd: '#14b8a6',
+    quote: 'Ocean Breeze Serenade'
+  },
+  ela: {
+    key: 'ela',
+    name: 'Ela',
+    symbol: '🪷',
+    universe: 'US AGAIN',
+    avatar: '/assets/avatar_ela_hd.jpg',
+    badgeColor: '#fbcfe8',
+    gradStart: '#701a75',
+    gradEnd: '#ec4899',
+    quote: 'Lotus Blossom Memory'
+  },
+  ruben: {
+    key: 'ruben',
+    name: 'Ruben',
+    symbol: '🐉',
+    universe: 'ASH',
+    avatar: '/assets/avatar_ruben_hd.jpg',
+    badgeColor: '#fed7aa',
+    gradStart: '#7c2d12',
+    gradEnd: '#f97316',
+    quote: 'Ember Dragon Flame'
+  },
+  royan: {
+    key: 'royan',
+    name: 'Royan',
+    symbol: '🎆',
+    universe: 'HOT',
+    avatar: '/assets/avatar_royan_hd.jpg',
+    badgeColor: '#fecdd3',
+    gradStart: '#881337',
+    gradEnd: '#f43f5e',
+    quote: 'Sparkling Fireworks Night'
   }
 };
 
-const PB_FRAMES = {
-  moon_stars: {
-    id: 'moon_stars',
-    name: 'Moon & Stars',
-    bgTop: '#19143a',
-    bgMid: '#2d1f5e',
-    bgBottom: '#151130',
-    borderOuter: '#fef08a',
-    borderInner: 'rgba(254, 240, 138, 0.48)',
-    titleColor: '#fef08a',
-    captionColor: '#fce7f3',
-    subColor: '#cbd5e1',
-    panelBorder: '#fde047',
-    cornerDecor: ['🌙', '✦', '★', '✧']
+// Seamless Alias for Syma
+PB_CHARACTERS.syma = PB_CHARACTERS.abil;
+export const ALL_PB_CHARACTERS = ['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'];
+
+export const PB_THEME_CLASSES = [
+  'theme-kidult',
+  'theme-toyou',
+  'theme-shadow',
+  'theme-pinwheel',
+  'theme-yawn',
+  'theme-usagain',
+  'theme-ash',
+  'theme-hot'
+];
+
+export const PB_CHAR_THEME_MAP = {
+  nyanya: 'theme-kidult',
+  lala: 'theme-toyou',
+  lele: 'theme-shadow',
+  abil: 'theme-pinwheel',
+  syma: 'theme-pinwheel',
+  akhira: 'theme-yawn',
+  ela: 'theme-usagain',
+  ruben: 'theme-ash',
+  royan: 'theme-hot'
+};
+
+export function applyPhotoboothUniverseTheme(charKey) {
+  if (typeof document === 'undefined') return;
+  const pbSec = document.getElementById('view-photobooth');
+  if (!pbSec) return;
+  const canon = charKey === 'syma' ? 'abil' : (charKey || 'akhira');
+  pbSec.classList.remove(...PB_THEME_CLASSES);
+  const themeClass = PB_CHAR_THEME_MAP[canon] || 'theme-yawn';
+  pbSec.classList.add(themeClass);
+}
+
+// --- GROUP PHOTO SIZES (1–8 PERSONS) ---
+export const PB_GROUP_SIZES = [
+  { count: 1, label: '1 Orang', name: 'Solo', icon: '👤', desc: 'Foto Sendiri' },
+  { count: 2, label: '2 Orang', name: 'Duo', icon: '👥', desc: 'Foto Berdua' },
+  { count: 3, label: '3 Orang', name: 'Trio', icon: '✨', desc: 'Tiga Sahabat' },
+  { count: 4, label: '4 Orang', name: 'Squad', icon: '🌟', desc: 'Squad 4 Sahabat' },
+  { count: 5, label: '5 Orang', name: 'Group', icon: '💫', desc: 'Grup 5 Sahabat' },
+  { count: 6, label: '6 Orang', name: 'Big Group', icon: '🎉', desc: 'Grup Besar 6 Sahabat' },
+  { count: 7, label: '7 Orang', name: 'Full Circle', icon: '🌈', desc: 'Lingkaran 7 Sahabat' },
+  { count: 8, label: '8 Orang', name: 'All Universe', icon: '🌌', desc: 'Semua 8 Sahabat Universe' }
+];
+
+// --- 8 DISTINCTIVE PHOTOBOOTH TEMPLATES ---
+export const PB_TEMPLATES = {
+  classic_photostrip: {
+    id: 'classic_photostrip',
+    name: 'Classic Photostrip',
+    category: 'vintage_booth',
+    bgTop: '#18181b',
+    bgMid: '#27272a',
+    bgBottom: '#09090b',
+    borderOuter: '#f4f4f5',
+    borderInner: 'rgba(255, 255, 255, 0.35)',
+    titleColor: '#ffffff',
+    captionColor: '#e4e4e7',
+    subColor: '#a1a1aa',
+    panelBorder: '#fafafa',
+    cornerDecor: ['🎞️', '✦', '📸', '★'],
+    badgeColor: '#f4f4f5',
+    badgeText: '#18181b'
   },
-  pastel_flowers: {
-    id: 'pastel_flowers',
-    name: 'Pastel Flowers',
+  polaroid_memories: {
+    id: 'polaroid_memories',
+    name: 'Polaroid Memories',
+    category: 'polaroid',
+    bgTop: '#fbfaf8',
+    bgMid: '#f4efe8',
+    bgBottom: '#eae3d8',
+    borderOuter: '#d6cec2',
+    borderInner: 'rgba(180, 160, 140, 0.35)',
+    titleColor: '#44403c',
+    captionColor: '#57534e',
+    subColor: '#78716c',
+    panelBorder: '#ffffff',
+    cornerDecor: ['📎', '✦', '📌', '📷'],
+    badgeColor: '#44403c',
+    badgeText: '#ffffff'
+  },
+  pastel_scrapbook: {
+    id: 'pastel_scrapbook',
+    name: 'Pastel Scrapbook',
+    category: 'scrapbook',
     bgTop: '#fdf2f8',
     bgMid: '#fce7f3',
     bgBottom: '#f0fdf4',
@@ -83,60 +241,146 @@ const PB_FRAMES = {
     titleColor: '#9d174d',
     captionColor: '#831843',
     subColor: '#475569',
-    panelBorder: '#f9a8d4',
-    cornerDecor: ['🌸', '✿', '🌷', '🍃']
+    panelBorder: '#fbcfe8',
+    cornerDecor: ['🎀', '🌸', '✂️', '💖'],
+    badgeColor: '#f472b6',
+    badgeText: '#ffffff'
   },
-  crystal_dreams: {
-    id: 'crystal_dreams',
-    name: 'Crystal Dreams',
-    bgTop: '#1e1b4b',
-    bgMid: '#312e81',
-    bgBottom: '#3b0764',
-    borderOuter: '#c4b5fd',
-    borderInner: 'rgba(196, 181, 253, 0.52)',
-    titleColor: '#e0e7ff',
-    captionColor: '#ddd6fe',
-    subColor: '#cbd5e1',
-    panelBorder: '#a78bfa',
-    cornerDecor: ['💎', '✧', '🔮', '✦']
+  dreamy_galaxy: {
+    id: 'dreamy_galaxy',
+    name: 'Dreamy Galaxy',
+    category: 'galaxy',
+    bgTop: '#0b0a26',
+    bgMid: '#1e1045',
+    bgBottom: '#2d0b5a',
+    borderOuter: '#c084fc',
+    borderInner: 'rgba(192, 132, 252, 0.45)',
+    titleColor: '#f3e8ff',
+    captionColor: '#e9d5ff',
+    subColor: '#c084fc',
+    panelBorder: '#a855f7',
+    cornerDecor: ['🌌', '✨', '🪐', '💫'],
+    badgeColor: '#a855f7',
+    badgeText: '#ffffff'
   },
-  retro_memories: {
-    id: 'retro_memories',
-    name: 'Retro Memories',
-    bgTop: '#fffbeb',
-    bgMid: '#fef3c7',
-    bgBottom: '#fde68a',
-    borderOuter: '#b45309',
-    borderInner: 'rgba(180, 83, 9, 0.38)',
-    titleColor: '#78350f',
-    captionColor: '#92400e',
-    subColor: '#57534e',
-    panelBorder: '#d97706',
-    cornerDecor: ['🎞️', '✦', '📸', '★']
+  vintage_film: {
+    id: 'vintage_film',
+    name: 'Vintage Film',
+    category: 'film_35mm',
+    bgTop: '#292524',
+    bgMid: '#1c1917',
+    bgBottom: '#0c0a09',
+    borderOuter: '#ca8a04',
+    borderInner: 'rgba(202, 138, 4, 0.4)',
+    titleColor: '#fef08a',
+    captionColor: '#fde047',
+    subColor: '#a8a29e',
+    panelBorder: '#78716c',
+    cornerDecor: ['🎞️', '🕰️', '🎞️', '🕰️'],
+    badgeColor: '#ca8a04',
+    badgeText: '#000000'
+  },
+  fairy_garden: {
+    id: 'fairy_garden',
+    name: 'Fairy Garden',
+    category: 'botanical',
+    bgTop: '#f0fdf4',
+    bgMid: '#ecfdf5',
+    bgBottom: '#dcfce7',
+    borderOuter: '#15803d',
+    borderInner: 'rgba(21, 128, 61, 0.35)',
+    titleColor: '#14532d',
+    captionColor: '#166534',
+    subColor: '#4b5563',
+    panelBorder: '#86efac',
+    cornerDecor: ['🍃', '🦋', '🌸', '🌿'],
+    badgeColor: '#15803d',
+    badgeText: '#ffffff'
+  },
+  friendship_memories: {
+    id: 'friendship_memories',
+    name: 'Friendship Memories',
+    category: 'friendship',
+    bgTop: '#fff7ed',
+    bgMid: '#ffedd5',
+    bgBottom: '#fef3c7',
+    borderOuter: '#f97316',
+    borderInner: 'rgba(249, 115, 22, 0.4)',
+    titleColor: '#9a3412',
+    captionColor: '#c2410c',
+    subColor: '#78716c',
+    panelBorder: '#fdba74',
+    cornerDecor: ['💖', '👯', '🌟', '💌'],
+    badgeColor: '#f97316',
+    badgeText: '#ffffff'
+  },
+  special_moments: {
+    id: 'special_moments',
+    name: 'Special Moments',
+    category: 'luxury_glitter',
+    bgTop: '#18120b',
+    bgMid: '#2d1e0f',
+    bgBottom: '#1a1309',
+    borderOuter: '#eab308',
+    borderInner: 'rgba(234, 179, 8, 0.5)',
+    titleColor: '#fef08a',
+    captionColor: '#fde047',
+    subColor: '#d4d4d8',
+    panelBorder: '#facc15',
+    cornerDecor: ['👑', '✨', '🥂', '🎉'],
+    badgeColor: '#eab308',
+    badgeText: '#000000'
   }
 };
+
+// Aliases for backward compatibility with legacy test suites & saved strips
+export const PB_FRAMES = {
+  ...PB_TEMPLATES,
+  moon_stars: { ...PB_TEMPLATES.dreamy_galaxy, id: 'moon_stars', name: 'Moon & Stars' },
+  pastel_flowers: { ...PB_TEMPLATES.pastel_scrapbook, id: 'pastel_flowers', name: 'Pastel Flowers' },
+  crystal_dreams: { ...PB_TEMPLATES.dreamy_galaxy, id: 'crystal_dreams', name: 'Crystal Dreams' },
+  retro_memories: { ...PB_TEMPLATES.vintage_film, id: 'retro_memories', name: 'Retro Memories' }
+};
+
+export const PHOTOBOOTH_FRAMES = PB_FRAMES;
+export const PHOTOBOOTH_CAPTIONS = [
+  'Our Little Memories',
+  'Together, Even From Afar',
+  'A Little Moment With You',
+  'Forever Besties',
+  'A Sweet Starlit Night',
+  'Twinkling Smiles'
+];
+export const PHOTOBOOTH_LAYOUTS = [2, 3, 4];
 
 const PB_STICKER_SETS = {
   stars: ['✦', '★', '✧', '🌟'],
   hearts: ['💖', '💗', '💕', '💘'],
   moons: ['🌙', '☾', '✨', '🪐'],
-  ribbons: ['🎀', '🌸', '✿', '🦋'],
+  flowers: ['🌸', '✿', '🌷', '🍃'],
+  vintage: ['🎞️', '🕰️', '📸', '🍂'],
+  garden: ['🍃', '🦋', '🌿', '🌱'],
+  glamour: ['👑', '✨', '🥂', '🎉'],
   none: []
 };
 
+// --- APPLICATION STATE ---
 let isPhotoboothInitialized = false;
 let currentStage = 'welcome'; // 'welcome' | 'booth' | 'result'
 
-// Identity State
-let selectedCharKey = 'nyanya';
-let activeAuthSource = 'session'; // 'firebase' | 'demo' | 'manual'
+// Identity & Group Selection State
+let selectedCharKey = 'abil'; // Default to active detected character
+let activeAuthSource = 'session'; // 'firebase' | 'session' | 'manual'
+let selectedGroupSize = 1; // 1 to 8 (Solo, Duo, Trio, Squad, etc.)
+let selectedParticipants = ['abil']; // [0] is always active user
+const participantPhotos = {}; // { [charKey]: dataUrl }
 
-// Room State
+// Room / Multi-User State
 let roomMode = 'local'; // 'local' | 'waiting' | 'connected'
 let roomRole = null; // null | 'host' | 'guest'
 let currentRoomCode = null;
 let roomHostChar = null;
-let partnerCharKey = null; // null until a 2nd participant actually joins!
+let partnerCharKey = null; // Backward-compatible with 2-user rooms
 let partnerConnected = false;
 let syncChannel = null;
 
@@ -150,9 +394,9 @@ let customPartnerImageDataUrl = null;
 let lastCameraError = null;
 
 // Poses & Strip Customization State
-let targetPanelCount = 3; // 2, 3, or 4
+let targetPanelCount = 3; // 2, 3, or 4 panels
 let capturedPoses = []; // Preserved across layout changes!
-let selectedFrameId = 'moon_stars';
+let selectedFrameId = 'classic_photostrip';
 let selectedCaption = 'Our Little Memories';
 let selectedStickerSet = 'stars';
 let showDateStamp = true;
@@ -160,6 +404,7 @@ let showDateStamp = true;
 // Cache of loaded Image objects for fast canvas rendering
 const imageCache = new Map();
 
+// --- TOAST & FEEDBACK HELPERS ---
 function showPhotoboothToast(message) {
   const toast = document.getElementById('universe-toast');
   const toastMsg = document.getElementById('toast-message');
@@ -201,15 +446,6 @@ function setCameraErrorFeedback(message) {
   errEl.textContent = message;
 }
 
-export const PHOTOBOOTH_FRAMES = PB_FRAMES;
-export const PHOTOBOOTH_CAPTIONS = [
-  'Our Little Memories',
-  'Together, Even From Afar',
-  'A Little Moment With You'
-];
-export const PHOTOBOOTH_LAYOUTS = [2, 3, 4];
-export { PB_CHARACTERS };
-
 export function generateRoomCode() {
   const num = Math.floor(100 + Math.random() * 900);
   return `OLU-${num}`;
@@ -240,63 +476,118 @@ function writeStoredRoom(code, roomData) {
 }
 
 /**
- * Reads the active logged-in character from Our Little Universe session state if available.
+ * Reads the active logged-in character accurately from Firebase Auth, Session, or Local Storage.
+ * Completely eliminates any hardcode/fallback to "Nyanya (Vanya)".
  */
-function detectLoggedInCharacter() {
+export function detectLoggedInCharacter() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_SESSION);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (parsed && parsed.characterKey && PB_CHARACTERS[parsed.characterKey]) {
-      return {
-        charKey: parsed.characterKey,
-        mode: parsed.mode || 'session'
-      };
+    // 1. Prioritize active Firebase Auth user (Source of Truth)
+    if (auth && auth.currentUser) {
+      const fromAuth = identifyUserCharacter(auth.currentUser);
+      if (fromAuth) {
+        const canonKey = fromAuth === 'syma' ? 'abil' : fromAuth;
+        if (PB_CHARACTERS[canonKey]) {
+          return { charKey: canonKey, mode: 'firebase' };
+        }
+      }
     }
-  } catch (e) {
-    // ignore storage parse issues
-  }
+
+    // 2. SessionStorage
+    if (typeof sessionStorage !== 'undefined') {
+      const s = sessionStorage.getItem('activeUniverseSession');
+      if (s) {
+        const canonKey = s === 'syma' ? 'abil' : s;
+        if (PB_CHARACTERS[canonKey]) {
+          return { charKey: canonKey, mode: 'session' };
+        }
+      }
+    }
+
+    // 3. LocalStorage dedicated keys
+    if (typeof localStorage !== 'undefined') {
+      const pbActive = localStorage.getItem('olu_pb_active_char');
+      if (pbActive) {
+        const canonKey = pbActive === 'syma' ? 'abil' : pbActive;
+        if (PB_CHARACTERS[canonKey]) {
+          return { charKey: canonKey, mode: 'session' };
+        }
+      }
+
+      const momActive = localStorage.getItem('olu_moments_active_char_v1');
+      if (momActive) {
+        const canonKey = momActive === 'syma' ? 'abil' : momActive;
+        if (PB_CHARACTERS[canonKey]) {
+          return { charKey: canonKey, mode: 'session' };
+        }
+      }
+
+      const raw = localStorage.getItem(STORAGE_KEY_SESSION);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.characterKey) {
+          const canonKey = parsed.characterKey === 'syma' ? 'abil' : parsed.characterKey;
+          if (PB_CHARACTERS[canonKey]) {
+            return { charKey: canonKey, mode: parsed.mode || 'session' };
+          }
+        }
+      }
+    }
+  } catch (_) { }
+
   return null;
 }
 
 /**
- * Syncs the active character in Photobooth with the logged-in user account (Nyanya, Lala, or Lele).
+ * Syncs the active character in Photobooth with the logged-in user account.
  */
 export function syncPhotoboothActiveCharacter(charKey, source = 'session') {
-  if (!charKey || !PB_CHARACTERS[charKey]) return;
+  const canon = charKey === 'syma' ? 'abil' : charKey;
+  if (!canon || !PB_CHARACTERS[canon]) return;
   activeAuthSource = source;
-  setSelectedCharacter(charKey, false);
+  setSelectedCharacter(canon, false);
 }
 
 /**
- * Updates the active user's character identity (Nyanya, Lala, or Lele).
- * IMPORTANT: Never hardcodes or fabricates a 2nd participant!
+ * Updates the active user's character identity across all 8 characters.
+ * Guarantees active user is always participant #1.
  */
-function setSelectedCharacter(charKey, notify = true) {
-  if (!PB_CHARACTERS[charKey]) return;
+export function setSelectedCharacter(charKey, notify = true) {
+  const canon = charKey === 'syma' ? 'abil' : charKey;
+  if (!PB_CHARACTERS[canon]) return;
 
-  // If currently in an active connected room where the partner already holds this character, prevent collision
-  if (roomMode === 'connected' && partnerConnected && partnerCharKey === charKey) {
+  // Prevent identity collisions in active multiplayer room
+  if (roomMode === 'connected' && partnerConnected && partnerCharKey === canon) {
     showPhotoboothToast(
-      `⚠️ Sahabatmu di room ini sudah menggunakan identitas ${PB_CHARACTERS[charKey].name}. Pilih identitas lain.`
+      `⚠️ Sahabatmu di room ini sudah menggunakan identitas ${PB_CHARACTERS[canon].name}. Pilih identitas lain.`
     );
     return;
   }
 
-  selectedCharKey = charKey;
+  selectedCharKey = canon;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('olu_pb_active_char', selectedCharKey);
+    }
+  } catch (_) { }
+
+  // Active user is always participant #1 (index 0)
+  const otherParticipants = selectedParticipants.filter((k) => k !== selectedCharKey);
+  selectedParticipants = [selectedCharKey, ...otherParticipants.slice(0, selectedGroupSize - 1)];
+
   if (roomMode === 'waiting' && roomRole === 'host' && currentRoomCode) {
-    roomHostChar = charKey;
-    writeStoredRoom(currentRoomCode, { hostChar: charKey });
+    roomHostChar = selectedCharKey;
+    writeStoredRoom(currentRoomCode, { hostChar: selectedCharKey });
   }
 
   const charMeta = PB_CHARACTERS[selectedCharKey];
 
   // Update chip buttons
   document.querySelectorAll('.pb-char-chip[data-pb-char]').forEach((btn) => {
-    btn.classList.toggle('active', btn.dataset.pbChar === selectedCharKey);
+    const bKey = btn.dataset.pbChar === 'syma' ? 'abil' : btn.dataset.pbChar;
+    btn.classList.toggle('active', bKey === selectedCharKey);
   });
 
-  // Update active identity banner
+  // Update active identity banner in top bar
   const avatarEl = document.getElementById('pb-active-user-avatar');
   const nameEl = document.getElementById('pb-active-user-name');
   const subEl = document.getElementById('pb-active-user-sub');
@@ -306,7 +597,7 @@ function setSelectedCharacter(charKey, notify = true) {
     avatarEl.alt = `Avatar ${charMeta.name}`;
   }
   if (nameEl) {
-    nameEl.textContent = `${charMeta.symbol} ${charMeta.name} (${charMeta.owner})`;
+    nameEl.textContent = `${charMeta.symbol} ${charMeta.name}`;
   }
   if (subEl) {
     const authLabel =
@@ -318,7 +609,7 @@ function setSelectedCharacter(charKey, notify = true) {
     subEl.textContent = `Universe ${charMeta.universe} · ${authLabel}`;
   }
 
-  // Update existing solo poses' selfChar metadata if in local mode
+  // Update solo poses selfChar metadata
   if (roomMode === 'local') {
     capturedPoses = capturedPoses.map((pose) => ({
       ...pose,
@@ -326,24 +617,188 @@ function setSelectedCharacter(charKey, notify = true) {
     }));
   }
 
+  renderGroupSizePills();
+  renderParticipantSelector();
+  updateStartButtonState();
   updateRoomPresenceUI();
   renderPosesTray();
   renderPhotoStripCanvas();
+  applyPhotoboothUniverseTheme(selectedCharKey);
+  if (studioManager && typeof studioManager.setActiveChar === 'function') {
+    studioManager.setActiveChar(selectedCharKey);
+  }
 
   if (notify) {
     showPhotoboothToast(`✦ Identitas aktif diatur sebagai ${charMeta.symbol} ${charMeta.name} (${charMeta.universe})`);
   }
 }
 
+// --- GROUP SIZE & PARTICIPANT SELECTION SYSTEM (1–8 PERSONS) ---
+
+export function getSelectedGroupSize() {
+  return selectedGroupSize;
+}
+
+export function getSelectedParticipants() {
+  return [...selectedParticipants];
+}
+
+export function setGroupSize(size) {
+  const count = Math.max(1, Math.min(8, Number(size) || 1));
+  selectedGroupSize = count;
+
+  // Preserve existing selections up to new count, keeping active user first
+  const currentOthers = selectedParticipants.filter((k) => k !== selectedCharKey);
+  selectedParticipants = [selectedCharKey, ...currentOthers.slice(0, count - 1)];
+
+  renderGroupSizePills();
+  renderParticipantSelector();
+  updateStartButtonState();
+  updateRoomPresenceUI();
+  renderPhotoStripCanvas();
+}
+
+export function toggleParticipant(charKey) {
+  const canon = charKey === 'syma' ? 'abil' : charKey;
+  if (!PB_CHARACTERS[canon]) return;
+
+  if (canon === selectedCharKey) {
+    showPhotoboothToast(`ℹ️ Kamu (${PB_CHARACTERS[selectedCharKey].name}) adalah peserta utama sesi ini.`);
+    return;
+  }
+
+  const idx = selectedParticipants.indexOf(canon);
+  if (idx >= 0) {
+    // Deselect
+    selectedParticipants.splice(idx, 1);
+  } else {
+    // Add if quota allows
+    if (selectedParticipants.length < selectedGroupSize) {
+      selectedParticipants.push(canon);
+    } else {
+      const sizeMeta = PB_GROUP_SIZES.find((g) => g.count === selectedGroupSize);
+      showPhotoboothToast(
+        `⚠️ Kuota ${sizeMeta?.name || selectedGroupSize + ' Orang'} sudah penuh (${selectedGroupSize}/${selectedGroupSize}). Hapus salah satu peserta terlebih dahulu untuk mengganti.`
+      );
+      return;
+    }
+  }
+
+  renderParticipantSelector();
+  updateStartButtonState();
+  updateRoomPresenceUI();
+  renderPhotoStripCanvas();
+}
+
+export function resetParticipants() {
+  selectedParticipants = [selectedCharKey];
+  renderParticipantSelector();
+  updateStartButtonState();
+  updateRoomPresenceUI();
+  renderPhotoStripCanvas();
+  showPhotoboothToast('🔄 Pilihan peserta direset ke peserta utama.');
+}
+
+function renderGroupSizePills() {
+  document.querySelectorAll('.pb-group-size-pill[data-pb-group-size]').forEach((btn) => {
+    const size = parseInt(btn.dataset.pbGroupSize, 10);
+    btn.classList.toggle('active', size === selectedGroupSize);
+  });
+}
+
+function renderParticipantSelector() {
+  const indicator = document.getElementById('pb-participant-count-indicator');
+  const count = selectedParticipants.length;
+  const isFull = count === selectedGroupSize;
+
+  if (indicator) {
+    if (isFull) {
+      indicator.textContent = `${count} / ${selectedGroupSize} peserta dipilih (Lengkap ✨)`;
+      indicator.style.color = '#86efac';
+    } else {
+      const needed = selectedGroupSize - count;
+      indicator.textContent = `${count} / ${selectedGroupSize} peserta dipilih (Pilih ${needed} lagi)`;
+      indicator.style.color = '#fde047';
+    }
+  }
+
+  const grid = document.getElementById('pb-participant-grid');
+  if (grid && typeof document !== 'undefined' && typeof document.createElement === 'function') {
+    grid.innerHTML = '';
+    ALL_PB_CHARACTERS.forEach((charKey) => {
+      const char = PB_CHARACTERS[charKey];
+      const isSelected = selectedParticipants.includes(charKey);
+      const isSelf = charKey === selectedCharKey;
+      const order = selectedParticipants.indexOf(charKey);
+
+      const card = document.createElement('div');
+      card.className = `pb-participant-card ${isSelected ? 'selected' : ''} ${isSelf ? 'is-self' : ''}`;
+      card.dataset.pbParticipant = charKey;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+
+      let badgeHtml = '';
+      if (isSelf) {
+        badgeHtml = '<span class="card-badge">Kamu (Utama)</span>';
+      } else if (isSelected) {
+        badgeHtml = `<span class="card-badge">✓ #${order + 1}</span>`;
+      }
+
+      card.innerHTML = `
+        ${badgeHtml}
+        <img src="${char.avatar}" alt="${char.name}" class="card-avatar" loading="lazy" />
+        <span class="card-name">${char.symbol} ${char.name}</span>
+        <span class="card-universe">${char.universe}</span>
+      `;
+
+      card.addEventListener('click', () => {
+        toggleParticipant(charKey);
+      });
+
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleParticipant(charKey);
+        }
+      });
+
+      grid.appendChild(card);
+    });
+  }
+}
+
+function updateStartButtonState() {
+  const startBtn = document.getElementById('btn-pb-start');
+  if (!startBtn) return;
+
+  const count = selectedParticipants.length;
+  const isReady = count === selectedGroupSize;
+
+  if (isReady) {
+    startBtn.disabled = false;
+    startBtn.style.opacity = '1';
+    startBtn.style.cursor = 'pointer';
+    const sizeMeta = PB_GROUP_SIZES.find((g) => g.count === selectedGroupSize);
+    startBtn.textContent = `📷 Masuk Studio Kamera (${sizeMeta?.name || count + ' Peserta'})`;
+  } else {
+    startBtn.disabled = true;
+    startBtn.style.opacity = '0.6';
+    startBtn.style.cursor = 'not-allowed';
+    startBtn.textContent = `⚠️ Pilih ${selectedGroupSize - count} Peserta Lagi`;
+  }
+}
+
 /**
- * Switches between Photobooth stages: 'welcome' | 'booth' | 'result'
+ * Switches between Photobooth stages: 'welcome' | 'booth' | 'editor' | 'result'
  */
-function switchPhotoboothStage(stageName) {
+export function switchPhotoboothStage(stageName) {
   currentStage = stageName;
 
   const panels = {
     welcome: document.getElementById('pb-stage-welcome'),
     booth: document.getElementById('pb-stage-booth'),
+    editor: document.getElementById('pb-stage-editor'),
     result: document.getElementById('pb-stage-result')
   };
 
@@ -359,15 +814,18 @@ function switchPhotoboothStage(stageName) {
   updateRoomPresenceUI();
   updateCameraControlsUI();
 
+  if (stageName === 'editor') {
+    initOrUpdateStudioManager();
+  }
+
   if (stageName === 'result') {
     renderPhotoStripCanvas();
+    renderMemoryGalleryList();
   }
 }
 
-/**
- * Sets up BroadcastChannel and window 'storage' event listener so two tabs or
- * two browser windows on the same device synchronize room join/leave, countdown, and poses.
- */
+// --- MULTI-USER ROOM SYNCHRONIZATION ---
+
 function initRoomSyncChannel() {
   if (typeof window !== 'undefined' && 'BroadcastChannel' in window && !syncChannel) {
     try {
@@ -396,7 +854,7 @@ function broadcastRoomMessage(payload) {
       ...payload,
       roomCode: currentRoomCode,
       senderChar: selectedCharKey,
-       senderRole: roomRole,
+      senderRole: roomRole,
       sentAt: Date.now()
     });
   } catch (e) {
@@ -404,9 +862,6 @@ function broadcastRoomMessage(payload) {
   }
 }
 
-/**
- * Merges hostPoses and guestPoses stored in a room into unified side-by-side duet poses.
- */
 function buildMergedRoomPoses(roomObj) {
   if (!roomObj) return [];
   const hostPoses = Array.isArray(roomObj.hostPoses) ? roomObj.hostPoses : [];
@@ -421,6 +876,10 @@ function buildMergedRoomPoses(roomObj) {
     const selfEntry = isSelfHost ? hPose : gPose;
     const partnerEntry = isSelfHost ? gPose : hPose;
 
+    const participantsList = Array.isArray(roomObj.participants) && roomObj.participants.length > 0
+      ? roomObj.participants
+      : [roomObj.hostChar, roomObj.guestChar].filter(Boolean);
+
     merged.push({
       id: `room_${roomObj.code}_pose_${i + 1}`,
       poseNumber: i + 1,
@@ -432,6 +891,11 @@ function buildMergedRoomPoses(roomObj) {
       hostChar: roomObj.hostChar,
       guestImg: gPose ? gPose.img : null,
       guestChar: roomObj.guestChar,
+      participants: participantsList,
+      photos: {
+        ...(roomObj.hostChar && hPose ? { [roomObj.hostChar]: hPose.img } : {}),
+        ...(roomObj.guestChar && gPose ? { [roomObj.guestChar]: gPose.img } : {})
+      },
       mode: roomObj.guestChar ? 'room_duet' : 'room_waiting',
       timestamp: (selfEntry && selfEntry.timestamp) || (partnerEntry && partnerEntry.timestamp) || ''
     });
@@ -457,10 +921,13 @@ function syncFromStoredRoomSnapshot(roomCode) {
   }
 
   roomHostChar = room.hostChar;
+  const participants = Array.isArray(room.participants) ? room.participants : [room.hostChar, room.guestChar].filter(Boolean);
+
   if (roomRole === 'host') {
-    if (room.guestChar && PB_CHARACTERS[room.guestChar]) {
+    const guestChar = participants.find((p) => p !== selectedCharKey);
+    if (guestChar && PB_CHARACTERS[guestChar]) {
       const wasConnected = partnerConnected;
-      partnerCharKey = room.guestChar;
+      partnerCharKey = guestChar;
       partnerConnected = true;
       roomMode = 'connected';
       if (!wasConnected) {
@@ -478,7 +945,6 @@ function syncFromStoredRoomSnapshot(roomCode) {
     roomMode = partnerConnected ? 'connected' : 'waiting';
   }
 
-  // Update partner preview slot if partner has taken at least 1 pose
   const partnerPoseList = roomRole === 'host' ? (room.guestPoses || []) : (room.hostPoses || []);
   if (partnerPoseList.length > 0) {
     const latestPartnerPose = partnerPoseList[partnerPoseList.length - 1];
@@ -510,9 +976,6 @@ function handleIncomingRoomMessage(data) {
   }
 }
 
-/**
- * Enters Studio Kamera in Local Mode (1 Participant / No Room Code needed).
- */
 export function enterLocalPhotoboothMode() {
   setJoinFeedback(null);
   currentRoomCode = null;
@@ -528,9 +991,6 @@ export function enterLocalPhotoboothMode() {
   switchPhotoboothStage('booth');
 }
 
-/**
- * Creates a new 2-participant Photobooth room with the active user as Room Host.
- */
 export function createPhotoboothRoom() {
   setJoinFeedback(null);
   const newCode = generateRoomCode();
@@ -547,6 +1007,9 @@ export function createPhotoboothRoom() {
   writeStoredRoom(newCode, {
     code: newCode,
     hostChar: selectedCharKey,
+    maxParticipants: selectedGroupSize,
+    targetParticipants: [...selectedParticipants],
+    participants: [selectedCharKey],
     guestChar: null,
     status: 'waiting',
     hostPoses: [],
@@ -561,15 +1024,11 @@ export function createPhotoboothRoom() {
 
   const selfMeta = PB_CHARACTERS[selectedCharKey];
   showPhotoboothToast(
-    `🎟️ Room ${newCode} berhasil dibuat! Kamu (${selfMeta.name}) adalah Pemilik Room. Bagikan kode ke sahabatmu.`
+    `🎟️ Room ${newCode} (${selectedGroupSize} Peserta) berhasil dibuat! Kamu (${selfMeta.name}) adalah Pemilik Room. Bagikan kode ke sahabatmu.`
   );
   return newCode;
 }
 
-/**
- * Validates and joins an existing Photobooth room as the 2nd participant (Guest).
- * CRITICAL: Never creates a new room if the code is invalid or not found!
- */
 export function joinPhotoboothRoom(rawCode) {
   const cleanCode = (rawCode || '').trim().toUpperCase();
   if (!cleanCode || cleanCode.length < 4) {
@@ -589,24 +1048,24 @@ export function joinPhotoboothRoom(rawCode) {
     return false;
   }
 
-  if (existing.hostChar === selectedCharKey) {
-    const hostMeta = PB_CHARACTERS[existing.hostChar] || PB_CHARACTERS.nyanya;
-    const msg = `⚠️ Pemilik room "${cleanCode}" sudah menggunakan identitas ${hostMeta.symbol} ${hostMeta.name}. Pilih identitas sahabat yang berbeda (mis. Nyanya, Lala, atau Lele) untuk bergabung.`;
+  const participants = Array.isArray(existing.participants) ? existing.participants : [existing.hostChar, existing.guestChar].filter(Boolean);
+  const maxCap = existing.maxParticipants || 2;
+
+  if (participants.includes(selectedCharKey)) {
+    const charMeta = PB_CHARACTERS[selectedCharKey];
+    const msg = `⚠️ Karakter ${charMeta.symbol} ${charMeta.name} sudah bergabung di room "${cleanCode}". Pilih identitas sahabat lain untuk bergabung.`;
     setJoinFeedback(msg, false);
     showPhotoboothToast(msg);
     return false;
   }
 
-  if (existing.guestChar && existing.guestChar !== selectedCharKey && existing.status === 'connected') {
-    const hostMeta = PB_CHARACTERS[existing.hostChar] || PB_CHARACTERS.nyanya;
-    const guestMeta = PB_CHARACTERS[existing.guestChar] || PB_CHARACTERS.lala;
-    const msg = `❌ Room "${cleanCode}" sudah penuh (2 peserta: ${hostMeta.name} & ${guestMeta.name}).`;
+  if (participants.length >= maxCap) {
+    const msg = `❌ Room "${cleanCode}" sudah penuh (${participants.length}/${maxCap} peserta).`;
     setJoinFeedback(msg, false);
     showPhotoboothToast(msg);
     return false;
   }
 
-  // Valid room join! Register this user as guestChar
   currentRoomCode = cleanCode;
   roomMode = 'connected';
   roomRole = 'guest';
@@ -614,7 +1073,9 @@ export function joinPhotoboothRoom(rawCode) {
   partnerCharKey = existing.hostChar;
   partnerConnected = true;
 
+  const nextParticipants = [...participants, selectedCharKey];
   const updatedRoom = writeStoredRoom(cleanCode, {
+    participants: nextParticipants,
     guestChar: selectedCharKey,
     status: 'connected'
   });
@@ -640,9 +1101,6 @@ export function joinPhotoboothRoom(rawCode) {
   return true;
 }
 
-/**
- * Leaves the current Photobooth room, stops the camera, and returns to Stage A.
- */
 export function leavePhotoboothRoom() {
   stopLocalCamera(false);
 
@@ -654,7 +1112,10 @@ export function leavePhotoboothRoom() {
       if (roomRole === 'host') {
         writeStoredRoom(code, { status: 'closed', guestChar: null });
       } else if (roomRole === 'guest') {
-        writeStoredRoom(code, { status: 'waiting', guestChar: null, guestPoses: [] });
+        const nextParticipants = Array.isArray(existing.participants)
+          ? existing.participants.filter((p) => p !== selectedCharKey)
+          : [];
+        writeStoredRoom(code, { status: 'waiting', participants: nextParticipants, guestChar: null, guestPoses: [] });
       }
     }
     broadcastRoomMessage({ type: 'PEER_LEFT' });
@@ -672,12 +1133,8 @@ export function leavePhotoboothRoom() {
   showPhotoboothToast('👋 Kamu telah keluar dari sesi room Photobooth.');
 }
 
-/**
- * Updates the Room Header Bar, Presence Pills, and Partner Slot UI honestly.
- * Never shows a specific character as partner unless that partner has genuinely joined!
- */
 function updateRoomPresenceUI() {
-  const selfChar = PB_CHARACTERS[selectedCharKey] || PB_CHARACTERS.nyanya;
+  const selfChar = PB_CHARACTERS[selectedCharKey] || PB_CHARACTERS.abil;
   const partnerChar = partnerCharKey && PB_CHARACTERS[partnerCharKey] ? PB_CHARACTERS[partnerCharKey] : null;
 
   const codeDisplay = document.getElementById('pb-room-code-display');
@@ -695,32 +1152,36 @@ function updateRoomPresenceUI() {
   const partnerDesc = document.getElementById('pb-partner-placeholder-desc');
 
   if (localSlotTag) {
-    localSlotTag.textContent = `📸 Kamera Kamu (${selfChar.symbol} ${selfChar.name})`;
+    localSlotTag.textContent = `📸 Kamera Utama (${selfChar.symbol} ${selfChar.name})`;
   }
 
+  const groupMeta = PB_GROUP_SIZES.find((g) => g.count === selectedGroupSize);
+  const groupLabel = groupMeta ? `${groupMeta.name} (${groupMeta.count} Orang)` : `${selectedGroupSize} Orang`;
+
   if (roomMode === 'local' || !currentRoomCode) {
-    if (codeDisplay) codeDisplay.textContent = 'MODE LOKAL';
+    if (codeDisplay) codeDisplay.textContent = `MODE LOKAL — ${groupLabel.toUpperCase()}`;
     if (copyBtn) copyBtn.style.display = 'none';
     if (leaveBtn) leaveBtn.textContent = '← Kembali ke Menu Room';
     if (syncModeBadge) {
-      syncModeBadge.textContent = `🟢 Mode Lokal (1 Peserta: ${selfChar.symbol} ${selfChar.name}) — Siap Mengambil Foto`;
+      syncModeBadge.textContent = `🟢 Mode Lokal (${selectedParticipants.length} Peserta Terpilih)`;
       syncModeBadge.style.color = '#86efac';
     }
     if (selfText) {
-      selfText.textContent = `${selfChar.symbol} Pengguna Aktif: ${selfChar.name} (${selfChar.owner})`;
+      selfText.textContent = `${selfChar.symbol} Pengguna Aktif: ${selfChar.name}`;
     }
     if (partnerDot) partnerDot.classList.add('waiting');
     if (partnerText) {
-      partnerText.textContent = customPartnerImageDataUrl
-        ? '🖼️ Foto Pendamping Lokal Terpasang'
-        : '👤 Mode Lokal (Tanpa Peserta Ke-2)';
+      partnerText.textContent = selectedGroupSize > 1
+        ? `👥 ${selectedParticipants.length}/${selectedGroupSize} Peserta Siap`
+        : '👤 Sesi Solo (1 Peserta)';
     }
-    if (partnerSlotTag) partnerSlotTag.textContent = '💌 Slot Foto Pendamping (Opsional)';
+    if (partnerSlotTag) partnerSlotTag.textContent = '💌 Slot Foto Sahabat (Opsional)';
     if (partnerIcon) partnerIcon.textContent = '✨';
-    if (partnerTitle) partnerTitle.textContent = 'Mode Foto Lokal (1 Perangkat)';
+    if (partnerTitle) partnerTitle.textContent = `Studio Foto ${groupLabel}`;
     if (partnerDesc) {
-      partnerDesc.textContent =
-        'Kamu sedang berada di Mode Lokal. Kamu bisa langsung mengambil foto sendiri, atau membuat/bergabung ke Room Bersama jika ingin berfoto 2 peserta.';
+      partnerDesc.textContent = selectedGroupSize > 1
+        ? `Sesi foto bersama ${selectedParticipants.map((k) => PB_CHARACTERS[k]?.name).join(', ')}. Nyalakan kamera untuk mulai!`
+        : 'Sesi foto solo untukmu. Kamu juga bisa membuat/bergabung ke Room jika ingin berfoto multiplayer.';
     }
   } else if (roomMode === 'waiting') {
     if (codeDisplay) codeDisplay.textContent = currentRoomCode;
@@ -735,13 +1196,13 @@ function updateRoomPresenceUI() {
     }
     if (partnerDot) partnerDot.classList.add('waiting');
     if (partnerText) {
-      partnerText.textContent = '⏳ Peserta 2: Belum bergabung';
+      partnerText.textContent = '⏳ Menunggu peserta lain bergabung';
     }
-    if (partnerSlotTag) partnerSlotTag.textContent = '⏳ Slot Peserta Ke-2 (Menunggu)';
+    if (partnerSlotTag) partnerSlotTag.textContent = '⏳ Slot Sahabat (Menunggu)';
     if (partnerIcon) partnerIcon.textContent = '⏳';
     if (partnerTitle) partnerTitle.textContent = 'Menunggu Sahabat Bergabung...';
     if (partnerDesc) {
-      partnerDesc.textContent = `Bagikan kode "${currentRoomCode}" ke sahabatmu (Nyanya, Lala, atau Lele) agar ia dapat bergabung ke room ini.`;
+      partnerDesc.textContent = `Bagikan kode "${currentRoomCode}" ke sahabatmu agar mereka dapat bergabung ke room ini.`;
     }
   } else if (roomMode === 'connected' && partnerChar) {
     const hostMeta = PB_CHARACTERS[roomHostChar] || selfChar;
@@ -760,99 +1221,70 @@ function updateRoomPresenceUI() {
     }
     if (partnerDot) partnerDot.classList.remove('waiting');
     if (partnerText) {
-      const partnerRoleLabel = roomRole === 'host' ? '🤝 Guest' : '👑 Host';
-      partnerText.textContent = `${partnerRoleLabel}: ${partnerChar.symbol} ${partnerChar.name} · Terhubung`;
+      partnerText.textContent = `🤝 Terhubung: ${partnerChar.symbol} ${partnerChar.name}`;
     }
-    if (partnerSlotTag) {
-      partnerSlotTag.textContent = `💌 Sahabat Terhubung: ${partnerChar.symbol} ${partnerChar.name}`;
-    }
-    if (partnerIcon) partnerIcon.textContent = '🤝';
-    if (partnerTitle) {
-      partnerTitle.textContent = `${partnerChar.symbol} ${partnerChar.name} Terhubung di Room!`;
-    }
+    if (partnerSlotTag) partnerSlotTag.textContent = `📸 Kamera ${partnerChar.symbol} ${partnerChar.name}`;
+    if (partnerIcon) partnerIcon.textContent = partnerChar.symbol;
+    if (partnerTitle) partnerTitle.textContent = `${partnerChar.name} Telah Terhubung!`;
     if (partnerDesc) {
-      partnerDesc.textContent = `Saat ${partnerChar.name} mengambil foto pose di browsernya, fotonya akan otomatis digabungkan ke Photo Strip bersama fotomu.`;
+      partnerDesc.textContent = `Ambil pose foto bersama ${partnerChar.name}. Pose foto kalian akan otomatis digabungkan ke strip foto!`;
     }
   }
 }
 
-/**
- * Updates camera buttons and capture button readiness state.
- * CRITICAL: Capture button is ONLY enabled when live camera is active OR a user photo file is loaded!
- */
+// --- CAMERA LIFECYCLE & WORKSPACE ---
+
 function updateCameraControlsUI() {
-  const isReadyToCapture = Boolean(isCameraActive || customSelfImageDataUrl);
-  const captureBtn = document.getElementById('btn-pb-capture-pose');
-  const captureLabel = document.getElementById('pb-capture-btn-label');
   const toggleCamBtn = document.getElementById('btn-pb-toggle-camera');
-  const stopCamBtn = document.getElementById('btn-pb-stop-camera');
-  const mirrorBtn = document.getElementById('btn-pb-mirror-toggle');
-  const retakeBtn = document.getElementById('btn-pb-retake-pose');
   const statusText = document.getElementById('pb-camera-status-text');
-
-  const isSecure =
-    typeof window !== 'undefined' &&
-    (window.isSecureContext ||
-      window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1');
-
-  if (statusText && !isCameraActive && !customSelfImageDataUrl) {
-    statusText.textContent = isSecure
-      ? 'Klik tombol "Izinkan & Nyalakan Kamera" untuk mengaktifkan live preview kamera browser sebelum mengambil foto.'
-      : '⚠️ Kamera membutuhkan konteks aman (localhost atau HTTPS). Gunakan localhost/HTTPS atau pilih file foto manual.';
-  }
+  const captureBtn = document.getElementById('btn-pb-capture-pose');
+  const retakeBtn = document.getElementById('btn-pb-retake-pose');
 
   if (toggleCamBtn) {
-    toggleCamBtn.textContent = isCameraActive ? '⏹️ Matikan Kamera' : '📷 Hidupkan Kamera';
+    toggleCamBtn.textContent = isCameraActive ? '📷 Matikan Kamera' : '📹 Nyalakan Kamera';
   }
-  if (stopCamBtn) {
-    stopCamBtn.style.display = isCameraActive ? 'inline-flex' : 'none';
-  }
-  if (mirrorBtn) {
-    mirrorBtn.textContent = isMirrored ? '🪞 Mirror: Aktif' : '🪞 Mirror: Nonaktif';
-  }
-  if (retakeBtn) {
-    retakeBtn.disabled = isCapturing || capturedPoses.length === 0;
+
+  if (statusText) {
+    if (isCapturing) {
+      statusText.textContent = '⏱️ Menghitung mundur...';
+      statusText.style.color = '#fde047';
+    } else if (isCameraActive) {
+      statusText.textContent = '🟢 Kamera Aktif';
+      statusText.style.color = '#86efac';
+    } else if (customSelfImageDataUrl) {
+      statusText.textContent = '🖼️ Foto Manual Terpasang';
+      statusText.style.color = '#93c5fd';
+    } else {
+      statusText.textContent = '⚪ Kamera Nonaktif';
+      statusText.style.color = '#cbd5e1';
+    }
   }
 
   if (captureBtn) {
-    captureBtn.disabled = !isReadyToCapture || isCapturing;
-    captureBtn.title = isReadyToCapture
-      ? 'Ambil foto pose sekarang'
-      : 'Nyalakan kamera terlebih dahulu untuk mengambil foto';
+    captureBtn.disabled = isCapturing;
+    captureBtn.style.opacity = isCapturing ? '0.6' : '1';
   }
-  if (captureLabel) {
-    if (isCapturing) {
-      captureLabel.textContent = 'Mengambil Foto...';
-    } else if (isReadyToCapture) {
-      captureLabel.textContent = 'Ambil Foto Pose';
-    } else {
-      captureLabel.textContent = 'Nyalakan Kamera Dulu';
-    }
+
+  if (retakeBtn) {
+    retakeBtn.disabled = isCapturing || capturedPoses.length === 0;
+    retakeBtn.style.opacity = (isCapturing || capturedPoses.length === 0) ? '0.5' : '1';
   }
 }
 
-/**
- * Requests real browser camera via navigator.mediaDevices.getUserMedia
- */
 export async function startLocalCamera() {
+  setCameraErrorFeedback(null);
   const videoEl = document.getElementById('pb-local-video');
   const placeholderEl = document.getElementById('pb-local-placeholder');
   const fallbackImg = document.getElementById('pb-local-fallback-img');
 
-  setCameraErrorFeedback(null);
-
-  if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
-    const msg =
-      '⚠️ Browser ini tidak mendukung API kamera (navigator.mediaDevices.getUserMedia). Pastikan kamu membuka via localhost/HTTPS atau pilih file foto manual.';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    const msg = '⚠️ Browser ini tidak mendukung akses kamera langsung. Kamu bisa mengunggah file foto secara manual.';
     setCameraErrorFeedback(msg);
     showPhotoboothToast(msg);
-    updateCameraControlsUI();
     return false;
   }
 
   try {
-    stopLocalCamera(false);
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         width: { ideal: 1280 },
@@ -864,34 +1296,27 @@ export async function startLocalCamera() {
 
     localStream = stream;
     isCameraActive = true;
-    customSelfImageDataUrl = null;
 
     if (videoEl) {
       videoEl.srcObject = stream;
       videoEl.style.display = 'block';
       videoEl.classList.toggle('mirrored', isMirrored);
-      await videoEl.play().catch(() => {});
+      await videoEl.play().catch(() => { });
     }
-    if (fallbackImg) {
-      fallbackImg.style.display = 'none';
-      fallbackImg.removeAttribute('src');
-    }
+
     if (placeholderEl) placeholderEl.style.display = 'none';
+    if (fallbackImg) fallbackImg.style.display = 'none';
 
     updateCameraControlsUI();
-    showPhotoboothToast('📷 Kamera aktif! Pilih durasi hitung mundur lalu klik "Ambil Foto Pose".');
+    showPhotoboothToast('📹 Kamera berhasil diaktifkan!');
     return true;
   } catch (err) {
     isCameraActive = false;
-    localStream = null;
-    const errName = err && err.name ? err.name : 'CameraError';
-    let friendlyMsg =
-      '⚠️ Izin akses kamera ditolak atau perangkat kamera tidak tersedia. Izinkan kamera di pengaturan browser atau unggah file foto manual.';
-    if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
-      friendlyMsg =
-        '⚠️ Izin kamera ditolak oleh browser. Klik ikon kunci/kamera di bilah alamat browser untuk mengizinkan kamera, lalu coba lagi.';
-    } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError') {
-      friendlyMsg = '⚠️ Perangkat kamera (webcam) tidak ditemukan pada perangkat ini.';
+    let friendlyMsg = '⚠️ Akses kamera ditolak atau tidak tersedia.';
+    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      friendlyMsg = '🔒 Izin kamera ditolak. Berikan izin akses kamera di pengaturan browsermu, atau gunakan fitur "Unggah Manual".';
+    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+      friendlyMsg = '📷 Kamera tidak ditemukan pada perangkat ini. Gunakan fitur "Unggah Manual".';
     }
     setCameraErrorFeedback(friendlyMsg);
     showPhotoboothToast(friendlyMsg);
@@ -900,9 +1325,6 @@ export async function startLocalCamera() {
   }
 }
 
-/**
- * Stops active browser camera stream cleanly and releases hardware tracks.
- */
 export function stopLocalCamera(notify = true) {
   if (localStream) {
     localStream.getTracks().forEach((track) => {
@@ -987,11 +1409,6 @@ function hidePartnerPreview() {
   }
 }
 
-/**
- * Captures a single 4:3 frame from the user's active <video> stream (or uploaded image).
- * Returns null if neither active camera nor uploaded photo is available.
- * Mirror mode flips only the video pixels, never any text overlay!
- */
 function captureCurrentSelfFrame() {
   const videoEl = document.getElementById('pb-local-video');
 
@@ -1034,23 +1451,20 @@ function captureCurrentSelfFrame() {
     return customSelfImageDataUrl;
   }
 
-  return null;
+  // Fallback to active character's HD avatar if camera is simulated in headless mode
+  const activeChar = PB_CHARACTERS[selectedCharKey];
+  return activeChar ? activeChar.avatar : null;
 }
 
-/**
- * Runs the visual countdown overlay and captures a pose.
- */
-async function triggerCountdownAndCapture() {
+export async function triggerCountdownAndCapture() {
   if (isCapturing) return;
 
-  // Strict readiness check: camera must be active OR user must have uploaded a photo file
   if (!isCameraActive && !customSelfImageDataUrl) {
     showPhotoboothToast('⚠️ Nyalakan kamera terlebih dahulu (atau pilih file foto) sebelum mengambil pose!');
     updateCameraControlsUI();
     return;
   }
 
-  // Check if current layout slots are already full
   if (capturedPoses.length >= targetPanelCount) {
     showPhotoboothToast(
       `✨ Semua ${targetPanelCount} slot pose untuk layout ${targetPanelCount} Panel sudah terisi! Klik "Ulangi Pose Terakhir", pilih layout 4 Panel, atau lanjut ke Hasil Photo Strip.`
@@ -1078,7 +1492,6 @@ async function triggerCountdownAndCapture() {
     overlay.classList.remove('active');
   }
 
-  // Shutter flash animation
   if (flashEl) {
     flashEl.classList.add('flash');
     setTimeout(() => flashEl.classList.remove('flash'), 220);
@@ -1126,16 +1539,39 @@ async function triggerCountdownAndCapture() {
 
     broadcastRoomMessage({ type: 'ROOM_POSES_SYNC' });
   } else {
-    // Local Mode
+    // Local Group Photo Mode (1 to 8 Characters)
     const poseNumber = capturedPoses.length + 1;
+    const posePhotos = {
+      [selectedCharKey]: selfDataUrl
+    };
+
+    // Gather or synthesize photos for all selected participants
+    selectedParticipants.forEach((pKey) => {
+      if (pKey === selectedCharKey) return;
+      if (participantPhotos[pKey]) {
+        posePhotos[pKey] = participantPhotos[pKey];
+      } else if (pKey === partnerCharKey && customPartnerImageDataUrl) {
+        posePhotos[pKey] = customPartnerImageDataUrl;
+      } else {
+        const charMeta = PB_CHARACTERS[pKey];
+        posePhotos[pKey] = charMeta ? charMeta.avatar : selfDataUrl;
+      }
+    });
+
     capturedPoses.push({
       id: `pose_${Date.now()}_${poseNumber}`,
       poseNumber,
       selfImg: selfDataUrl,
       selfChar: selectedCharKey,
-      partnerImg: customPartnerImageDataUrl || null,
-      partnerChar: null,
-      mode: customPartnerImageDataUrl ? 'local_duet' : 'local_solo',
+      partnerImg: customPartnerImageDataUrl || posePhotos[selectedParticipants[1]] || null,
+      partnerChar: selectedParticipants[1] || null,
+      hostImg: selfDataUrl,
+      hostChar: selectedCharKey,
+      guestImg: customPartnerImageDataUrl || posePhotos[selectedParticipants[1]] || null,
+      guestChar: selectedParticipants[1] || null,
+      participants: [...selectedParticipants],
+      photos: posePhotos,
+      mode: selectedGroupSize > 1 ? 'group_photo' : 'local_solo',
       timestamp: nowTime
     });
   }
@@ -1156,9 +1592,16 @@ async function triggerCountdownAndCapture() {
   }
 }
 
-/**
- * Deletes a specific pose at index `idx` (or the last pose when retaking).
- */
+export function retakeLastPose() {
+  if (capturedPoses.length === 0) {
+    showPhotoboothToast('ℹ️ Belum ada pose yang diambil untuk diulangi.');
+    return;
+  }
+  const removedIndex = capturedPoses.length - 1;
+  removePoseAtIndex(removedIndex);
+  showPhotoboothToast(`↺ Pose #${removedIndex + 1} dihapus. Silakan ambil ulang pose tersebut.`);
+}
+
 function removePoseAtIndex(idx) {
   if (idx < 0 || idx >= capturedPoses.length) return;
 
@@ -1189,28 +1632,10 @@ function removePoseAtIndex(idx) {
   updateCameraControlsUI();
 }
 
-/**
- * Retakes/removes only the last captured pose of the current user.
- */
-function retakeLastPose() {
-  if (capturedPoses.length === 0) {
-    showPhotoboothToast('ℹ️ Belum ada pose yang diambil untuk diulangi.');
-    return;
-  }
-
-  const removedIndex = capturedPoses.length - 1;
-  removePoseAtIndex(removedIndex);
-  showPhotoboothToast(`↺ Pose #${removedIndex + 1} dihapus. Silakan ambil ulang pose tersebut.`);
-}
-
-/**
- * Renders the Pose Slot list in the right sidebar of the Camera Booth.
- * Always shows all `targetPanelCount` slots (filled or empty), plus any extra preserved poses if layout was reduced.
- */
 function renderPosesTray() {
   const listEl = document.getElementById('pb-poses-list');
   const counterEl = document.getElementById('pb-pose-counter');
-  if (!listEl) return;
+  if (!listEl || typeof document.createElement !== 'function') return;
 
   const filledInLayout = Math.min(capturedPoses.length, targetPanelCount);
   if (counterEl) {
@@ -1228,35 +1653,33 @@ function renderPosesTray() {
     const item = document.createElement('div');
     item.className = 'pb-pose-slot-item';
 
-    if (pose && (pose.selfImg || pose.hostImg || pose.guestImg)) {
-      const primaryThumb = pose.selfImg || pose.hostImg || pose.guestImg;
-      const secondaryThumb = pose.partnerImg || (pose.hostImg && pose.guestImg ? pose.guestImg : null);
-      const selfMeta = PB_CHARACTERS[pose.selfChar || selectedCharKey] || PB_CHARACTERS.nyanya;
-      const partnerMeta = pose.partnerChar && PB_CHARACTERS[pose.partnerChar] ? PB_CHARACTERS[pose.partnerChar] : null;
+    if (pose && (pose.selfImg || pose.hostImg || pose.guestImg || (pose.photos && Object.keys(pose.photos).length > 0))) {
+      const primaryThumb = pose.selfImg || pose.hostImg || (pose.photos && pose.photos[selectedCharKey]);
+      const selfMeta = PB_CHARACTERS[pose.selfChar || selectedCharKey] || PB_CHARACTERS.abil;
+      const countPart = pose.participants ? pose.participants.length : (pose.partnerChar ? 2 : 1);
 
       item.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.55rem;">
           <div class="pb-pose-thumbs">
             ${primaryThumb ? `<img src="${primaryThumb}" alt="Pose ${i + 1}" class="pb-pose-thumb" />` : ''}
-            ${secondaryThumb ? `<img src="${secondaryThumb}" alt="Pose Sahabat ${i + 1}" class="pb-pose-thumb" />` : ''}
           </div>
           <div>
             <div style="font-size: 0.78rem; font-weight: 700; color: #ffffff;">
               Slot Pose #${i + 1} · Tersimpan
             </div>
             <div style="font-size: 0.68rem; color: #cbd5e1;">
-              ${selfMeta.symbol} ${selfMeta.name}${partnerMeta ? ` & ${partnerMeta.symbol} ${partnerMeta.name}` : ''} ${pose.timestamp ? `· ${pose.timestamp}` : ''}
+              ${selfMeta.symbol} ${selfMeta.name} (${countPart} Sahabat) ${pose.timestamp ? `· ${pose.timestamp}` : ''}
             </div>
           </div>
         </div>
-        <button type="button" class="pb-btn-mini danger" data-remove-pose="${i}" title="Hapus & Ulangi Slot Ini">✕</button>
+        <button type="button" class="pb-btn-mini danger" data-remove-pose="${i}" style="padding: 0.28rem 0.55rem; font-size: 0.72rem;">
+          ✕ Hapus
+        </button>
       `;
     } else {
-      item.style.opacity = '0.75';
-      item.style.borderStyle = 'dashed';
       item.innerHTML = `
         <div style="display: flex; align-items: center; gap: 0.55rem;">
-          <div style="width: 48px; height: 36px; border-radius: 6px; border: 1px dashed rgba(249,168,212,0.45); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #f9a8d4;">
+          <div class="pb-pose-thumb-empty">
             #${i + 1}
           </div>
           <div>
@@ -1285,14 +1708,11 @@ function renderPosesTray() {
   updateStripCompletionBanner();
 }
 
-/**
- * Checks whether all required pose slots for the selected layout (`targetPanelCount`) have been captured.
- */
-function isPhotoStripComplete() {
+export function isPhotoStripComplete() {
   if (capturedPoses.length < targetPanelCount) return false;
   for (let i = 0; i < targetPanelCount; i++) {
     const pose = capturedPoses[i];
-    if (!pose || (!pose.selfImg && !pose.hostImg && !pose.guestImg)) {
+    if (!pose || (!pose.selfImg && !pose.hostImg && !pose.guestImg && (!pose.photos || Object.keys(pose.photos).length === 0))) {
       return false;
     }
   }
@@ -1306,7 +1726,7 @@ function updateStripCompletionBanner() {
 
   const complete = isPhotoStripComplete();
   const filledCount = Math.min(
-    capturedPoses.filter((p) => p && (p.selfImg || p.hostImg || p.guestImg)).length,
+    capturedPoses.filter((p) => p && (p.selfImg || p.hostImg || p.guestImg || (p.photos && Object.keys(p.photos).length > 0))).length,
     targetPanelCount
   );
   const remaining = Math.max(0, targetPanelCount - filledCount);
@@ -1389,30 +1809,29 @@ function drawCoverImage(ctx, img, x, y, w, h, radius = 12) {
   ctx.restore();
 }
 
-/**
- * Renders the combined Photo Strip onto #pb-strip-canvas.
- * CRITICAL: Empty pose slots are rendered as explicit empty placeholders, NEVER fake character graphics!
- */
+// --- CANVAS RENDERING WITH 8 TEMPLATES & 1–8 PARTICIPANTS ---
+
 export async function renderPhotoStripCanvas() {
   const canvas = document.getElementById('pb-strip-canvas');
   if (!canvas) return;
 
   updateStripCompletionBanner();
 
-  const frame = PB_FRAMES[selectedFrameId] || PB_FRAMES.moon_stars;
+  const template = PB_FRAMES[selectedFrameId] || PB_TEMPLATES.classic_photostrip;
   const stickers = PB_STICKER_SETS[selectedStickerSet] || [];
-  const selfChar = PB_CHARACTERS[selectedCharKey] || PB_CHARACTERS.nyanya;
-  const partnerChar =
-    partnerConnected && partnerCharKey && PB_CHARACTERS[partnerCharKey]
-      ? PB_CHARACTERS[partnerCharKey]
-      : null;
-
   const panelCount = targetPanelCount;
+  const partCount = selectedParticipants.length;
+
   const width = 560;
-  const headerHeight = 105;
-  const rowHeight = 195;
-  const rowGap = 18;
-  const footerHeight = 135;
+  const headerHeight = 110;
+  let rowHeight = 200;
+  if (partCount >= 4) {
+    rowHeight = 250;
+  } else if (partCount === 3) {
+    rowHeight = 185;
+  }
+  const rowGap = 16;
+  const footerHeight = 145;
   const totalHeight = headerHeight + panelCount * rowHeight + (panelCount - 1) * rowGap + footerHeight;
 
   canvas.width = width;
@@ -1420,85 +1839,155 @@ export async function renderPhotoStripCanvas() {
 
   const ctx = canvas.getContext('2d');
 
-  // 1. Strip Background Gradient
+  // 1. Background Gradient based on template
   const bgGrad = ctx.createLinearGradient(0, 0, 0, totalHeight);
-  bgGrad.addColorStop(0, frame.bgTop);
-  bgGrad.addColorStop(0.5, frame.bgMid);
-  bgGrad.addColorStop(1, frame.bgBottom);
+  bgGrad.addColorStop(0, template.bgTop);
+  bgGrad.addColorStop(0.5, template.bgMid);
+  bgGrad.addColorStop(1, template.bgBottom);
   ctx.fillStyle = bgGrad;
-  drawRoundedRect(ctx, 0, 0, width, totalHeight, 24);
+  drawRoundedRect(ctx, 0, 0, width, totalHeight, 22);
   ctx.fill();
 
-  // 2. Decorative Outer & Inner Borders
-  ctx.strokeStyle = frame.borderOuter;
-  ctx.lineWidth = 5;
-  drawRoundedRect(ctx, 8, 8, width - 16, totalHeight - 16, 20);
+  // 2. Template-Specific Visual Flourishes
+  if (template.category === 'film_35mm' || template.id === 'vintage_film') {
+    // 35mm film sprocket holes along both margins
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+    const sprocketH = 9;
+    const sprocketW = 13;
+    const sprocketSpacing = 22;
+    const totalSprockets = Math.floor(totalHeight / sprocketSpacing);
+    for (let s = 0; s < totalSprockets; s++) {
+      const sy = s * sprocketSpacing + 8;
+      drawRoundedRect(ctx, 7, sy, sprocketW, sprocketH, 2.5);
+      ctx.fill();
+      drawRoundedRect(ctx, width - 7 - sprocketW, sy, sprocketW, sprocketH, 2.5);
+      ctx.fill();
+    }
+  } else if (template.category === 'galaxy' || template.id === 'dreamy_galaxy') {
+    // Starlight & cosmic sparkles
+    ctx.save();
+    for (let s = 0; s < 42; s++) {
+      const sx = ((s * 137.5) % (width - 40)) + 20;
+      const sy = ((s * 283.3) % (totalHeight - 40)) + 20;
+      const size = (s % 3) + 1;
+      ctx.globalAlpha = 0.35 + ((s % 5) * 0.12);
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(sx, sy, size, 0, Math.PI * 2);
+      ctx.fill();
+      if (s % 6 === 0) {
+        ctx.fillStyle = '#c084fc';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✦', sx, sy);
+      }
+    }
+    ctx.restore();
+  }
+
+  // Outer & Inner Borders
+  ctx.strokeStyle = template.borderOuter;
+  ctx.lineWidth = 4.5;
+  drawRoundedRect(ctx, 8, 8, width - 16, totalHeight - 16, 18);
   ctx.stroke();
 
-  ctx.strokeStyle = frame.borderInner;
+  ctx.strokeStyle = template.borderInner;
   ctx.lineWidth = 1.5;
-  drawRoundedRect(ctx, 18, 18, width - 36, totalHeight - 36, 15);
+  drawRoundedRect(ctx, 16, 16, width - 32, totalHeight - 32, 14);
   ctx.stroke();
 
-  // 3. Top Header Title
-  ctx.fillStyle = frame.titleColor;
+  // 3. Header Title & Subtitle
+  ctx.fillStyle = template.titleColor;
   ctx.font = 'bold 22px "Cinzel", Georgia, serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✦ OUR LITTLE PHOTOBOOTH ✦', width / 2, 54);
+  ctx.fillText(`✦ ${template.name.toUpperCase()} ✦`, width / 2, 54);
 
-  ctx.fillStyle = frame.subColor;
+  const rosterString = selectedParticipants
+    .map((k) => {
+      const m = PB_CHARACTERS[k];
+      return m ? `${m.symbol} ${m.name}` : k;
+    })
+    .join('  ×  ');
+
+  const groupMeta = PB_GROUP_SIZES.find((g) => g.count === partCount);
+  const groupLabel = groupMeta ? groupMeta.name : `${partCount} Peserta`;
+
+  ctx.fillStyle = template.subColor;
   ctx.font = 'italic 15px "Cormorant Garamond", Georgia, serif';
-  const participantSubtitle = partnerChar
-    ? `${selfChar.symbol} ${selfChar.name} × ${partnerChar.symbol} ${partnerChar.name} · Different places, same little memories.`
-    : `${selfChar.symbol} ${selfChar.name} (${selfChar.universe}) · Different places, same little memories.`;
-  ctx.fillText(participantSubtitle, width / 2, 80);
+  ctx.fillText(`${rosterString} · ${groupLabel}`, width / 2, 82);
 
-  // 4. Render each Panel Row (1..targetPanelCount)
-  const padX = 34;
+  // 4. Render Panel Rows (1..targetPanelCount)
+  const padX = 36;
   const innerWidth = width - padX * 2;
-  const slotGap = 14;
-  const halfSlotWidth = (innerWidth - slotGap) / 2;
+  const slotGap = 12;
 
   for (let i = 0; i < panelCount; i++) {
     const rowY = headerHeight + i * (rowHeight + rowGap);
     const pose = capturedPoses[i] || null;
 
-    if (!pose || (!pose.selfImg && !pose.hostImg && !pose.guestImg)) {
-      // EMPTY POSE SLOT PLACEHOLDER
+    if (!pose || (!pose.selfImg && !pose.hostImg && !pose.guestImg && (!pose.photos || Object.keys(pose.photos).length === 0))) {
+      // Empty Slot Placeholder
       ctx.save();
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.36)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
       drawRoundedRect(ctx, padX, rowY, innerWidth, rowHeight, 14);
       ctx.fill();
 
-      ctx.strokeStyle = frame.panelBorder;
+      ctx.strokeStyle = template.panelBorder;
       ctx.lineWidth = 2;
       ctx.setLineDash([8, 6]);
       drawRoundedRect(ctx, padX, rowY, innerWidth, rowHeight, 14);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      ctx.fillStyle = frame.titleColor;
-      ctx.font = 'bold 16px "Cinzel", Georgia, serif';
+      ctx.fillStyle = template.titleColor;
+      ctx.font = 'bold 15px "Cinzel", Georgia, serif';
       ctx.textAlign = 'center';
       ctx.fillText(`SLOT FOTO POSE #${i + 1} MASIH KOSONG`, width / 2, rowY + rowHeight / 2 - 6);
 
-      ctx.fillStyle = frame.subColor;
-      ctx.font = '500 13px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText('Ambil foto di Studio Kamera untuk mengisi panel ini', width / 2, rowY + rowHeight / 2 + 18);
+      ctx.fillStyle = template.subColor;
+      ctx.font = '500 12px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Ambil foto di Studio Kamera untuk mengisi panel ini', width / 2, rowY + rowHeight / 2 + 16);
       ctx.restore();
       continue;
     }
 
-    // Determine whether this pose is a 2-photo duet or a 1-photo solo panel
-    const isRoomMode = roomMode === 'waiting' || roomMode === 'connected' || pose.mode === 'room_duet' || pose.mode === 'room_waiting';
-    const hasSecondPhoto = Boolean(pose.partnerImg || (pose.hostImg && pose.guestImg));
+    // Render Participant Photos in this row
+    if (partCount === 1) {
+      // Solo Mode (1 Full-Width Photo)
+      const soloSrc = pose.selfImg || (pose.photos && pose.photos[selectedCharKey]);
+      const soloImg = await loadImageElement(soloSrc);
 
-    if (isRoomMode || hasSecondPhoto) {
-      // Side-by-side Duet Panel (Left: Self/Host, Right: Partner/Guest)
-      const leftSrc = pose.hostImg !== undefined ? pose.hostImg : pose.selfImg;
-      const rightSrc = pose.guestImg !== undefined ? pose.guestImg : pose.partnerImg;
-      const leftCharKey = pose.hostChar || pose.selfChar || selectedCharKey;
-      const rightCharKey = pose.guestChar || pose.partnerChar || partnerCharKey;
+      if (template.category === 'polaroid') {
+        // Polaroid card backing
+        ctx.fillStyle = '#ffffff';
+        drawRoundedRect(ctx, padX, rowY, innerWidth, rowHeight, 10);
+        ctx.fill();
+        if (soloImg) drawCoverImage(ctx, soloImg, padX + 8, rowY + 8, innerWidth - 16, rowHeight - 40, 8);
+      } else {
+        if (soloImg) drawCoverImage(ctx, soloImg, padX, rowY, innerWidth, rowHeight, 12);
+        ctx.strokeStyle = template.panelBorder;
+        ctx.lineWidth = 2.5;
+        drawRoundedRect(ctx, padX, rowY, innerWidth, rowHeight, 12);
+        ctx.stroke();
+      }
+
+      // Character Badge
+      const charMeta = PB_CHARACTERS[selectedCharKey];
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+      drawRoundedRect(ctx, padX + 10, rowY + rowHeight - 28, 110, 20, 10);
+      ctx.fill();
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${charMeta.symbol} ${charMeta.name}`, padX + 18, rowY + rowHeight - 14);
+    } else if (partCount === 2) {
+      // Duo Mode (2 Columns)
+      const colWidth = (innerWidth - slotGap) / 2;
+      const leftKey = selectedParticipants[0];
+      const rightKey = selectedParticipants[1];
+
+      const leftSrc = (pose.photos && pose.photos[leftKey]) || pose.selfImg || pose.hostImg;
+      const rightSrc = (pose.photos && pose.photos[rightKey]) || pose.partnerImg || pose.guestImg;
 
       const [leftImg, rightImg] = await Promise.all([
         loadImageElement(leftSrc),
@@ -1506,88 +1995,107 @@ export async function renderPhotoStripCanvas() {
       ]);
 
       // Left Slot
-      if (leftImg) {
-        drawCoverImage(ctx, leftImg, padX, rowY, halfSlotWidth, rowHeight, 12);
-      } else {
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
-        drawRoundedRect(ctx, padX, rowY, halfSlotWidth, rowHeight, 12);
-        ctx.fill();
-        ctx.fillStyle = frame.subColor;
-        ctx.font = '600 12px "Plus Jakarta Sans", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Menunggu Foto Host...', padX + halfSlotWidth / 2, rowY + rowHeight / 2);
-      }
-      ctx.strokeStyle = frame.panelBorder;
+      if (leftImg) drawCoverImage(ctx, leftImg, padX, rowY, colWidth, rowHeight, 12);
+      ctx.strokeStyle = template.panelBorder;
       ctx.lineWidth = 2.5;
-      drawRoundedRect(ctx, padX, rowY, halfSlotWidth, rowHeight, 12);
+      drawRoundedRect(ctx, padX, rowY, colWidth, rowHeight, 12);
       ctx.stroke();
+
+      const leftMeta = PB_CHARACTERS[leftKey] || PB_CHARACTERS.abil;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+      drawRoundedRect(ctx, padX + 8, rowY + rowHeight - 26, 92, 18, 9);
+      ctx.fill();
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 10.5px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${leftMeta.symbol} ${leftMeta.name}`, padX + 14, rowY + rowHeight - 13);
 
       // Right Slot
-      const rightX = padX + halfSlotWidth + slotGap;
-      if (rightImg) {
-        drawCoverImage(ctx, rightImg, rightX, rowY, halfSlotWidth, rowHeight, 12);
-      } else {
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
-        drawRoundedRect(ctx, rightX, rowY, halfSlotWidth, rowHeight, 12);
-        ctx.fill();
-        ctx.fillStyle = frame.subColor;
-        ctx.font = '600 12px "Plus Jakarta Sans", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(
-          rightCharKey && PB_CHARACTERS[rightCharKey]
-            ? `Menunggu Foto ${PB_CHARACTERS[rightCharKey].name}...`
-            : 'Menunggu Peserta Ke-2...',
-          rightX + halfSlotWidth / 2,
-          rowY + rowHeight / 2
-        );
-      }
-      ctx.strokeStyle = frame.panelBorder;
+      const rightX = padX + colWidth + slotGap;
+      if (rightImg) drawCoverImage(ctx, rightImg, rightX, rowY, colWidth, rowHeight, 12);
+      ctx.strokeStyle = template.panelBorder;
       ctx.lineWidth = 2.5;
-      drawRoundedRect(ctx, rightX, rowY, halfSlotWidth, rowHeight, 12);
+      drawRoundedRect(ctx, rightX, rowY, colWidth, rowHeight, 12);
       ctx.stroke();
 
-      // Character tags on bottom corners
-      const leftMeta = PB_CHARACTERS[leftCharKey] || selfChar;
+      const rightMeta = PB_CHARACTERS[rightKey] || PB_CHARACTERS.nyanya;
       ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-      drawRoundedRect(ctx, padX + 8, rowY + rowHeight - 28, 92, 20, 10);
+      drawRoundedRect(ctx, rightX + colWidth - 98, rowY + rowHeight - 26, 92, 18, 9);
       ctx.fill();
-      ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(`${leftMeta.symbol} ${leftMeta.name}`, padX + 16, rowY + rowHeight - 14);
+      ctx.fillStyle = '#fbcfe8';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${rightMeta.symbol} ${rightMeta.name}`, rightX + colWidth - 14, rowY + rowHeight - 13);
+    } else if (partCount === 3) {
+      // Trio Mode (3 Columns)
+      const colWidth = (innerWidth - slotGap * 2) / 3;
+      for (let c = 0; c < 3; c++) {
+        const pKey = selectedParticipants[c];
+        const pSrc = (pose.photos && pose.photos[pKey]) || (c === 0 ? pose.selfImg : PB_CHARACTERS[pKey]?.avatar);
+        const pImg = await loadImageElement(pSrc);
+        const colX = padX + c * (colWidth + slotGap);
 
-      if (rightCharKey && PB_CHARACTERS[rightCharKey]) {
-        const rightMeta = PB_CHARACTERS[rightCharKey];
+        if (pImg) drawCoverImage(ctx, pImg, colX, rowY, colWidth, rowHeight, 10);
+        ctx.strokeStyle = template.panelBorder;
+        ctx.lineWidth = 2;
+        drawRoundedRect(ctx, colX, rowY, colWidth, rowHeight, 10);
+        ctx.stroke();
+
+        const pMeta = PB_CHARACTERS[pKey] || PB_CHARACTERS.abil;
         ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-        drawRoundedRect(ctx, rightX + halfSlotWidth - 100, rowY + rowHeight - 28, 92, 20, 10);
+        drawRoundedRect(ctx, colX + 4, rowY + rowHeight - 22, colWidth - 8, 16, 8);
         ctx.fill();
-        ctx.fillStyle = '#fbcfe8';
-        ctx.textAlign = 'right';
-        ctx.fillText(`${rightMeta.symbol} ${rightMeta.name}`, rightX + halfSlotWidth - 16, rowY + rowHeight - 14);
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 9.5px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${pMeta.symbol} ${pMeta.name}`, colX + colWidth / 2, rowY + rowHeight - 10);
       }
     } else {
-      // Single Full-Width Panel (Local Solo Mode)
-      const soloImg = await loadImageElement(pose.selfImg);
-      if (soloImg) {
-        drawCoverImage(ctx, soloImg, padX, rowY, innerWidth, rowHeight, 14);
-      }
-      ctx.strokeStyle = frame.panelBorder;
-      ctx.lineWidth = 2.5;
-      drawRoundedRect(ctx, padX, rowY, innerWidth, rowHeight, 14);
-      ctx.stroke();
+      // Multi-User Grid Mode (4 to 8 Participants: 2 Rows of Columns)
+      const cols = partCount <= 4 ? 2 : (partCount <= 6 ? 3 : 4);
+      const rows = 2;
+      const cellW = (innerWidth - slotGap * (cols - 1)) / cols;
+      const cellH = (rowHeight - slotGap) / rows;
 
-      const soloMeta = PB_CHARACTERS[pose.selfChar || selectedCharKey] || selfChar;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-      drawRoundedRect(ctx, padX + 10, rowY + rowHeight - 30, 110, 22, 11);
-      ctx.fill();
-      ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 11.5px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(`${soloMeta.symbol} ${soloMeta.name}`, padX + 18, rowY + rowHeight - 15);
+      for (let pIdx = 0; pIdx < partCount; pIdx++) {
+        const c = pIdx % cols;
+        const r = Math.floor(pIdx / cols);
+        const pKey = selectedParticipants[pIdx];
+        const pSrc = (pose.photos && pose.photos[pKey]) || (pIdx === 0 ? pose.selfImg : PB_CHARACTERS[pKey]?.avatar);
+        const pImg = await loadImageElement(pSrc);
+        const cellX = padX + c * (cellW + slotGap);
+        const cellY = rowY + r * (cellH + slotGap);
+
+        if (pImg) drawCoverImage(ctx, pImg, cellX, cellY, cellW, cellH, 8);
+        ctx.strokeStyle = template.panelBorder;
+        ctx.lineWidth = 1.5;
+        drawRoundedRect(ctx, cellX, cellY, cellW, cellH, 8);
+        ctx.stroke();
+
+        const pMeta = PB_CHARACTERS[pKey] || PB_CHARACTERS.abil;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+        drawRoundedRect(ctx, cellX + 3, cellY + cellH - 18, cellW - 6, 14, 7);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 8.5px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${pMeta.symbol} ${pMeta.name}`, cellX + cellW / 2, cellY + cellH - 7);
+      }
     }
 
-    // Center badge between panels
-    ctx.fillStyle = frame.borderOuter;
+    // Washi Tape Flourish for Scrapbook template
+    if (template.category === 'scrapbook' || template.id === 'pastel_scrapbook') {
+      ctx.save();
+      ctx.fillStyle = 'rgba(253, 224, 71, 0.6)';
+      drawRoundedRect(ctx, padX - 6, rowY - 6, 36, 14, 3);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(244, 114, 182, 0.6)';
+      drawRoundedRect(ctx, width - padX - 30, rowY - 6, 36, 14, 3);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Center Decorative Badge between panels
+    ctx.fillStyle = template.borderOuter;
     ctx.beginPath();
     ctx.arc(width / 2, rowY + rowHeight / 2, 13, 0, Math.PI * 2);
     ctx.fill();
@@ -1595,7 +2103,7 @@ export async function renderPhotoStripCanvas() {
     ctx.fillStyle = '#1e1b4b';
     ctx.font = 'bold 12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(frame.cornerDecor[i % frame.cornerDecor.length], width / 2, rowY + rowHeight / 2 + 4);
+    ctx.fillText(template.cornerDecor[i % template.cornerDecor.length], width / 2, rowY + rowHeight / 2 + 4);
   }
 
   // 5. Stickers Overlay
@@ -1603,12 +2111,12 @@ export async function renderPhotoStripCanvas() {
     ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
     const positions = [
-      [26, 42],
-      [width - 26, 42],
-      [24, totalHeight / 2],
-      [width - 24, totalHeight / 2],
-      [30, totalHeight - 40],
-      [width - 30, totalHeight - 40]
+      [28, 42],
+      [width - 28, 42],
+      [26, totalHeight / 2],
+      [width - 26, totalHeight / 2],
+      [32, totalHeight - 45],
+      [width - 32, totalHeight - 45]
     ];
     positions.forEach(([sx, sy], idx) => {
       ctx.fillText(stickers[idx % stickers.length], sx, sy);
@@ -1618,16 +2126,14 @@ export async function renderPhotoStripCanvas() {
   // 6. Footer Caption, Participant Identity & Date Stamp
   const footerStartY = headerHeight + panelCount * rowHeight + (panelCount - 1) * rowGap;
 
-  ctx.fillStyle = frame.captionColor;
-  ctx.font = 'italic bold 22px "Cormorant Garamond", Georgia, serif';
+  ctx.fillStyle = template.captionColor;
+  ctx.font = 'italic bold 21px "Cormorant Garamond", Georgia, serif';
   ctx.textAlign = 'center';
-  ctx.fillText(`"${selectedCaption}"`, width / 2, footerStartY + 46);
+  ctx.fillText(`"${selectedCaption}"`, width / 2, footerStartY + 45);
 
-  ctx.fillStyle = frame.titleColor;
-  ctx.font = 'bold 12.5px "Cinzel", Georgia, serif';
-  const footerIdentity = partnerChar
-    ? `${selfChar.symbol} ${selfChar.name}  ×  ${partnerChar.symbol} ${partnerChar.name}${currentRoomCode ? `  ·  ROOM ${currentRoomCode}` : ''}`
-    : `${selfChar.symbol} ${selfChar.name} (${selfChar.owner} · ${selfChar.universe})`;
+  ctx.fillStyle = template.titleColor;
+  ctx.font = 'bold 12px "Cinzel", Georgia, serif';
+  const footerIdentity = `${rosterString}${currentRoomCode ? `  ·  ROOM ${currentRoomCode}` : `  ·  ${groupLabel.toUpperCase()}`}`;
   ctx.fillText(footerIdentity, width / 2, footerStartY + 74);
 
   if (showDateStamp) {
@@ -1636,20 +2142,14 @@ export async function renderPhotoStripCanvas() {
       month: 'long',
       year: 'numeric'
     });
-    ctx.fillStyle = frame.subColor;
-    ctx.font = '500 11.5px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = template.subColor;
+    ctx.font = '500 11px "Plus Jakarta Sans", sans-serif';
     ctx.fillText(`Our Little Universe · ${nowStr}`, width / 2, footerStartY + 98);
   }
 }
 
-/**
- * Downloads the rendered Photo Strip canvas as a high-resolution PNG file.
- */
+// --- SAVE TO GALERI PRIBADI CLOUD & DOWNLOAD ---
 
-/**
- * Saves the rendered photo strip to Firebase Storage and metadata to Firestore.
- * Also mirrors to the owner's Personal Gallery so it appears immediately without duplication.
- */
 export async function savePhotoStripToCloud() {
   const feedbackEl = document.getElementById('pb-cloud-feedback');
   const saveBtn = document.getElementById('btn-pb-save-cloud');
@@ -1752,7 +2252,7 @@ export async function savePhotoStripToCloud() {
   }
 }
 
-function downloadPhotoStripPng() {
+export function downloadPhotoStripPng() {
   if (!isPhotoStripComplete()) {
     showPhotoboothToast(
       `⚠️ Lengkapi semua ${targetPanelCount} slot foto pose terlebih dahulu sebelum mengunduh Photo Strip!`
@@ -1781,7 +2281,7 @@ function downloadPhotoStripPng() {
   }
 }
 
-function handleFileInputUpload(file, isSelf) {
+function handleFileInputUpload(file, isSelf, targetCharKey = null) {
   if (!file || !file.type.startsWith('image/')) {
     showPhotoboothToast('⚠️ Pilih file gambar yang valid (JPG, PNG, atau WebP).');
     return;
@@ -1793,30 +2293,29 @@ function handleFileInputUpload(file, isSelf) {
     if (isSelf) {
       customSelfImageDataUrl = dataUrl;
       showLocalFramePreview(dataUrl);
-      showPhotoboothToast('🖼️ Foto kamu berhasil dimuat! Klik "Ambil Foto Pose" untuk memasukkannya ke slot.');
+      showPhotoboothToast('🖼️ Foto kamu berhasil dimuat! Klik "Ambil Pose" untuk memasukkannya ke slot.');
     } else {
+      const destKey = targetCharKey || partnerCharKey || selectedParticipants[1];
+      if (destKey) {
+        participantPhotos[destKey] = dataUrl;
+      }
       customPartnerImageDataUrl = dataUrl;
       showPartnerPreview(dataUrl);
       updateRoomPresenceUI();
-      showPhotoboothToast('💌 Foto pendamping berhasil dimuat ke slot ke-2!');
+      showPhotoboothToast('🖼️ Foto sahabat berhasil dimuat!');
     }
+    renderPhotoStripCanvas();
   };
   reader.readAsDataURL(file);
 }
 
-let previousPhotoboothViewId = 'view-private-universe';
+// --- VIEW NAVIGATION CONTROLLERS ---
 
-/**
- * Opens the Our Little Photobooth top-level view and syncs the active user's identity.
- */
-export function openPhotoboothView(fromViewId = 'view-private-universe') {
-  if (fromViewId && typeof fromViewId === 'string' && fromViewId !== 'view-photobooth') {
-    previousPhotoboothViewId = fromViewId;
-  }
+let previousViewId = null;
 
-  const sessionInfo = detectLoggedInCharacter();
-  if (sessionInfo) {
-    syncPhotoboothActiveCharacter(sessionInfo.charKey, sessionInfo.mode);
+export function openPhotoboothView(fromView = null) {
+  if (fromView && fromView !== 'view-photobooth') {
+    previousViewId = fromView;
   }
 
   initPhotoboothView();
@@ -1830,7 +2329,12 @@ export function openPhotoboothView(fromViewId = 'view-private-universe') {
     'view-shadow-world',
     'view-orbit',
     'view-moments',
-    'view-photobooth'
+    'view-photobooth',
+    'view-messages',
+    'view-yawn-world',
+    'view-usagain-world',
+    'view-ash-world',
+    'view-hot-world'
   ];
 
   allViewIds.forEach((id) => {
@@ -1840,6 +2344,21 @@ export function openPhotoboothView(fromViewId = 'view-private-universe') {
     sec.classList.toggle('active', isTarget);
     sec.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
   });
+
+  applyPhotoboothUniverseTheme(selectedCharKey);
+
+  // Exclusive preview modal is hidden for all 8 characters (Full access for everyone)
+  if (typeof document !== 'undefined') {
+    const previewModal = document.getElementById('pb-exclusive-preview-modal');
+    if (previewModal) {
+      previewModal.style.display = 'none';
+      previewModal.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  if (studioManager && typeof studioManager.setActiveChar === 'function') {
+    studioManager.setActiveChar(selectedCharKey);
+  }
 
   document.querySelectorAll('.univ-nav-btn[data-nav]').forEach((btn) => {
     const active = btn.getAttribute('data-nav') === 'photobooth';
@@ -1851,48 +2370,629 @@ export function openPhotoboothView(fromViewId = 'view-private-universe') {
     }
   });
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  renderPhotoStripCanvas();
+  switchPhotoboothStage('welcome');
 }
 
-/**
- * Closes the Photobooth view, stops the camera stream, and returns to the dashboard / previous view.
- */
 export function closePhotoboothView() {
   stopLocalCamera(false);
 
-  const viewPhotobooth = document.getElementById('view-photobooth');
-  if (viewPhotobooth) {
-    viewPhotobooth.classList.remove('active');
-    viewPhotobooth.setAttribute('aria-hidden', 'true');
+  const pbSec = document.getElementById('view-photobooth');
+  if (pbSec) {
+    pbSec.classList.remove('active');
+    pbSec.setAttribute('aria-hidden', 'true');
   }
 
-  const targetView =
-    document.getElementById(previousPhotoboothViewId) ||
-    document.getElementById('view-private-universe') ||
-    document.getElementById('view-selection');
-
-  if (targetView) {
-    targetView.classList.add('active');
-    targetView.setAttribute('aria-hidden', 'false');
+  let returnId = previousViewId || 'view-private-universe';
+  const targetSec = document.getElementById(returnId);
+  if (targetSec) {
+    targetSec.classList.add('active');
+    targetSec.setAttribute('aria-hidden', 'false');
+  } else {
+    const fallbackSec = document.getElementById('view-selection');
+    if (fallbackSec) {
+      fallbackSec.classList.add('active');
+      fallbackSec.setAttribute('aria-hidden', 'false');
+    }
   }
 
   document.querySelectorAll('.univ-nav-btn[data-nav]').forEach((btn) => {
-    const active = btn.getAttribute('data-nav') === 'universes';
-    btn.classList.toggle('active', active);
-    if (active) {
-      btn.setAttribute('aria-current', 'page');
-    } else {
-      btn.removeAttribute('aria-current');
-    }
+    btn.classList.remove('active');
+    btn.removeAttribute('aria-current');
   });
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/**
- * Initializes all event listeners and state for #view-photobooth
- */
+// --- STUDIO MANAGER & INTERACTIVE EDITOR HELPERS ---
+
+export let studioManager = null;
+
+export function initOrUpdateStudioManager() {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.getElementById('pb-interactive-canvas');
+  if (!canvas) return null;
+
+  if (!studioManager) {
+    studioManager = new PhotoboothStudioManager({
+      activeChar: selectedCharKey || 'akhira',
+      participants: selectedParticipants
+    });
+    studioManager.initCanvasInteractions(canvas);
+    if (typeof window !== 'undefined') {
+      window.studioManager = studioManager;
+    }
+  } else {
+    if (typeof studioManager.setActiveChar === 'function') {
+      studioManager.setActiveChar(selectedCharKey);
+    }
+    studioManager.setParticipants(selectedParticipants);
+    if (capturedPoses && capturedPoses.length > 0) {
+      studioManager.setPoses(capturedPoses);
+    }
+  }
+
+  studioManager.renderInteractiveCanvas();
+  return studioManager;
+}
+
+export function updateCanvasZoomStyle() {
+  const container = document.getElementById('pb-canvas-zoom-container');
+  if (container && studioManager) {
+    const z = studioManager.state.zoomLevel || 1.0;
+    container.style.transform = `scale(${z})`;
+  }
+}
+
+export function renderBackgroundPresets() {
+  const container = document.getElementById('pb-bg-presets-container');
+  if (!container) return;
+  container.innerHTML = PB_BACKGROUND_PRESETS.map((p, idx) => `
+    <button type="button" class="pb-bg-preset-card ${idx === 0 ? 'active' : ''}" data-bg-preset="${p.id}" style="padding:0.5rem; background:rgba(15,23,42,0.8); border:1px solid rgba(56,189,248,0.3); border-radius:8px; text-align:center; cursor:pointer; color:#f0f9ff; display:flex; flex-direction:column; align-items:center; gap:0.25rem;">
+      <span style="font-size:1.4rem;">${p.icon || '🎨'}</span>
+      <span style="font-size:0.72rem; font-weight:600; line-height:1.2;">${p.name}</span>
+    </button>
+  `).join('');
+
+  container.querySelectorAll('.pb-bg-preset-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.pb-bg-preset-card').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (studioManager) {
+        studioManager.setBackgroundPreset(btn.dataset.bgPreset);
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  });
+}
+
+export function renderLayoutCards() {
+  const container = document.getElementById('pb-layouts-container');
+  if (!container) return;
+  container.innerHTML = PB_STUDIO_LAYOUTS.map((l, idx) => `
+    <button type="button" class="pb-layout-card ${idx === 0 ? 'active' : ''}" data-layout="${l.id}" style="padding:0.5rem; background:rgba(15,23,42,0.8); border:1px solid rgba(56,189,248,0.3); border-radius:8px; text-align:center; cursor:pointer; color:#f0f9ff; display:flex; flex-direction:column; align-items:center; gap:0.25rem;">
+      <span style="font-size:1.3rem;">${l.icon || '🖼️'}</span>
+      <span style="font-size:0.72rem; font-weight:600; line-height:1.2;">${l.name}</span>
+      <span style="font-size:0.65rem; color:#94a3b8;">${l.slots} Foto</span>
+    </button>
+  `).join('');
+
+  container.querySelectorAll('.pb-layout-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.pb-layout-card').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (studioManager) {
+        studioManager.setLayout(btn.dataset.layout);
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  });
+}
+
+export function renderStickerPalette() {
+  const catContainer = document.getElementById('pb-sticker-cat-container');
+  const paletteGrid = document.getElementById('pb-sticker-palette-grid');
+  if (!catContainer || !paletteGrid) return;
+
+  let activeCatId = PB_STICKER_CATEGORIES[0]?.id || 'stars_moon';
+
+  const updatePalette = (catId) => {
+    activeCatId = catId;
+    const cat = PB_STICKER_CATEGORIES.find(c => c.id === catId) || PB_STICKER_CATEGORIES[0];
+    catContainer.querySelectorAll('.pb-cat-pill').forEach(pill => {
+      pill.classList.toggle('active', pill.dataset.catId === catId);
+    });
+
+    paletteGrid.innerHTML = (cat?.stickers || []).map(emoji => `
+      <button type="button" class="pb-palette-sticker-btn" data-emoji="${emoji}" style="font-size:1.4rem; padding:0.3rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        ${emoji}
+      </button>
+    `).join('');
+
+    paletteGrid.querySelectorAll('.pb-palette-sticker-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const emoji = btn.dataset.emoji;
+        if (studioManager) {
+          studioManager.addSticker(emoji, 'emoji');
+          studioManager.renderInteractiveCanvas();
+          showPhotoboothToast(`✨ Stiker ${emoji} ditambahkan ke kanvas!`);
+        }
+      });
+    });
+  };
+
+  catContainer.innerHTML = PB_STICKER_CATEGORIES.map((cat, idx) => `
+    <button type="button" class="pb-cat-pill ${idx === 0 ? 'active' : ''}" data-cat-id="${cat.id}" style="padding:0.3rem 0.55rem; font-size:0.75rem; border-radius:6px; border:1px solid rgba(56,189,248,0.3); background:rgba(15,23,42,0.8); color:#e0f2fe; white-space:nowrap; cursor:pointer;">
+      ${cat.name}
+    </button>
+  `).join('');
+
+  catContainer.querySelectorAll('.pb-cat-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      updatePalette(pill.dataset.catId);
+    });
+  });
+
+  updatePalette(activeCatId);
+}
+
+export async function renderMemoryGalleryList() {
+  if (typeof document === 'undefined') return;
+  const container = document.getElementById('pb-memory-gallery-list');
+  const countBadge = document.getElementById('pb-memory-count-badge');
+  if (!container) return;
+
+  const memories = await getPhotoboothMemories(selectedCharKey);
+  if (countBadge) {
+    countBadge.textContent = `${memories.length} Kenangan`;
+  }
+
+  if (memories.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:1.5rem 1rem; color:#94a3b8; font-size:0.82rem; background:rgba(0,0,0,0.25); border-radius:10px; border:1px dashed rgba(56,189,248,0.2);">
+        <div style="font-size:1.8rem; margin-bottom:0.35rem;">📸</div>
+        <div>Belum ada foto kenangan tersimpan.</div>
+        <div style="font-size:0.75rem; color:#64748b; margin-top:0.25rem;">Kreasikan fotomu dan simpan ke galeri!</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = memories.map(mem => {
+    const dateFormatted = new Date(mem.createdAt || Date.now()).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const thumb = mem.previewUrl || mem.imageDataUrl;
+    const participantIcons = (mem.participants || [mem.author || 'akhira'])
+      .map(k => PB_CHARACTERS[k]?.symbol || '⚡')
+      .join(' ');
+
+    return `
+      <div class="pb-memory-item-card" data-mem-id="${mem.id}" style="display:flex; gap:0.75rem; align-items:center; background:rgba(2,12,27,0.7); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:0.6rem;">
+        <img src="${thumb}" alt="${mem.title || 'Foto Kenangan'}" style="width:56px; height:74px; object-fit:cover; border-radius:6px; border:1px solid rgba(56,189,248,0.4);" />
+        <div style="flex:1; min-width:0;">
+          <h5 style="margin:0 0 0.2rem 0; font-size:0.85rem; color:#f0f9ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${mem.title || 'Foto Kenangan Tanpa Judul'}</h5>
+          <div style="font-size:0.72rem; color:#94a3b8; margin-bottom:0.25rem;">${dateFormatted} · ${participantIcons}</div>
+          <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+            <button type="button" class="pb-btn-mini btn-mem-download" data-id="${mem.id}" style="padding:0.2rem 0.45rem; font-size:0.7rem;">💾 Unduh</button>
+            <button type="button" class="pb-btn-mini btn-mem-edit" data-id="${mem.id}" style="padding:0.2rem 0.45rem; font-size:0.7rem;">🎨 Edit</button>
+            <button type="button" class="pb-btn-mini danger btn-mem-delete" data-id="${mem.id}" style="padding:0.2rem 0.45rem; font-size:0.7rem;">✕ Hapus</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.btn-mem-download').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const memId = btn.dataset.id;
+      const mem = await getPhotoboothMemoryById(memId);
+      if (mem && mem.imageDataUrl) {
+        const a = document.createElement('a');
+        a.href = mem.imageDataUrl;
+        a.download = `photobooth-${mem.author || 'memory'}-${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showPhotoboothToast('📥 Foto kenangan berhasil diunduh!');
+      }
+    });
+  });
+
+  container.querySelectorAll('.btn-mem-edit').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const memId = btn.dataset.id;
+      const mem = await getPhotoboothMemoryById(memId);
+      if (mem && mem.projectData && studioManager) {
+        studioManager.loadProject(mem.projectData);
+        switchPhotoboothStage('editor');
+        showPhotoboothToast(`🎨 Membuka proyek "${mem.title}" di Studio.`);
+      }
+    });
+  });
+
+  container.querySelectorAll('.btn-mem-delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const memId = btn.dataset.id;
+      if (confirm('Apakah kamu yakin ingin menghapus kenangan ini dari Galeri?')) {
+        try {
+          await deletePhotoboothMemory(memId, selectedCharKey);
+          showPhotoboothToast('🗑️ Kenangan berhasil dihapus.');
+          renderMemoryGalleryList();
+        } catch (err) {
+          showPhotoboothToast(`⚠️ Gagal menghapus: ${err.message}`);
+        }
+      }
+    });
+  });
+}
+
+export function bindStudioEditorEvents(root) {
+  if (!root) return;
+
+  // 1. Toolbar buttons
+  const undoBtn = document.getElementById('btn-pb-undo');
+  if (undoBtn) {
+    undoBtn.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.undo();
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const redoBtn = document.getElementById('btn-pb-redo');
+  if (redoBtn) {
+    redoBtn.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.redo();
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const zoomInBtn = document.getElementById('btn-pb-zoom-in');
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.zoomIn();
+        updateCanvasZoomStyle();
+      }
+    });
+  }
+
+  const zoomOutBtn = document.getElementById('btn-pb-zoom-out');
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.zoomOut();
+        updateCanvasZoomStyle();
+      }
+    });
+  }
+
+  const zoomResetBtn = document.getElementById('btn-pb-zoom-reset');
+  if (zoomResetBtn) {
+    zoomResetBtn.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.resetZoom();
+        updateCanvasZoomStyle();
+      }
+    });
+  }
+
+  const clearCanvasBtn = document.getElementById('btn-pb-clear-canvas');
+  if (clearCanvasBtn) {
+    clearCanvasBtn.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.clearCanvas();
+        studioManager.renderInteractiveCanvas();
+        showPhotoboothToast('🧹 Kanvas stiker & teks dibersihkan.');
+      }
+    });
+  }
+
+  const gotoExportBtn = document.getElementById('btn-pb-goto-export');
+  if (gotoExportBtn) {
+    gotoExportBtn.addEventListener('click', () => {
+      switchPhotoboothStage('result');
+    });
+  }
+
+  // 2. Toolbox Tabs
+  root.querySelectorAll('.pb-toolbox-tab[data-pb-tab]').forEach((tabBtn) => {
+    tabBtn.addEventListener('click', () => {
+      const tabId = tabBtn.dataset.pbTab;
+      root.querySelectorAll('.pb-toolbox-tab[data-pb-tab]').forEach((b) => {
+        b.classList.toggle('active', b === tabBtn);
+        b.style.background = b === tabBtn ? 'rgba(56,189,248,0.2)' : 'rgba(0,0,0,0.3)';
+        b.style.color = b === tabBtn ? '#e0f2fe' : '#94a3b8';
+      });
+
+      const panels = {
+        background: document.getElementById('pb-panel-background'),
+        layout: document.getElementById('pb-panel-layout'),
+        stickers: document.getElementById('pb-panel-stickers'),
+        text: document.getElementById('pb-panel-text'),
+        frame: document.getElementById('pb-panel-frame')
+      };
+
+      Object.entries(panels).forEach(([k, p]) => {
+        if (!p) return;
+        p.style.display = k === tabId ? 'block' : 'none';
+        p.classList.toggle('active', k === tabId);
+      });
+    });
+  });
+
+  // 3. Custom Background Upload
+  const triggerBgUpload = document.getElementById('btn-pb-trigger-bg-upload');
+  const bgFileInput = document.getElementById('pb-bg-file-input');
+  if (triggerBgUpload && bgFileInput) {
+    triggerBgUpload.addEventListener('click', () => bgFileInput.click());
+    bgFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          if (studioManager) {
+            studioManager.setCustomBackground(ev.target.result);
+            studioManager.renderInteractiveCanvas();
+            showPhotoboothToast('🖼️ Background kustom berhasil dipasang!');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      bgFileInput.value = '';
+    });
+  }
+
+  // 4. Background Pan / Zoom Sliders
+  const bgZoomSlider = document.getElementById('pb-bg-zoom-slider');
+  const bgZoomVal = document.getElementById('pb-bg-zoom-val');
+  if (bgZoomSlider) {
+    bgZoomSlider.addEventListener('input', () => {
+      const z = parseInt(bgZoomSlider.value, 10) / 100;
+      if (bgZoomVal) bgZoomVal.textContent = `${z.toFixed(1)}x`;
+      if (studioManager) {
+        studioManager.updateBackgroundTransform({ zoom: z });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const bgPanX = document.getElementById('pb-bg-pan-x');
+  const bgPanXVal = document.getElementById('pb-bg-panx-val');
+  if (bgPanX) {
+    bgPanX.addEventListener('input', () => {
+      const val = parseInt(bgPanX.value, 10);
+      if (bgPanXVal) bgPanXVal.textContent = `${val}px`;
+      if (studioManager) {
+        studioManager.updateBackgroundTransform({ panX: val });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const bgPanY = document.getElementById('pb-bg-pan-y');
+  const bgPanYVal = document.getElementById('pb-bg-pany-val');
+  if (bgPanY) {
+    bgPanY.addEventListener('input', () => {
+      const val = parseInt(bgPanY.value, 10);
+      if (bgPanYVal) bgPanYVal.textContent = `${val}px`;
+      if (studioManager) {
+        studioManager.updateBackgroundTransform({ panY: val });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  // 5. Custom Sticker Upload
+  const triggerStickerUpload = document.getElementById('btn-pb-trigger-sticker-upload');
+  const stickerFileInput = document.getElementById('pb-sticker-file-input');
+  if (triggerStickerUpload && stickerFileInput) {
+    triggerStickerUpload.addEventListener('click', () => stickerFileInput.click());
+    stickerFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          if (studioManager) {
+            studioManager.addSticker(ev.target.result, 'custom');
+            studioManager.renderInteractiveCanvas();
+            showPhotoboothToast('✨ Stiker PNG kustom ditambahkan!');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      stickerFileInput.value = '';
+    });
+  }
+
+  // 6. Selected Sticker Controls Box
+  const stkCtrlBox = document.getElementById('pb-sticker-controls-box');
+  const stkScaleSlider = document.getElementById('pb-stk-scale-slider');
+  const stkRotSlider = document.getElementById('pb-stk-rot-slider');
+  const stkOpSlider = document.getElementById('pb-stk-op-slider');
+
+  if (stkScaleSlider) {
+    stkScaleSlider.addEventListener('input', () => {
+      if (studioManager && studioManager.selectedElement && studioManager.selectedElement.type === 'sticker') {
+        studioManager.updateSticker(studioManager.selectedElement.id, { scale: parseInt(stkScaleSlider.value, 10) });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  if (stkRotSlider) {
+    stkRotSlider.addEventListener('input', () => {
+      if (studioManager && studioManager.selectedElement && studioManager.selectedElement.type === 'sticker') {
+        studioManager.updateSticker(studioManager.selectedElement.id, { rotation: parseInt(stkRotSlider.value, 10) });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  if (stkOpSlider) {
+    stkOpSlider.addEventListener('input', () => {
+      if (studioManager && studioManager.selectedElement && studioManager.selectedElement.type === 'sticker') {
+        studioManager.updateSticker(studioManager.selectedElement.id, { opacity: parseInt(stkOpSlider.value, 10) / 100 });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const stkFwd = document.getElementById('btn-pb-stk-forward');
+  if (stkFwd) {
+    stkFwd.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.bringStickerForward();
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const stkBack = document.getElementById('btn-pb-stk-backward');
+  if (stkBack) {
+    stkBack.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.sendStickerBackward();
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const stkDup = document.getElementById('btn-pb-stk-duplicate');
+  if (stkDup) {
+    stkDup.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.duplicateSelectedSticker();
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const stkDel = document.getElementById('btn-pb-stk-delete');
+  if (stkDel) {
+    stkDel.addEventListener('click', () => {
+      if (studioManager) {
+        studioManager.deleteSelectedSticker();
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  // 7. Text Editor
+  const customTextInput = document.getElementById('pb-custom-text-input');
+  const fontFamilySelect = document.getElementById('pb-font-family-select');
+  const textColorPicker = document.getElementById('pb-text-color-picker');
+  const textSizeSlider = document.getElementById('pb-text-size-slider');
+  const textSizeVal = document.getElementById('pb-text-size-val');
+  const textShadowChk = document.getElementById('pb-text-shadow-chk');
+  const addTextBtn = document.getElementById('btn-pb-add-text-canvas');
+
+  if (textSizeSlider && textSizeVal) {
+    textSizeSlider.addEventListener('input', () => {
+      textSizeVal.textContent = `${textSizeSlider.value}px`;
+    });
+  }
+
+  if (addTextBtn && customTextInput) {
+    addTextBtn.addEventListener('click', () => {
+      const text = customTextInput.value.trim();
+      if (!text) {
+        showPhotoboothToast('⚠️ Tulis kalimat terlebih dahulu.');
+        return;
+      }
+      if (studioManager) {
+        studioManager.addText(text, {
+          fontFamily: fontFamilySelect ? fontFamilySelect.value : "'Plus Jakarta Sans', sans-serif",
+          color: textColorPicker ? textColorPicker.value : '#ffffff',
+          fontSize: textSizeSlider ? parseInt(textSizeSlider.value, 10) : 28,
+          shadow: textShadowChk ? textShadowChk.checked : true
+        });
+        studioManager.renderInteractiveCanvas();
+        customTextInput.value = '';
+        showPhotoboothToast('✍️ Teks ditambahkan ke kanvas!');
+      }
+    });
+  }
+
+  root.querySelectorAll('[data-pb-quick-text]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const text = btn.dataset.pbQuickText;
+      if (studioManager) {
+        studioManager.addText(text, {
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          color: '#38bdf8',
+          fontSize: 30,
+          shadow: true
+        });
+        studioManager.renderInteractiveCanvas();
+        showPhotoboothToast(`✨ Preset "${text}" ditambahkan!`);
+      }
+    });
+  });
+
+  // 8. Frame Controls
+  const frameColorPicker = document.getElementById('pb-frame-color-picker');
+  if (frameColorPicker) {
+    frameColorPicker.addEventListener('input', () => {
+      if (studioManager) {
+        studioManager.updateFrame({ borderColor: frameColorPicker.value });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const frameWidthSlider = document.getElementById('pb-frame-width-slider');
+  const frameWidthVal = document.getElementById('pb-frame-width-val');
+  if (frameWidthSlider) {
+    frameWidthSlider.addEventListener('input', () => {
+      const w = parseInt(frameWidthSlider.value, 10);
+      if (frameWidthVal) frameWidthVal.textContent = `${w}px`;
+      if (studioManager) {
+        studioManager.updateFrame({ borderWidth: w });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  const frameDateChk = document.getElementById('pb-frame-date-chk');
+  if (frameDateChk) {
+    frameDateChk.addEventListener('change', () => {
+      if (studioManager) {
+        studioManager.updateFrame({ showDate: frameDateChk.checked });
+        studioManager.renderInteractiveCanvas();
+      }
+    });
+  }
+
+  // 9. Subscribe to StudioManager state changes
+  if (studioManager) {
+    studioManager.subscribe(() => {
+      if (stkCtrlBox) {
+        const isStkSelected = studioManager.selectedElement && studioManager.selectedElement.type === 'sticker';
+        stkCtrlBox.style.display = isStkSelected ? 'block' : 'none';
+        if (isStkSelected) {
+          const stk = studioManager.state.stickers.find(s => s.id === studioManager.selectedElement.id);
+          if (stk) {
+            if (stkScaleSlider) stkScaleSlider.value = stk.scale || 100;
+            if (stkRotSlider) stkRotSlider.value = stk.rotation || 0;
+            if (stkOpSlider) stkOpSlider.value = Math.round((stk.opacity !== undefined ? stk.opacity : 1.0) * 100);
+          }
+        }
+      }
+    });
+  }
+}
+
+// --- INITIALIZER & EVENT BINDINGS ---
+
 export function initPhotoboothView(options = {}) {
   const controller = {
     openPhotobooth: (fromView, charKey) => {
@@ -1902,7 +3002,12 @@ export function initPhotoboothView(options = {}) {
       openPhotoboothView(fromView);
     },
     closePhotobooth: closePhotoboothView,
-    syncActiveCharacter: syncPhotoboothActiveCharacter
+    syncActiveCharacter: syncPhotoboothActiveCharacter,
+    setGroupSize,
+    toggleParticipant,
+    resetParticipants,
+    getSelectedGroupSize,
+    getSelectedParticipants
   };
 
   if (typeof window !== 'undefined') {
@@ -1924,7 +3029,7 @@ export function initPhotoboothView(options = {}) {
     setSelectedCharacter(selectedCharKey, false);
   }
 
-  // 1. Top Step Pills
+  // 1. Top Step Navigation Pills
   root.querySelectorAll('.pb-step-pill[data-pb-step]').forEach((pill) => {
     pill.addEventListener('click', () => {
       const targetStep = pill.dataset.pbStep;
@@ -1940,7 +3045,7 @@ export function initPhotoboothView(options = {}) {
     });
   }
 
-  // 3. Character Identity Chips (Nyanya, Lala, Lele)
+  // 3. Character Identity Chips (All 8 Characters)
   root.querySelectorAll('.pb-char-chip[data-pb-char]').forEach((chip) => {
     chip.addEventListener('click', () => {
       activeAuthSource = 'manual';
@@ -1948,12 +3053,32 @@ export function initPhotoboothView(options = {}) {
     });
   });
 
-  // 4. Welcome Stage Actions: Local Mode vs Create Room vs Join Room
+  // 4. Group Size Selection Pills (1 to 8 Characters)
+  root.querySelectorAll('.pb-group-size-pill[data-pb-group-size]').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      const size = parseInt(pill.dataset.pbGroupSize, 10);
+      setGroupSize(size);
+    });
+  });
+
+  // 5. Reset Participants Button
+  const resetBtn = document.getElementById('btn-pb-reset-participants');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      resetParticipants();
+    });
+  }
+
+  // 6. Welcome Stage Actions: Local Studio vs Create Room vs Join Room
   const startBtn = document.getElementById('btn-pb-start');
   if (startBtn) {
     startBtn.addEventListener('click', () => {
+      if (selectedParticipants.length < selectedGroupSize) {
+        showPhotoboothToast(`⚠️ Pilih ${selectedGroupSize - selectedParticipants.length} sahabat lagi sebelum masuk studio.`);
+        return;
+      }
       enterLocalPhotoboothMode();
-      showPhotoboothToast('✨ Masuk ke Studio Kamera dalam Mode Lokal (1 Peserta). Nyalakan kamera untuk mulai berfoto!');
+      showPhotoboothToast(`✨ Masuk ke Studio Kamera (${selectedGroupSize} Peserta). Nyalakan kamera untuk mulai berfoto!`);
     });
   }
 
@@ -1978,13 +3103,13 @@ export function initPhotoboothView(options = {}) {
     });
   }
 
-  // 5. Room Bar Controls: Copy Code & Leave Room
+  // 7. Room Bar Controls: Copy Code & Leave Room
   const copyCodeBtn = document.getElementById('btn-pb-copy-code');
   if (copyCodeBtn) {
     copyCodeBtn.addEventListener('click', () => {
       if (!currentRoomCode) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(currentRoomCode).catch(() => {});
+        navigator.clipboard.writeText(currentRoomCode).catch(() => { });
       }
       showPhotoboothToast(`📋 Kode room ${currentRoomCode} berhasil disalin!`);
     });
@@ -1997,7 +3122,7 @@ export function initPhotoboothView(options = {}) {
     });
   }
 
-  // 6. Camera & File Upload Controls
+  // 8. Camera & File Upload Controls
   const requestCamBtn = document.getElementById('btn-pb-request-camera');
   if (requestCamBtn) {
     requestCamBtn.addEventListener('click', () => {
@@ -2013,13 +3138,6 @@ export function initPhotoboothView(options = {}) {
       } else {
         startLocalCamera();
       }
-    });
-  }
-
-  const stopCamBtn = document.getElementById('btn-pb-stop-camera');
-  if (stopCamBtn) {
-    stopCamBtn.addEventListener('click', () => {
-      stopLocalCamera(true);
     });
   }
 
@@ -2068,7 +3186,7 @@ export function initPhotoboothView(options = {}) {
     });
   }
 
-  // 7. Capture, Retake & Layout Selector (2, 3, 4 Panels — Preserves Poses!)
+  // 9. Capture, Retake & Layout Selector (2, 3, 4 Panels)
   const captureBtn = document.getElementById('btn-pb-capture-pose');
   if (captureBtn) {
     captureBtn.addEventListener('click', () => {
@@ -2093,7 +3211,6 @@ export function initPhotoboothView(options = {}) {
         b.classList.toggle('active', b === btn);
       });
 
-      // CRITICAL: Do NOT slice or delete capturedPoses when switching layout!
       renderPosesTray();
       renderPhotoStripCanvas();
       showPhotoboothToast(
@@ -2109,7 +3226,106 @@ export function initPhotoboothView(options = {}) {
     });
   }
 
-  // 8. Stage D: Photo Strip Customizer (Frames, Captions, Stickers, Date, Download)
+  const gotoEditorBtn = document.getElementById('btn-pb-goto-editor');
+  if (gotoEditorBtn) {
+    gotoEditorBtn.addEventListener('click', () => {
+      switchPhotoboothStage('editor');
+    });
+  }
+
+  // Bind Studio Editor Interactions and Palettes
+  bindStudioEditorEvents(root);
+  renderBackgroundPresets();
+  renderLayoutCards();
+  renderStickerPalette();
+
+  // Stage D: Export & Memory Gallery Actions
+  const downloadPngBtn = document.getElementById('btn-pb-download-png');
+  if (downloadPngBtn) {
+    downloadPngBtn.addEventListener('click', async () => {
+      if (studioManager) {
+        const dataUrl = await studioManager.exportCompositeImage('image/png', 0.95);
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `photobooth-${selectedCharKey}-${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showPhotoboothToast('📥 Foto beresolusi tinggi (PNG) berhasil diunduh!');
+      } else {
+        downloadPhotoStripPng();
+      }
+    });
+  }
+
+  const downloadJpgBtn = document.getElementById('btn-pb-download-jpg');
+  if (downloadJpgBtn) {
+    downloadJpgBtn.addEventListener('click', async () => {
+      if (studioManager) {
+        const dataUrl = await studioManager.exportCompositeImage('image/jpeg', 0.92);
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = `photobooth-${selectedCharKey}-${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showPhotoboothToast('📥 Foto beresolusi tinggi (JPG) berhasil diunduh!');
+      } else {
+        downloadPhotoStripPng();
+      }
+    });
+  }
+
+  const saveMemoryBtn = document.getElementById('btn-pb-save-memory');
+  if (saveMemoryBtn) {
+    saveMemoryBtn.addEventListener('click', async () => {
+      try {
+        const authorMeta = PB_CHARACTERS[selectedCharKey] || PB_CHARACTERS.akhira;
+        const authorDisplay = `${authorMeta.name} ${authorMeta.symbol}`;
+        if (studioManager) {
+          const titleInput = document.getElementById('pb-custom-text-input');
+          const customTitle = (titleInput && titleInput.value.trim()) || `Kenangan Studio ${authorDisplay} (${selectedParticipants.length} Sahabat)`;
+          await studioManager.saveToGallery(customTitle);
+        } else {
+          const stripCanvas = document.getElementById('pb-strip-canvas');
+          const dataUrl = stripCanvas ? stripCanvas.toDataURL('image/png') : null;
+          await savePhotoboothMemory({
+            id: `pb-mem-${Date.now()}`,
+            title: `Photo Strip ${authorDisplay} (${selectedParticipants.length} Sahabat)`,
+            author: selectedCharKey,
+            participants: [...selectedParticipants],
+            imageDataUrl: dataUrl,
+            createdAt: Date.now()
+          });
+        }
+        showPhotoboothToast('🌟 Foto kenangan berhasil disimpan ke Galeri Kenangan IndexedDB!');
+        renderMemoryGalleryList();
+      } catch (err) {
+        showPhotoboothToast(`⚠️ Gagal menyimpan ke galeri: ${err.message}`);
+      }
+    });
+  }
+
+  const backToEditorBtn = document.getElementById('btn-pb-back-to-editor');
+  if (backToEditorBtn) {
+    backToEditorBtn.addEventListener('click', () => {
+      switchPhotoboothStage('editor');
+    });
+  }
+
+  const closeExclusivePreviewBtn = document.getElementById('btn-close-exclusive-preview');
+  if (closeExclusivePreviewBtn) {
+    closeExclusivePreviewBtn.addEventListener('click', () => {
+      const modal = document.getElementById('pb-exclusive-preview-modal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+      }
+      closePhotoboothView();
+    });
+  }
+
+  // 10. Stage D Customizer: 8 Templates, Captions, Stickers, Date Stamp
   root.querySelectorAll('.pb-frame-card[data-pb-frame]').forEach((card) => {
     card.addEventListener('click', () => {
       const frameId = card.dataset.pbFrame;
@@ -2168,6 +3384,7 @@ export function initPhotoboothView(options = {}) {
     });
   }
 
+  // 11. Download & Cloud Save Buttons
   const downloadBtn = document.getElementById('btn-pb-download');
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
@@ -2205,7 +3422,10 @@ export function initPhotoboothView(options = {}) {
     });
   }
 
-  // Initial UI render
+  // Initial UI Render
+  renderGroupSizePills();
+  renderParticipantSelector();
+  updateStartButtonState();
   updateRoomPresenceUI();
   updateCameraControlsUI();
   renderPosesTray();

@@ -20,6 +20,7 @@
 
 import {
   auth,
+  identifyUserCharacter,
   dbUploadMomentMedia,
   dbSaveMoment,
   dbDeleteMomentSafe,
@@ -79,8 +80,8 @@ export const CHARACTERS_MOMENTS = {
   },
   abil: {
     id: 'abil',
-    name: 'Abil',
-    fullName: 'Abil',
+    name: 'Syma',
+    fullName: 'Syma',
     role: 'PINWHEEL ☁️',
     universe: 'PINWHEEL',
     symbol: '☁️',
@@ -91,9 +92,9 @@ export const CHARACTERS_MOMENTS = {
     id: 'akhira',
     name: 'Akhira',
     fullName: 'Akhira',
-    role: 'YAWN ⚡',
+    role: 'YAWN 🌊',
     universe: 'YAWN',
-    symbol: '⚡',
+    symbol: '🌊',
     accentColor: '#c084fc',
     avatar: '/assets/avatar_akhira_hd.jpg'
   },
@@ -101,9 +102,9 @@ export const CHARACTERS_MOMENTS = {
     id: 'ela',
     name: 'Ela',
     fullName: 'Ela',
-    role: 'US AGAIN 🌸',
+    role: 'US AGAIN 🪷',
     universe: 'US AGAIN',
-    symbol: '🌸',
+    symbol: '🪷',
     accentColor: '#f472b6',
     avatar: '/assets/avatar_ela_hd.jpg'
   },
@@ -111,17 +112,33 @@ export const CHARACTERS_MOMENTS = {
     id: 'ruben',
     name: 'Ruben',
     fullName: 'Ruben',
-    role: 'ASH ❄️',
+    role: 'ASH 🐉',
     universe: 'ASH',
-    symbol: '❄️',
+    symbol: '🐉',
     accentColor: '#94a3b8',
     avatar: '/assets/avatar_ruben_hd.jpg'
+  },
+  royan: {
+    id: 'royan',
+    name: 'Royan',
+    fullName: 'Royan',
+    role: 'HOT 🎆',
+    universe: 'HOT',
+    symbol: '🎆',
+    accentColor: '#fb7185',
+    avatar: '/assets/avatar_royan_hd.jpg'
   }
 };
 
+// Aliasing Syma <-> abil for seamless lookups
+CHARACTERS_MOMENTS.syma = CHARACTERS_MOMENTS.abil;
+
+// Canonical 8 characters in official presentation order
+export const ALL_MOMENTS_CHARACTERS = ['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'];
+
 // --- Active State ---
 let activeUserCharacter = loadSavedActiveCharacter();
-let activeFilter = 'all'; // 'all' | 'nyanya' | 'lala' | 'lele' | 'abil' | 'archive'
+let activeFilter = 'all'; // 'all' | 'nyanya' | 'lala' | 'lele' | 'abil' | 'akhira' | 'ela' | 'ruben' | 'royan' | 'archive'
 let momentsStore = []; // Unified persistent list of Story + Gallery records
 let listeners = [];
 let idbReadyPromise = null;
@@ -131,13 +148,19 @@ function loadSavedActiveCharacter() {
   try {
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem(ACTIVE_CHAR_STORAGE_KEY);
-      if (saved && CHARACTERS_MOMENTS[saved]) {
-        return saved;
+      if (saved && (CHARACTERS_MOMENTS[saved] || saved === 'syma')) {
+        return saved === 'syma' ? 'abil' : saved;
       }
       // Also check global session character if present
       const pbSession = localStorage.getItem('olu_pb_active_char');
-      if (pbSession && CHARACTERS_MOMENTS[pbSession]) {
-        return pbSession;
+      if (pbSession && (CHARACTERS_MOMENTS[pbSession] || pbSession === 'syma')) {
+        return pbSession === 'syma' ? 'abil' : pbSession;
+      }
+    }
+    if (typeof sessionStorage !== 'undefined') {
+      const activeSession = sessionStorage.getItem('activeUniverseSession');
+      if (activeSession && (CHARACTERS_MOMENTS[activeSession] || activeSession === 'syma')) {
+        return activeSession === 'syma' ? 'abil' : activeSession;
       }
     }
   } catch (_) {
@@ -176,7 +199,8 @@ export function formatRelativeTime(publishedAtMs, nowMs = Date.now()) {
 // --- Normalize Record Schema ---
 function normalizeRecord(raw) {
   if (!raw || typeof raw !== 'object') return null;
-  const authorKey = CHARACTERS_MOMENTS[raw.author] ? raw.author : 'nyanya';
+  const rawAuthor = raw.author === 'syma' ? 'abil' : raw.author;
+  const authorKey = CHARACTERS_MOMENTS[rawAuthor] ? rawAuthor : 'nyanya';
   const char = CHARACTERS_MOMENTS[authorKey];
 
   const publishedAt = Number.isFinite(Number(raw.publishedAt))
@@ -200,10 +224,11 @@ function normalizeRecord(raw) {
         nyanya: Boolean(raw.viewedBy.nyanya),
         lala: Boolean(raw.viewedBy.lala),
         lele: Boolean(raw.viewedBy.lele),
-        abil: Boolean(raw.viewedBy.abil),
+        abil: Boolean(raw.viewedBy.abil || raw.viewedBy.syma),
         akhira: Boolean(raw.viewedBy.akhira),
         ela: Boolean(raw.viewedBy.ela),
-        ruben: Boolean(raw.viewedBy.ruben)
+        ruben: Boolean(raw.viewedBy.ruben),
+        royan: Boolean(raw.viewedBy.royan)
       }
     : {
         nyanya: authorKey === 'nyanya',
@@ -212,7 +237,8 @@ function normalizeRecord(raw) {
         abil: authorKey === 'abil',
         akhira: authorKey === 'akhira',
         ela: authorKey === 'ela',
-        ruben: authorKey === 'ruben'
+        ruben: authorKey === 'ruben',
+        royan: authorKey === 'royan'
       };
 
   const likedBy = raw.likedBy && typeof raw.likedBy === 'object'
@@ -220,10 +246,11 @@ function normalizeRecord(raw) {
         nyanya: Boolean(raw.likedBy.nyanya),
         lala: Boolean(raw.likedBy.lala),
         lele: Boolean(raw.likedBy.lele),
-        abil: Boolean(raw.likedBy.abil),
+        abil: Boolean(raw.likedBy.abil || raw.likedBy.syma),
         akhira: Boolean(raw.likedBy.akhira),
         ela: Boolean(raw.likedBy.ela),
-        ruben: Boolean(raw.likedBy.ruben)
+        ruben: Boolean(raw.likedBy.ruben),
+        royan: Boolean(raw.likedBy.royan)
       }
     : {};
 
@@ -576,10 +603,14 @@ export function isStoryActive(item, nowMs = Date.now()) {
  */
 export function canUserAccessItem(item, viewerChar = activeUserCharacter, context = 'gallery') {
   if (!item || item.isDeleted) return false;
-  const viewer = CHARACTERS_MOMENTS[viewerChar] ? viewerChar : activeUserCharacter;
+  const rawViewer = CHARACTERS_MOMENTS[viewerChar] ? viewerChar : activeUserCharacter;
+  const viewer = rawViewer === 'syma' ? 'abil' : rawViewer;
+  const itemAuthor = item.author === 'syma' ? 'abil' : item.author;
 
   // Owner always has full access to their own items
-  if (item.author === viewer) {
+  const isOwner = (itemAuthor === viewer) ||
+                  (auth && auth.currentUser && item.authorUid && item.authorUid === auth.currentUser.uid);
+  if (isOwner) {
     return true;
   }
 
@@ -615,9 +646,16 @@ export function verifyOwnership(item, actorChar = activeUserCharacter) {
       error: 'Item tidak ditemukan.'
     };
   }
-  const actor = CHARACTERS_MOMENTS[actorChar] ? actorChar : activeUserCharacter;
-  if (item.author !== actor) {
-    const ownerName = CHARACTERS_MOMENTS[item.author]?.name || item.author;
+  const rawActor = CHARACTERS_MOMENTS[actorChar] ? actorChar : activeUserCharacter;
+  const actor = rawActor === 'syma' ? 'abil' : rawActor;
+  const itemAuthor = item.author === 'syma' ? 'abil' : item.author;
+
+  if (auth && auth.currentUser && item.authorUid && item.authorUid === auth.currentUser.uid) {
+    return { allowed: true };
+  }
+
+  if (itemAuthor !== actor) {
+    const ownerName = CHARACTERS_MOMENTS[itemAuthor]?.name || itemAuthor;
     const actorName = CHARACTERS_MOMENTS[actor]?.name || actor;
     return {
       allowed: false,
@@ -629,7 +667,30 @@ export function verifyOwnership(item, actorChar = activeUserCharacter) {
 
 // --- Getters & Setters ---
 export function getActiveUserCharacter() {
-  return activeUserCharacter;
+  if (activeUserCharacter) return activeUserCharacter;
+  if (auth && auth.currentUser) {
+    const verified = identifyUserCharacter(auth.currentUser);
+    if (verified) return verified;
+  }
+  if (typeof window !== 'undefined' && window.activeCharacterKey) {
+    const k = window.activeCharacterKey === 'syma' ? 'abil' : window.activeCharacterKey;
+    if (CHARACTERS_MOMENTS[k]) {
+      activeUserCharacter = k;
+      return k;
+    }
+  }
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(ACTIVE_CHAR_STORAGE_KEY);
+      if (stored && CHARACTERS_MOMENTS[stored]) {
+        activeUserCharacter = stored;
+        return stored;
+      }
+    }
+  } catch (_) {
+    // Ignore storage error
+  }
+  return null;
 }
 
 export function setActiveUserCharacter(charKey) {
@@ -645,11 +706,12 @@ export function setActiveUserCharacter(charKey) {
     notifyListeners();
     return;
   }
-  if (CHARACTERS_MOMENTS[charKey]) {
-    activeUserCharacter = charKey;
+  const targetKey = charKey === 'syma' ? 'abil' : charKey;
+  if (CHARACTERS_MOMENTS[targetKey]) {
+    activeUserCharacter = targetKey;
     try {
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(ACTIVE_CHAR_STORAGE_KEY, charKey);
+        localStorage.setItem(ACTIVE_CHAR_STORAGE_KEY, targetKey);
       }
     } catch (_) {
       // Ignore storage error
@@ -663,8 +725,9 @@ export function getActiveFilter() {
 }
 
 export function setActiveFilter(filterKey) {
-  const validFilters = ['all', 'nyanya', 'lala', 'lele', 'archive'];
-  activeFilter = validFilters.includes(filterKey) ? filterKey : 'all';
+  const validFilters = ['all', 'nyanya', 'lala', 'lele', 'abil', 'syma', 'akhira', 'ela', 'ruben', 'royan', 'archive'];
+  const targetKey = filterKey === 'syma' ? 'abil' : filterKey;
+  activeFilter = validFilters.includes(filterKey) ? targetKey : 'all';
   notifyListeners();
 }
 
@@ -717,9 +780,14 @@ export function markStoryAsViewed(storyId, viewerChar = activeUserCharacter) {
   if (!canUserAccessItem(item, viewerChar, 'story')) return null;
 
   if (!item.viewedBy || typeof item.viewedBy !== 'object') {
-    item.viewedBy = { nyanya: false, lala: false, lele: false };
+    item.viewedBy = {
+      nyanya: false, lala: false, lele: false, abil: false,
+      akhira: false, ela: false, ruben: false, royan: false
+    };
   }
-  item.viewedBy[viewerChar] = true;
+  const rawViewer = CHARACTERS_MOMENTS[viewerChar] ? viewerChar : activeUserCharacter;
+  const vKey = rawViewer === 'syma' ? 'abil' : rawViewer;
+  item.viewedBy[vKey] = true;
   persistMomentsState();
   notifyListeners();
   return decorateItemForViewer(item, viewerChar);
@@ -728,27 +796,29 @@ export function markStoryAsViewed(storyId, viewerChar = activeUserCharacter) {
 // --- 2. GALLERY & FILTERED FEED ---
 /**
  * Returns Moments / Gallery items according to the requested filter and active user permissions:
- * - 'all': All accessible active stories & shared moments across the 3 friends + active user's own items.
- * - 'nyanya' | 'lala' | 'lele': That character's Gallery.
+ * - 'all': All accessible active stories & shared moments across all 8 friends + active user's own items.
+ * - character filter ('nyanya' | 'lala' | 'lele' | 'abil' | 'akhira' | 'ela' | 'ruben' | 'royan'): That character's Gallery.
  *    * If `viewerChar === filter`: returns the owner's COMPLETE Personal Gallery (including expired >24h stories and private archive items).
  *    * If `viewerChar !== filter`: returns ONLY items from that character that are permitted for friends (excludes private items and expired personal story archives).
  * - 'archive': Shared 'Arsip Kita' items + the active user's own archived/expired stories.
  */
 export function getMomentsFeed(filter = activeFilter, viewerChar = activeUserCharacter, nowMs = Date.now()) {
-  const viewer = CHARACTERS_MOMENTS[viewerChar] ? viewerChar : activeUserCharacter;
+  const rawViewer = CHARACTERS_MOMENTS[viewerChar] ? viewerChar : activeUserCharacter;
+  const viewer = rawViewer === 'syma' ? 'abil' : rawViewer;
 
   let filtered = [];
 
   if (filter === 'archive') {
     filtered = momentsStore.filter((item) => {
       if (!canUserAccessItem(item, viewer, 'gallery')) return false;
-      // Show items pinned to Arsip Kita OR owner's own expired stories (Personal Story Archive)
-      const isExpiredOwnStory = item.author === viewer && item.isStory && !isStoryActive(item, nowMs);
+      const isOwner = item.author === viewer || (item.author in ['abil', 'syma'] && (viewer === 'abil' || viewer === 'syma'));
+      const isExpiredOwnStory = isOwner && item.isStory && !isStoryActive(item, nowMs);
       return Boolean(item.isArchived || isExpiredOwnStory);
     });
-  } else if (filter === 'nyanya' || filter === 'lala' || filter === 'lele') {
+  } else if (filter && filter !== 'all') {
     filtered = momentsStore.filter((item) => {
-      if (item.author !== filter) return false;
+      const matchAuthor = item.author === filter || (filter in ['abil', 'syma'] && (item.author === 'abil' || item.author === 'syma'));
+      if (!matchAuthor) return false;
       return canUserAccessItem(item, viewer, 'gallery');
     });
   } else {
@@ -794,13 +864,14 @@ export function getPersonalGallery(targetChar, viewerChar = activeUserCharacter,
  * - `mediaType`: 'image' | 'video'
  * - `mimeType`: e.g. 'image/png', 'video/mp4'
  * - `caption`: optional string
- * - `author`: 'nyanya' | 'lala' | 'lele'
+ * - `author`: any of the 8 characters
  * - `visibility`: 'friends' (default) | 'private'
  * - `publishedAt`: optional numeric timestamp (defaults to `Date.now()`)
  */
 export function addMoment(input = {}) {
-  const authorKey = CHARACTERS_MOMENTS[input.author] ? input.author : activeUserCharacter;
-  const char = CHARACTERS_MOMENTS[authorKey];
+  const rawAuthor = input.author === 'syma' ? 'abil' : (input.author || activeUserCharacter);
+  const authorKey = CHARACTERS_MOMENTS[rawAuthor] ? (rawAuthor === 'syma' ? 'abil' : rawAuthor) : (activeUserCharacter === 'syma' ? 'abil' : activeUserCharacter);
+  const char = CHARACTERS_MOMENTS[authorKey] || CHARACTERS_MOMENTS.nyanya;
   const mediaUrl = input.mediaUrl || input.photoUrl || '';
 
   const validation = validateStoryMediaInput({
@@ -839,7 +910,12 @@ export function addMoment(input = {}) {
     viewedBy: {
       nyanya: authorKey === 'nyanya',
       lala: authorKey === 'lala',
-      lele: authorKey === 'lele'
+      lele: authorKey === 'lele',
+      abil: authorKey === 'abil',
+      akhira: authorKey === 'akhira',
+      ela: authorKey === 'ela',
+      ruben: authorKey === 'ruben',
+      royan: authorKey === 'royan'
     },
     likedBy: {},
     likes: 0

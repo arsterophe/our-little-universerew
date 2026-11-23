@@ -157,7 +157,12 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
   }
 
   // --- Open / Close Moments View ---
-  function openMoments(fromViewId) {
+  function openMoments(fromViewId, explicitCharKey) {
+    if (explicitCharKey && (CHARACTERS_MOMENTS[explicitCharKey] || explicitCharKey === 'syma')) {
+      const canonChar = explicitCharKey === 'syma' ? 'abil' : explicitCharKey;
+      setActiveUserCharacter(canonChar);
+    }
+
     if (fromViewId) {
       previousViewId = fromViewId;
     } else if (viewPrivateUniverse && viewPrivateUniverse.classList.contains('active')) {
@@ -168,7 +173,13 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
       previousViewId = 'view-selection';
     }
 
-    ['view-selection', 'view-private-universe', 'view-orbit', 'view-kidult-world', 'view-toyou-world', 'view-shadow-world', 'view-photobooth'].forEach((id) => {
+    [
+      'view-selection', 'view-login', 'view-private-universe', 'view-orbit',
+      'view-kidult-world', 'view-toyou-world', 'view-shadow-world',
+      'view-pinwheel-world', 'view-yawn-world', 'view-ash-world',
+      'view-usagain-world', 'view-hot-world', 'view-photobooth',
+      'view-kotak-pos', 'view-our-messages'
+    ].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.classList.remove('active');
@@ -176,8 +187,9 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
       }
     });
 
+    const activeChar = getActiveUserCharacter() || (window.activeCharacterKey === 'syma' ? 'abil' : window.activeCharacterKey) || 'nyanya';
     if (viewMoments) {
-      viewMoments.classList.add('active');
+      viewMoments.className = `view-section view-moments theme-${activeChar} active`;
       viewMoments.setAttribute('aria-hidden', 'false');
     }
 
@@ -200,23 +212,11 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
       viewMoments.setAttribute('aria-hidden', 'true');
     }
 
-    const viewKidultWorld = document.getElementById('view-kidult-world');
-    const viewToYouWorld = document.getElementById('view-toyou-world');
-    const viewShadowWorld = document.getElementById('view-shadow-world');
-
-    if (previousViewId === 'view-orbit' && viewOrbit) {
-      viewOrbit.classList.add('active');
-      viewOrbit.setAttribute('aria-hidden', 'false');
-    } else if (previousViewId === 'view-kidult-world' && viewKidultWorld) {
-      viewKidultWorld.classList.add('active');
-      viewKidultWorld.setAttribute('aria-hidden', 'false');
-    } else if (previousViewId === 'view-toyou-world' && viewToYouWorld) {
-      viewToYouWorld.classList.add('active');
-      viewToYouWorld.setAttribute('aria-hidden', 'false');
-    } else if (previousViewId === 'view-shadow-world' && viewShadowWorld) {
-      viewShadowWorld.classList.add('active');
-      viewShadowWorld.setAttribute('aria-hidden', 'false');
-    } else if (previousViewId === 'view-private-universe' && viewPrivateUniverse) {
+    const targetEl = previousViewId ? document.getElementById(previousViewId) : null;
+    if (targetEl) {
+      targetEl.classList.add('active');
+      targetEl.setAttribute('aria-hidden', 'false');
+    } else if (viewPrivateUniverse) {
       viewPrivateUniverse.classList.add('active');
       viewPrivateUniverse.setAttribute('aria-hidden', 'false');
     } else if (viewSelection) {
@@ -251,11 +251,12 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
 
   // --- Perspective Switcher in Moments Header ---
   if (momentsViewerBadge) {
-    momentsViewerBadge.title = 'Klik untuk berganti akun aktif (Nyanya ⭐ / Lala ☀️ / Lele 🌙)';
+    momentsViewerBadge.title = 'Klik untuk berganti akun aktif (8 Karakter Sahabat)';
     momentsViewerBadge.addEventListener('click', () => {
-      const order = ['nyanya', 'lala', 'lele'];
+      const order = ['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'];
       const current = getActiveUserCharacter();
-      const nextIdx = (order.indexOf(current) + 1) % order.length;
+      const currentCanonical = current === 'syma' ? 'abil' : current;
+      const nextIdx = (order.indexOf(currentCanonical) + 1) % order.length;
       const nextChar = order[nextIdx];
       setActiveUserCharacter(nextChar);
       const charInfo = CHARACTERS_MOMENTS[nextChar];
@@ -278,10 +279,12 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
     }
     if (momentsGalleryAccessNote) {
       const currentFilter = getActiveFilter();
-      if (currentFilter === current) {
+      const currentCanonical = current === 'syma' ? 'abil' : current;
+      const filterCanonical = currentFilter === 'syma' ? 'abil' : currentFilter;
+      if (filterCanonical === currentCanonical) {
         momentsGalleryAccessNote.textContent = `🔓 Menampilkan Gallery Pribadi milikmu (${char.name} ${char.symbol}) — termasuk arsip Story >24 jam & item privat.`;
-      } else if (currentFilter === 'nyanya' || currentFilter === 'lala' || currentFilter === 'lele') {
-        const targetChar = CHARACTERS_MOMENTS[currentFilter];
+      } else if (CHARACTERS_MOMENTS[filterCanonical]) {
+        const targetChar = CHARACTERS_MOMENTS[filterCanonical];
         momentsGalleryAccessNote.textContent = `🔒 Melihat Gallery publik ${targetChar.name} ${targetChar.symbol}. Arsip Story pribadi (>24 jam) & item privat milik ${targetChar.name} dilindungi.`;
       } else if (currentFilter === 'archive') {
         momentsGalleryAccessNote.textContent = `🏛️ Menampilkan Arsip Kita bersama & arsip Story pribadimu (${char.name} ${char.symbol}).`;
@@ -296,7 +299,7 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
     if (!storiesTray) return;
     storiesTray.innerHTML = '';
 
-    const characters = ['nyanya', 'lala', 'lele'];
+    const characters = ['nyanya', 'lala', 'lele', 'abil', 'akhira', 'ela', 'ruben', 'royan'];
     const nowMs = Date.now();
     const viewerChar = getActiveUserCharacter();
 
@@ -336,11 +339,10 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
       item.innerHTML = `
         <div class="story-ring-wrapper ${ringClass}">
           <img src="${char.avatar}" alt="${char.name}" class="story-avatar-img" />
-          ${
-            hasStory
-              ? `<span class="story-active-badge" title="${storyCount} Story aktif">${storyCount}</span>`
-              : `<span class="story-no-story-badge" title="Belum ada Story aktif dalam 24 jam terakhir">–</span>`
-          }
+          ${hasStory
+          ? `<span class="story-active-badge" title="${storyCount} Story aktif">${storyCount}</span>`
+          : `<span class="story-no-story-badge" title="Belum ada Story aktif dalam 24 jam terakhir">–</span>`
+        }
         </div>
         <div class="story-char-meta">
           <span class="story-char-name">
@@ -465,7 +467,7 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
           playPromise.catch(() => {
             // Autoplay with sound may be blocked by browser policy; mute and retry
             storyMainVideo.muted = true;
-            storyMainVideo.play().catch(() => {});
+            storyMainVideo.play().catch(() => { });
           });
         }
       }
@@ -473,7 +475,7 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
       if (storyMainVideo) {
         try {
           storyMainVideo.pause();
-        } catch (_) {}
+        } catch (_) { }
         storyMainVideo.removeAttribute('src');
         storyMainVideo.style.display = 'none';
       }
@@ -590,7 +592,7 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
     if (storyMainVideo) {
       try {
         storyMainVideo.pause();
-      } catch (_) {}
+      } catch (_) { }
     }
   }
 
@@ -721,9 +723,10 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
       if (currentFilter === 'archive') {
         emptyTitle = 'Belum Ada Koleksi di Arsip';
         emptyMsg = 'Belum ada Story yang disematkan ke Arsip Kita atau Story yang melewati masa tayang 24 jam.';
-      } else if (currentFilter === 'nyanya' || currentFilter === 'lala' || currentFilter === 'lele') {
+      } else if (CHARACTERS_MOMENTS[currentFilter]) {
         const charInfo = CHARACTERS_MOMENTS[currentFilter];
-        if (currentViewer === currentFilter) {
+        const isOwner = (currentViewer === currentFilter) || (currentViewer in ['abil', 'syma'] && (currentFilter === 'abil' || currentFilter === 'syma'));
+        if (isOwner) {
           emptyTitle = `Gallery Pribadi ${charInfo.name} ${charInfo.symbol} Masih Kosong`;
           emptyMsg = `Setiap Story yang kamu unggah akan otomatis tersimpan permanen di Gallery ${charInfo.name}.`;
         } else {
@@ -977,7 +980,7 @@ export function initMomentsView({ onShowToast, onTriggerSparkle } = {}) {
     if (previewVideo) {
       try {
         previewVideo.pause();
-      } catch (_) {}
+      } catch (_) { }
       previewVideo.removeAttribute('src');
       previewVideo.style.display = 'none';
     }

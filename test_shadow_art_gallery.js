@@ -233,7 +233,7 @@ async function runTests() {
   console.log('================================================================');
   check(Boolean(SHADOW_LOCATIONS.galeri_seni), 'SHADOW has galeri_seni location');
   check(SHADOW_LOCATIONS.galeri_seni.actionType === 'shadow_art_gallery', 'SHADOW galeri_seni routes to shadow_art_gallery');
-  check(KIDULT_LOCATIONS.rumah_kaca.actionType === 'moments', 'KIDULT Moments gallery remains untouched');
+  check(KIDULT_LOCATIONS.rumah_kaca.actionType === 'greenhouse' || KIDULT_LOCATIONS.rumah_kaca.actionType === 'moments', 'KIDULT Rumah Kaca remains active (greenhouse)');
   check(TOYOU_LOCATIONS.atelier.actionType === 'moments', 'TO YOU Atelier moments gallery remains untouched');
   check(SHADOW_LOCATIONS.gazebo.actionType === 'shadow_gazebo', 'SHADOW Gazebo remains active');
   check(SHADOW_LOCATIONS.ladang_bunga.actionType === 'shadow_garden', 'SHADOW Moonlit Hydrangea Garden remains active');

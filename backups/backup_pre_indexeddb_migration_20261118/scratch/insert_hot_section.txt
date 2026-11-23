@@ -1,0 +1,503 @@
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW: ROYAN'S UNIVERSE — HOT                             -->
+      <!-- THE ENCHANTED ELVEN SANCTUARY (UNIVERSE KE-8)             -->
+      <!-- ======================================================== -->
+      <section class="view-section view-hot-world" id="view-hot-world" aria-label="Royan's Universe: The Enchanted Elven Sanctuary" aria-hidden="true">
+        <div class="hot-world-viewport">
+          <!-- Background Artwork Layer -->
+          <div class="hot-world-bg" id="hot-world-bg" aria-hidden="true"></div>
+
+          <!-- Atmospheric Lighting & Fog Overlay -->
+          <div class="hot-world-overlay" aria-hidden="true"></div>
+
+          <!-- Canvas for Fireflies, Falling Petals, Fluttering Butterflies & Stardust -->
+          <canvas class="hot-fx-canvas" id="hot-fx-canvas" aria-hidden="true"></canvas>
+
+          <!-- Top Header Navigation Bar -->
+          <header class="hot-top-header">
+            <!-- Left: Brand / World Identity -->
+            <div class="hot-header-left">
+              <div class="hot-header-icon-wrap" aria-hidden="true">🎆</div>
+              <div class="hot-header-text">
+                <div class="hot-world-title-wrap">
+                  <span class="hot-world-title">ROYAN'S UNIVERSE</span>
+                  <span style="font-size:0.8rem; color:#c084fc;">✧</span>
+                </div>
+                <span class="hot-world-subtitle">The Enchanted Elven Sanctuary</span>
+              </div>
+            </div>
+
+            <!-- Center: Global Navigation Bar -->
+            <nav class="hot-top-center-nav" aria-label="Navigasi Utama Elven Sanctuary">
+              <button type="button" class="hot-nav-pill-btn" id="btn-hot-nav-universes" aria-label="Jelajahi Universe Lainnya">
+                <span>🪐</span>
+                <span>Universes</span>
+              </button>
+              <button type="button" class="hot-nav-pill-btn" id="btn-hot-nav-calendar" aria-label="Buka Kalender Orbit">
+                <span>📅</span>
+                <span>Orbit</span>
+              </button>
+              <button type="button" class="hot-nav-pill-btn" id="btn-hot-nav-stories" aria-label="Buka Cerita Universe">
+                <span>📖</span>
+                <span>Stories</span>
+              </button>
+              <button type="button" class="hot-nav-pill-btn" id="btn-hot-nav-messages" aria-label="Buka Kotak Pesan">
+                <span>💌</span>
+                <span>Messages</span>
+              </button>
+              <button type="button" class="hot-nav-pill-btn" id="btn-hot-nav-games" aria-label="Buka Mini Games">
+                <span>🎮</span>
+                <span>Games</span>
+              </button>
+              <button type="button" class="hot-nav-pill-btn" id="btn-hot-nav-gallery" aria-label="Buka Galeri Foto">
+                <span>🖼</span>
+                <span>Gallery</span>
+              </button>
+            </nav>
+
+            <!-- Right: Character Greeting & Settings -->
+            <div class="hot-top-right-nav">
+              <div class="hot-profile-greeting-pill">
+                <img src="/assets/avatar_royan_hd.jpg" alt="Foto Profil Royan" class="hot-header-avatar">
+                <span class="hot-header-greeting-text">Hello, Royan 🎆</span>
+              </div>
+              <button type="button" class="hot-circle-btn" id="btn-hot-settings" aria-label="Pengaturan Universe" title="Elven Sanctuary Settings">⚙</button>
+            </div>
+          </header>
+
+          <!-- Left Character Profile Panel (Elven Frosted Glass) -->
+          <aside class="hot-profile-sidebar" aria-label="Profil Karakter Royan">
+            <div class="hot-profile-top">
+              <div class="hot-profile-avatar-wrap">
+                <img src="/assets/portrait_royan_hd.jpg" alt="Royan Profile" class="hot-profile-avatar-img">
+                <span class="hot-profile-level-badge">Lv. ∞</span>
+              </div>
+              <div class="hot-profile-meta">
+                <h2 class="hot-profile-name">Royan 🎆</h2>
+                <span class="hot-profile-race-title">The Gentle Guardian · Elven</span>
+                <span class="hot-profile-status">
+                  <span class="hot-status-dot"></span>
+                  <span>Awake in Sanctuary</span>
+                </span>
+              </div>
+            </div>
+
+            <blockquote class="hot-profile-quote">
+              “Even the quietest souls can make the brightest difference.”
+            </blockquote>
+
+            <div class="hot-profile-details">
+              <div class="hot-profile-row">
+                <span class="hot-profile-row-label">Suasana Hati:</span>
+                <button type="button" class="hot-mood-badge-interactive" id="hot-profile-mood" title="Klik untuk mengubah suasana hati">
+                  Peaceful 🌿
+                </button>
+              </div>
+              <div class="hot-profile-row">
+                <span class="hot-profile-row-label">Universe Realm:</span>
+                <span style="font-weight:600; color:#c084fc;">HOT • Sanctuary</span>
+              </div>
+              <div class="hot-pet-shortcut" id="hot-sidebar-pet-shortcut" role="button" tabindex="0" title="Buka Terrarium Kip">
+                <span id="hot-sidebar-pet-status">🦎 Kip (Happy &amp; Basking 🌿)</span>
+              </div>
+            </div>
+          </aside>
+
+          <!-- 8 Interactive Location Hotspots -->
+          <div class="hot-hotspots-container">
+            <!-- 1. Elven Residence (Left Wooden House) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-residence" id="btn-loc-hot-residence" aria-label="Elven Residence">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">🏡</span>
+              <span class="hot-loc-label">Elven Residence</span>
+            </button>
+
+            <!-- 2. Celestial Observatory (Upper Right Glass Dome & Telescope) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-observatory" id="btn-loc-hot-observatory" aria-label="Celestial Observatory">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">🔭</span>
+              <span class="hot-loc-label">Observatory</span>
+            </button>
+
+            <!-- 3. Enchanted Gazebo (Lower Right Garden Canopy) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-gazebo" id="btn-loc-hot-gazebo" aria-label="Enchanted Gazebo">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">🌸</span>
+              <span class="hot-loc-label">Enchanted Gazebo</span>
+            </button>
+
+            <!-- 4. Elven Mailbox (Bridge Walkway) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-mailbox" id="btn-loc-hot-mailbox" aria-label="Elven Mailbox">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">💌</span>
+              <span class="hot-loc-label">Elven Mailbox</span>
+            </button>
+
+            <!-- 5. Mystic Garden (Stair Flowerbed) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-garden" id="btn-loc-hot-garden" aria-label="Mystic Garden">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">🌿</span>
+              <span class="hot-loc-label">Mystic Garden</span>
+            </button>
+
+            <!-- 6. Gecko Sanctuary (Bottom-Left Stone Terrace) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-gecko" id="btn-loc-hot-gecko" aria-label="Gecko Sanctuary">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">🦎</span>
+              <span class="hot-loc-label">Gecko Sanctuary</span>
+            </button>
+
+            <!-- 7. Lotus Pond (Bottom-Right Lily Pond) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-pond" id="btn-loc-hot-pond" aria-label="Lotus Pond">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">🪷</span>
+              <span class="hot-loc-label">Lotus Pond</span>
+            </button>
+
+            <!-- 8. Crystal Waterfall (Central Cascade) -->
+            <button type="button" class="hot-loc-btn btn-loc-hot-waterfall" id="btn-loc-hot-waterfall" aria-label="Crystal Waterfall">
+              <div class="hot-loc-pulse" aria-hidden="true"></div>
+              <span class="hot-loc-icon">✨</span>
+              <span class="hot-loc-label">Crystal Waterfall</span>
+            </button>
+          </div>
+
+          <!-- Bottom Interface Bar -->
+          <footer class="hot-bottom-bar">
+            <!-- Left: Web Audio API Music Player -->
+            <div class="hot-music-player" id="hot-music-player">
+              <div class="hot-music-disc" aria-hidden="true">💿</div>
+              <div class="hot-music-info">
+                <span class="hot-music-title" id="hot-music-title">Whispers of the Elven Wood</span>
+                <span class="hot-music-sub" id="hot-music-sub">Gentle Harp &amp; Forest Wind • 58 BPM</span>
+                <div class="hot-music-progress-bar">
+                  <div class="hot-music-progress-fill" id="hot-music-progress-fill"></div>
+                </div>
+              </div>
+              <div class="hot-music-controls">
+                <button type="button" class="hot-music-ctrl-btn" id="btn-hot-music-prev" aria-label="Lagu Sebelumnya" title="Previous">⏮</button>
+                <button type="button" class="hot-music-ctrl-btn hot-play-btn" id="btn-hot-music-play" aria-label="Putar Musik Ambience" title="Play / Pause">
+                  <span id="hot-play-icon">▶</span>
+                </button>
+                <button type="button" class="hot-music-ctrl-btn" id="btn-hot-music-next" aria-label="Lagu Berikutnya" title="Next">⏭</button>
+              </div>
+            </div>
+
+            <!-- Center: Main Title & Daily Quote Tagline -->
+            <div class="hot-tagline-panel">
+              <span class="hot-tagline-main">The Gentle Guardian</span>
+              <span class="hot-tagline-sub">“Even the quietest souls can make the brightest difference.”</span>
+            </div>
+
+            <!-- Right: Gallery, Collection & Pet Shortcuts -->
+            <div class="hot-bottom-actions">
+              <button type="button" class="hot-big-action-btn" id="btn-hot-gallery" aria-label="Buka Galeri Foto Royan">
+                <div class="hot-big-action-circle">🖼</div>
+                <span class="hot-big-action-label">Gallery</span>
+              </button>
+              <button type="button" class="hot-big-action-btn" id="btn-hot-collection" aria-label="Buka Koleksi Relik Elven">
+                <div class="hot-big-action-circle">🎁</div>
+                <span class="hot-big-action-label">Collection</span>
+              </button>
+              <button type="button" class="hot-big-action-btn" id="btn-hot-pet-corner" aria-label="Buka Pojok Pet Kip">
+                <div class="hot-big-action-circle">🦎</div>
+                <span class="hot-big-action-label">Kip</span>
+              </button>
+            </div>
+          </footer>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- ROYAN SUB-MODALS & INTERACTIVE DIALOGS         -->
+        <!-- ============================================== -->
+
+        <!-- MODAL 1: ELVEN RESIDENCE -->
+        <div class="hot-modal-overlay" id="hot-residence-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">🏡</span>
+                <div>
+                  <span class="hot-modal-tag">KEDIAMAN UTAMA • ROYAN</span>
+                  <h3 class="hot-modal-title">Elven Residence</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:1rem; color:#f3e8ff;">Rumah kayu elven bertingkat hangat di tengah naungan pohon wisteria berbunga ungu, dengan lentera gantung dan aroma teh herba malam hari.</p>
+              <div class="hot-form-group">
+                <label class="hot-form-label" for="hot-residence-atmo">Suasana Ruangan:</label>
+                <select class="hot-select" id="hot-residence-atmo">
+                  <option value="Cozy Warm Lantern">Lentera Emas Hangat (Cozy)</option>
+                  <option value="Moonlit Violet Glow">Pendaran Rembulan Violet</option>
+                  <option value="Emerald Hearth Fire">Perapian Hijau Zamrud</option>
+                </select>
+              </div>
+              <div class="hot-form-group">
+                <label class="hot-form-label" for="hot-residence-decor">Dekorasi Bunga &amp; Kristal:</label>
+                <select class="hot-select" id="hot-residence-decor">
+                  <option value="Enchanted Moonlilies">Lili Rembulan Sihir</option>
+                  <option value="Starfall Wisteria Vines">Sulur Wisteria Bintang</option>
+                  <option value="Amethyst Crystal Clusters">Gugusan Kristal Kecubung</option>
+                </select>
+              </div>
+              <div class="hot-form-group">
+                <label class="hot-form-label" for="hot-residence-diary">Buku Harian Penjaga Hutan:</label>
+                <textarea class="hot-textarea" id="hot-residence-diary" rows="3" placeholder="Tuliskan catatan malam Royan..."></textarea>
+              </div>
+              <button type="button" class="hot-primary-btn" id="btn-save-hot-residence">✨ Simpan Kediaman</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 2: CELESTIAL OBSERVATORY -->
+        <div class="hot-modal-overlay" id="hot-observatory-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">🔭</span>
+                <div>
+                  <span class="hot-modal-tag">KUBAH ASTRONOMI • LANGIT MALAM</span>
+                  <h3 class="hot-modal-title">Celestial Observatory</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:0.85rem; color:#f3e8ff;">Kubah kaca tebing tinggi dengan teleskop kuno berlapis perak yang mengarahkan pandangan ke cincin bulan raksasa dan gugusan bintang sanctuary.</p>
+              <div style="margin-bottom:0.85rem;">
+                <button type="button" class="hot-primary-btn" id="btn-log-hot-astronomy">🔭 Teropong Rasi Bintang Baru</button>
+              </div>
+              <div style="font-size:0.75rem; font-weight:700; color:#34d399; margin-bottom:0.4rem;">Jurnal Pengamatan Langit:</div>
+              <div id="hot-astronomy-logs"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 3: ENCHANTED GAZEBO -->
+        <div class="hot-modal-overlay" id="hot-gazebo-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">🌸</span>
+                <div>
+                  <span class="hot-modal-tag">PAVILIUN KETENANGAN • RELAKSASI</span>
+                  <h3 class="hot-modal-title">Enchanted Gazebo</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:1rem; color:#f3e8ff;">Gazebo beratap kubah tanaman rambat dengan tirai sutra putih lembut, bantal sutra nyaman, dan aroma seduhan teh hangat di tepi danau.</p>
+              <div class="hot-form-group">
+                <label class="hot-form-label" for="hot-gazebo-tea">Pilih Seduhan Teh Herbal:</label>
+                <select class="hot-select" id="hot-gazebo-tea">
+                  <option value="Moonlight Chamomile">Moonlight Chamomile (Menenangkan Jiwa)</option>
+                  <option value="Lavender Starlight Infusion">Lavender Starlight (Mimpi Manis)</option>
+                  <option value="Elven Mint &amp; Honey">Elven Mint &amp; Madu Bunga (Menyegarkan)</option>
+                </select>
+              </div>
+              <button type="button" class="hot-primary-btn" id="btn-hot-gazebo-brew">🍵 Seduh Teh Hangat</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 4: ELVEN MAILBOX -->
+        <div class="hot-modal-overlay" id="hot-mailbox-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">💌</span>
+                <div>
+                  <span class="hot-modal-tag">KOTAK SURAT • PESAN KASIH</span>
+                  <h3 class="hot-modal-title">Elven Mailbox</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:1rem; color:#f3e8ff;">Kotak pos besi berornamen bunga elven di pangkal jembatan kayu. Kupu-kupu pembawa pesan mengantarkan surat-surat dari universe sahabat.</p>
+              <div style="background:rgba(18,11,35,0.6); padding:0.85rem; border-radius:12px; border:1px solid rgba(192,132,252,0.3); margin-bottom:1rem; text-align:center;">
+                <div style="font-size:2rem; margin-bottom:0.35rem;">📬✨</div>
+                <div style="font-weight:700; color:#34d399; margin-bottom:0.25rem;">Terhubung ke Our Little Messages</div>
+                <div style="font-size:0.75rem; color:#c4b5fd;">Kirim atau baca pesan pribadi antar karakter universe secara real-time.</div>
+              </div>
+              <button type="button" class="hot-primary-btn" id="btn-hot-open-messages">💌 Buka Our Little Messages</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 5: MYSTIC GARDEN -->
+        <div class="hot-modal-overlay" id="hot-garden-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">🌿</span>
+                <div>
+                  <span class="hot-modal-tag">TAMAN BOTANI • BUNGA AJAIB</span>
+                  <h3 class="hot-modal-title">Mystic Garden</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:1rem; color:#f3e8ff;">Taman terasering berbunga hydrangia ungu, mawar merah muda, dan anggrek cahaya bintang yang dipupuk dengan embun rembulan.</p>
+              <div id="hot-garden-status" style="background:rgba(18,11,35,0.6); padding:0.85rem; border-radius:12px; border:1px solid rgba(52,211,153,0.3); margin-bottom:1rem; font-size:0.8rem; line-height:1.6;"></div>
+              <button type="button" class="hot-primary-btn" id="btn-hot-garden-water">💧 Siram Taman dengan Embun Rembulan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 6: GECKO SANCTUARY -->
+        <div class="hot-modal-overlay" id="hot-gecko-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">🦎</span>
+                <div>
+                  <span class="hot-modal-tag">HABITAT HEWAN PELIHARAAN • KIP</span>
+                  <h3 class="hot-modal-title">Gecko Sanctuary</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:0.85rem; color:#f3e8ff;">Kubah terarium kaca di teras batu tempat Kip, gecko bintik berbunga kesayangan Royan, beristirahat dan menikmati cahaya hangat.</p>
+              <div class="hot-gecko-card">
+                <div class="hot-gecko-status-grid">
+                  <div class="hot-gecko-stat-box">
+                    <div class="hot-gecko-stat-val" id="hot-gecko-hunger">92%</div>
+                    <div class="hot-gecko-stat-lbl">Kenyang</div>
+                  </div>
+                  <div class="hot-gecko-stat-box">
+                    <div class="hot-gecko-stat-val" id="hot-gecko-mood">Happy 🌿</div>
+                    <div class="hot-gecko-stat-lbl">Mood</div>
+                  </div>
+                  <div class="hot-gecko-stat-box">
+                    <div class="hot-gecko-stat-val" id="hot-gecko-temp">26°C</div>
+                    <div class="hot-gecko-stat-lbl">Suhu</div>
+                  </div>
+                  <div class="hot-gecko-stat-box">
+                    <div class="hot-gecko-stat-val">Sehat</div>
+                    <div class="hot-gecko-stat-lbl">Kesehatan</div>
+                  </div>
+                </div>
+                <div class="hot-gecko-actions">
+                  <button type="button" class="hot-secondary-btn" id="btn-hot-gecko-feed">🦗 Beri Makan</button>
+                  <button type="button" class="hot-secondary-btn" id="btn-hot-gecko-mist">💧 Semprot Embun</button>
+                  <button type="button" class="hot-secondary-btn" onclick="alert('🦎 Kip menatapmu dengan mata bulat berkilau penuh kasih! ✨')">👋 Elus Kip</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 7: LOTUS POND -->
+        <div class="hot-modal-overlay" id="hot-pond-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">🪷</span>
+                <div>
+                  <span class="hot-modal-tag">DANAU TERATAI • IKAN KOI</span>
+                  <h3 class="hot-modal-title">Lotus Pond</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:1rem; color:#f3e8ff;">Danau air kristal yang tenang dengan bunga lotus mekar berpendar cahaya merah muda dan kawanan ikan koi emas berenang damai.</p>
+              <div style="background:rgba(18,11,35,0.6); padding:0.85rem; border-radius:12px; border:1px solid rgba(192,132,252,0.3); margin-bottom:1rem; text-align:center;">
+                <div style="font-size:2rem; margin-bottom:0.35rem;">🐟✨🪷</div>
+                <div style="font-weight:700; color:#34d399;">Kawanan Koi Teratai Elven</div>
+                <div style="font-size:0.75rem; color:#c4b5fd; margin-top:0.25rem;">Air jernih mencerminkan rembulan ungu dan gemericik air terjun.</div>
+              </div>
+              <button type="button" class="hot-primary-btn" id="btn-hot-feed-fish">🪷 Beri Makan Ikan Koi</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 8: CRYSTAL WATERFALL -->
+        <div class="hot-modal-overlay" id="hot-waterfall-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">✨</span>
+                <div>
+                  <span class="hot-modal-tag">AIR TERJUN KRISTAL • RESONANSI SUARA</span>
+                  <h3 class="hot-modal-title">Crystal Waterfall</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:1rem; color:#f3e8ff;">Air terjun kembar yang jatuh dari tebing suaka. Kristal-kristal ungu di tepiannya bergema selaras dengan frekuensi nada alam.</p>
+              <div style="font-size:0.75rem; font-weight:700; color:#c4b5fd; margin-bottom:0.6rem;">Petik Nada Resonansi Kristal:</div>
+              <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:0.6rem;">
+                <button type="button" class="hot-secondary-btn hot-crystal-tune-btn" data-crystal-name="Amethyst Whisper">💎 Amethyst (Do - C4)</button>
+                <button type="button" class="hot-secondary-btn hot-crystal-tune-btn" data-crystal-name="Fluorite Resonance">💎 Fluorite (Mi - E4)</button>
+                <button type="button" class="hot-secondary-btn hot-crystal-tune-btn" data-crystal-name="Moonstone Chime">💎 Moonstone (Sol - G4)</button>
+                <button type="button" class="hot-secondary-btn hot-crystal-tune-btn" data-crystal-name="Celestite Harmony">💎 Celestite (Do - C5)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL 9: COLLECTION -->
+        <div class="hot-modal-overlay" id="hot-collection-modal" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="hot-modal-card">
+            <div class="hot-modal-header">
+              <div class="hot-modal-header-left">
+                <span class="hot-modal-icon-badge">🎁</span>
+                <div>
+                  <span class="hot-modal-tag">PETI RELIK &amp; ARTEFAK ELVEN</span>
+                  <h3 class="hot-modal-title">Elven Relics &amp; Keepsakes</h3>
+                </div>
+              </div>
+              <button type="button" class="hot-modal-close-btn" aria-label="Tutup">✕</button>
+            </div>
+            <div class="hot-modal-body">
+              <p style="margin-bottom:0.75rem; color:#f3e8ff;">Benda-benda kenangan dan relik alam yang dikumpulkan Royan di seluruh penjuru sanctuary.</p>
+              <div class="hot-items-grid">
+                <div class="hot-item-cell">
+                  <div class="hot-item-icon">🪶</div>
+                  <div class="hot-item-name">Bulu Burung Bintang</div>
+                  <div class="hot-item-desc">Berkilau di kegelapan</div>
+                </div>
+                <div class="hot-item-cell">
+                  <div class="hot-item-icon">💎</div>
+                  <div class="hot-item-name">Kristal Violet Murni</div>
+                  <div class="hot-item-desc">Resonansi menenangkan</div>
+                </div>
+                <div class="hot-item-cell">
+                  <div class="hot-item-icon">🪷</div>
+                  <div class="hot-item-name">Kelopak Teratai Emas</div>
+                  <div class="hot-item-desc">Dipetik saat purnama</div>
+                </div>
+                <div class="hot-item-cell">
+                  <div class="hot-item-icon">📜</div>
+                  <div class="hot-item-name">Gulungan Mantra Kuno</div>
+                  <div class="hot-item-desc">Tulisan elven pelindung</div>
+                </div>
+                <div class="hot-item-cell">
+                  <div class="hot-item-icon">🍃</div>
+                  <div class="hot-item-name">Daun Pohon Induk</div>
+                  <div class="hot-item-desc">Tak pernah layu</div>
+                </div>
+                <div class="hot-item-cell">
+                  <div class="hot-item-icon">🦎</div>
+                  <div class="hot-item-name">Fosil Jejak Kip</div>
+                  <div class="hot-item-desc">Kenangan pertama</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VIEW: SHADOW — MOONLIT HYDRANGEA GARDEN                 -->

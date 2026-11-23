@@ -1,0 +1,804 @@
+/* ==========================================================================
+   ASH — RUBEN'S UNIVERSE: THE DRAGON'S DEN
+   Theme: Midnight Purple, Royal Violet, Lavender, Silver & Glowing White
+   ========================================================================== */
+
+.view-ash-world {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0b0717;
+  color: #f5f3ff;
+  overflow: hidden;
+  z-index: 80;
+  display: none;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.view-ash-world.active {
+  display: block;
+}
+
+/* 1. STAGE & BASE BACKGROUND LAYER */
+.ash-2d-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 60% 25%, #2a164d 0%, #130a24 55%, #07030e 100%);
+  user-select: none;
+}
+
+.ash-base-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.ash-scene-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 36%;
+  display: block;
+  transform: scale(1.01);
+  filter: contrast(1.06) saturate(1.1) brightness(1.0);
+}
+
+.ash-color-grade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 60% 22%, transparent 45%, rgba(11, 7, 23, 0.4) 80%, rgba(7, 3, 14, 0.7) 100%),
+              linear-gradient(to bottom, rgba(168, 85, 247, 0.08) 0%, transparent 45%, rgba(11, 7, 23, 0.45) 100%);
+  pointer-events: none;
+}
+
+/* 2. CANVAS FX (Flying Dragon, Petals, Mist, Starlight & Glowing Crystals) */
+.ash-magic-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* 3. TOP HEADER (Left: Profile Avatar, Center: Nav, Right: Settings) */
+.ash-top-header {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  right: 24px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+/* A. Top-Left: Ruben Profile & Dragon's Den Title */
+.ash-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(24, 12, 44, 0.82);
+  border: 1px solid rgba(216, 180, 254, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 20px 8px 10px;
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgba(7, 3, 14, 0.7), 0 0 18px rgba(168, 85, 247, 0.35);
+  pointer-events: auto;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ash-header-left:hover {
+  border-color: rgba(233, 213, 255, 0.85);
+  box-shadow: 0 10px 32px rgba(7, 3, 14, 0.8), 0 0 24px rgba(192, 132, 252, 0.6);
+}
+
+.ash-header-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(233, 213, 255, 0.9);
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.8), inset 0 0 8px rgba(147, 51, 234, 0.4);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 7, 28, 0.95);
+}
+
+.ash-header-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ash-header-titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.ash-header-main-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(216, 180, 254, 0.7);
+}
+
+.ash-header-sub-title {
+  margin: 2px 0 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #e9d5ff;
+}
+
+/* B. Top-Center: Explore Universe & Story Buttons */
+.ash-header-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.ash-nav-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(24, 12, 44, 0.82);
+  border: 1px solid rgba(216, 180, 254, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #f5f3ff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(7, 3, 14, 0.6), 0 0 12px rgba(168, 85, 247, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ash-nav-pill-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(42, 20, 77, 0.9);
+  border-color: rgba(233, 213, 255, 0.9);
+  box-shadow: 0 8px 26px rgba(7, 3, 14, 0.75), 0 0 18px rgba(192, 132, 252, 0.5);
+  color: #ffffff;
+}
+
+.ash-nav-pill-btn:active {
+  transform: translateY(0);
+}
+
+.ash-nav-pill-btn .pill-icon {
+  font-size: 0.95rem;
+}
+
+/* C. Top-Right: Settings Button */
+.ash-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: auto;
+}
+
+.ash-settings-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(24, 12, 44, 0.82);
+  border: 1px solid rgba(216, 180, 254, 0.42);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #f5f3ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 20px rgba(7, 3, 14, 0.6), 0 0 12px rgba(168, 85, 247, 0.25);
+  padding: 0;
+}
+
+.ash-settings-btn:hover {
+  transform: rotate(45deg) scale(1.08);
+  background: rgba(54, 26, 98, 0.92);
+  border-color: rgba(233, 213, 255, 0.9);
+  box-shadow: 0 0 20px rgba(192, 132, 252, 0.7);
+}
+
+/* 4. INTERACTIVE LOCATIONS ON THE ARTWORK (8 Floating Glass Hotspots) */
+.ash-locations-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ash-loc-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(26, 12, 48, 0.86);
+  border: 1px solid rgba(216, 180, 254, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(5, 2, 11, 0.75),
+              0 0 16px rgba(168, 85, 247, 0.4),
+              0 0 24px rgba(192, 132, 252, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ashBobbingFloat 4.2s ease-in-out infinite alternate;
+}
+
+.ash-loc-btn:hover {
+  transform: translate(-50%, -50%) scale(1.08) translateY(-3px);
+  background: rgba(46, 20, 86, 0.94);
+  border-color: rgba(243, 232, 255, 0.95);
+  box-shadow: 0 12px 32px rgba(5, 2, 11, 0.9),
+              0 0 26px rgba(192, 132, 252, 0.75),
+              0 0 32px rgba(233, 213, 255, 0.5);
+  color: #ffffff;
+}
+
+.ash-loc-btn:active {
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+.ash-loc-icon {
+  font-size: 1.05rem;
+  filter: drop-shadow(0 0 6px rgba(216, 180, 254, 0.8));
+}
+
+/* Exact Coordinates Aligned to Reference Artwork */
+.btn-loc-ash-castle {
+  top: 29%;
+  left: 52%;
+  animation-delay: 0s;
+}
+
+.btn-loc-ash-engineering {
+  top: 29%;
+  left: 11%;
+  animation-delay: -1.0s;
+}
+
+.btn-loc-ash-observatory {
+  top: 30%;
+  left: 23%;
+  animation-delay: -2.0s;
+}
+
+.btn-loc-ash-gazebo {
+  top: 63%;
+  left: 21%;
+  animation-delay: -1.5s;
+}
+
+.btn-loc-ash-garden {
+  top: 84%;
+  left: 24%;
+  animation-delay: -2.5s;
+}
+
+.btn-loc-ash-mailbox {
+  top: 76%;
+  left: 65%;
+  animation-delay: -0.6s;
+}
+
+.btn-loc-ash-gaming {
+  top: 66%;
+  left: 78%;
+  animation-delay: -1.8s;
+}
+
+.btn-loc-ash-music {
+  top: 48%;
+  left: 88%;
+  animation-delay: -2.8s;
+}
+
+@keyframes ashBobbingFloat {
+  0% { transform: translate(-50%, -50%) translateY(0px); }
+  100% { transform: translate(-50%, -50%) translateY(-6px); }
+}
+
+/* 5. BOTTOM BAR (Music Player, Tagline & Action Circles) */
+.ash-bottom-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  right: 24px;
+  z-index: 15;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+/* Left: Music Player */
+.ash-music-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(24, 12, 44, 0.86);
+  border: 1px solid rgba(216, 180, 254, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgba(7, 3, 14, 0.7), 0 0 18px rgba(168, 85, 247, 0.35);
+  pointer-events: auto;
+  min-width: 270px;
+}
+
+.ash-music-vinyl {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #7e22ce 15%, #3b0764 45%, #090212 100%);
+  border: 1.5px solid rgba(216, 180, 254, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.ash-music-vinyl.is-playing {
+  animation: ashVinylSpin 5s linear infinite;
+}
+
+@keyframes ashVinylSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ash-music-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ash-music-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ash-music-sub {
+  font-size: 0.68rem;
+  color: #d8b4fe;
+  font-weight: 500;
+}
+
+.ash-music-progress-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(216, 180, 254, 0.2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.ash-music-progress-fill {
+  width: 38%;
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #c084fc);
+  transition: width 0.4s ease;
+}
+
+.ash-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+
+.ash-music-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: #e9d5ff;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ash-music-ctrl-btn:hover {
+  color: #ffffff;
+  transform: scale(1.15);
+  text-shadow: 0 0 8px rgba(216, 180, 254, 0.8);
+}
+
+.ash-play-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(147, 51, 234, 0.25);
+  border: 1px solid rgba(216, 180, 254, 0.6);
+  border-radius: 50%;
+  font-size: 0.92rem;
+  color: #ffffff;
+}
+
+.ash-play-btn:hover {
+  background: rgba(147, 51, 234, 0.5);
+  border-color: #f3e8ff;
+}
+
+/* Center: Tagline Panel */
+.ash-tagline-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: rgba(24, 12, 44, 0.82);
+  border: 1px solid rgba(216, 180, 254, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 8px 24px;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(7, 3, 14, 0.6);
+  pointer-events: auto;
+}
+
+.ash-tagline-main {
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.6);
+}
+
+.ash-tagline-sub {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: #d8b4fe;
+  font-style: italic;
+}
+
+/* Right: Gallery & Collection Big Round Buttons */
+.ash-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.ash-big-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #f5f3ff;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ash-big-action-btn:hover {
+  transform: translateY(-4px) scale(1.06);
+}
+
+.ash-big-action-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(147, 51, 234, 0.45) 0%, rgba(24, 12, 44, 0.95) 75%);
+  border: 1.5px solid rgba(216, 180, 254, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 8px 24px rgba(7, 3, 14, 0.75),
+              0 0 16px rgba(168, 85, 247, 0.45);
+  transition: all 0.25s ease;
+}
+
+.ash-big-action-btn:hover .ash-big-action-circle {
+  border-color: #f3e8ff;
+  box-shadow: 0 10px 30px rgba(7, 3, 14, 0.85),
+              0 0 24px rgba(192, 132, 252, 0.7);
+}
+
+.ash-big-action-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #e9d5ff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* 6. MODAL OVERLAYS & DIALOG CARDS */
+.ash-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background: rgba(7, 3, 14, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.ash-modal-overlay.active {
+  display: flex;
+}
+
+.ash-modal-card {
+  width: 100%;
+  max-width: 600px;
+  background: linear-gradient(145deg, rgba(30, 14, 56, 0.96) 0%, rgba(14, 6, 28, 0.98) 100%);
+  border: 1px solid rgba(216, 180, 254, 0.45);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.88), 0 0 32px rgba(168, 85, 247, 0.35);
+  padding: 24px;
+  color: #f5f3ff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: ashModalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ashModalPop {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.ash-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(216, 180, 254, 0.2);
+  padding-bottom: 12px;
+}
+
+.ash-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ash-modal-icon-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(147, 51, 234, 0.25);
+  border: 1px solid rgba(216, 180, 254, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.ash-modal-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #c084fc;
+  text-transform: uppercase;
+}
+
+.ash-modal-title {
+  margin: 2px 0 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.ash-modal-close-btn {
+  background: rgba(216, 180, 254, 0.1);
+  border: 1px solid rgba(216, 180, 254, 0.3);
+  color: #e9d5ff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ash-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ffffff;
+}
+
+.ash-action-btn {
+  background: linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%);
+  border: 1px solid rgba(233, 213, 255, 0.6);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(126, 34, 206, 0.4);
+}
+
+.ash-action-btn:hover {
+  background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.6);
+}
+
+/* 7. PROFILE & LAB CARD LAYOUTS */
+.ash-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ash-field-label {
+  font-size: 0.74rem;
+  color: #d8b4fe;
+  font-weight: 600;
+}
+
+.ash-field-input {
+  background: rgba(20, 9, 38, 0.85);
+  border: 1px solid rgba(216, 180, 254, 0.35);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.ash-field-input:focus {
+  border-color: #c084fc;
+}
+
+.ash-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* 8. COLLECTION & RELICS */
+.ash-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.ash-artifact-item {
+  background: rgba(24, 11, 46, 0.7);
+  border: 1px solid rgba(216, 180, 254, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.ash-artifact-item:hover {
+  background: rgba(42, 18, 78, 0.85);
+  border-color: rgba(233, 213, 255, 0.7);
+  transform: translateY(-2px);
+}
+
+.ash-artifact-icon {
+  font-size: 1.8rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(147, 51, 234, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ash-artifact-info h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ash-artifact-info p {
+  margin: 3px 0 0 0;
+  font-size: 0.72rem;
+  color: #cbd5e1;
+  line-height: 1.25;
+}
+
+/* 9. RESPONSIVE BREAKPOINTS */
+@media (max-width: 992px) {
+  .ash-tagline-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ash-top-header {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+  }
+  .ash-header-sub-title {
+    display: none;
+  }
+  .ash-header-center {
+    gap: 6px;
+  }
+  .ash-nav-pill-btn {
+    padding: 6px 12px;
+    font-size: 0.76rem;
+  }
+  .ash-loc-btn {
+    padding: 6px 12px;
+    font-size: 0.72rem;
+  }
+  .ash-bottom-bar {
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+  }
+  .ash-music-player {
+    padding: 6px 12px;
+    min-width: 200px;
+  }
+  .ash-big-action-circle {
+    width: 48px;
+    height: 48px;
+    font-size: 1.35rem;
+  }
+}
+

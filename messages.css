@@ -1214,6 +1214,397 @@ input[type="file"].msg-file-input-hidden {
   color: #cbd5e1;
 }
 
+/* WhatsApp-style New Chat Header Button */
+.msg-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.btn-msg-new-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.4), rgba(168, 85, 247, 0.45));
+  border: 1px solid rgba(249, 168, 212, 0.6);
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-msg-new-chat:hover {
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Empty Inbox State (WhatsApp-style) */
+.msg-empty-inbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1rem;
+  gap: 0.65rem;
+  color: #cbd5e1;
+}
+
+.msg-empty-inbox-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 10px rgba(244, 114, 182, 0.4));
+}
+
+.msg-empty-inbox-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.msg-empty-inbox-desc {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+  max-width: 220px;
+}
+
+.btn-msg-start-new {
+  margin-top: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35);
+}
+
+.btn-msg-start-new:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(236, 72, 153, 0.5);
+}
+
+/* Empty Feed Placeholder Area */
+.msg-empty-feed-placeholder {
+  margin: auto;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: #cbd5e1;
+  max-width: 440px;
+}
+
+.msg-empty-feed-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.6));
+}
+
+.msg-empty-feed-placeholder h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fef08a;
+  margin: 0;
+}
+
+.msg-empty-feed-placeholder p {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Modal overlay styling for Our Little Messages (Contact Picker) */
+.msg-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(10, 6, 26, 0.88) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease;
+}
+
+.msg-modal-overlay.open {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.msg-modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 1.8rem 1.8rem;
+  border-radius: 24px;
+  background: rgba(24, 16, 50, 0.96);
+  border: 1.5px solid rgba(244, 114, 182, 0.5);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(236, 72, 153, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  transform: scale(0.95) translateY(10px);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.msg-modal-overlay.open .msg-modal-card,
+.msg-modal-overlay.open .orbit-modal-card {
+  transform: scale(1) translateY(0);
+}
+
+/* Friends Picker Grid inside New Chat Modal */
+.msg-friends-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.75rem;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.msg-friend-picker-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.2px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  user-select: none;
+}
+
+.msg-friend-picker-card:hover,
+.msg-friend-picker-card:focus-visible {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.3));
+  border-color: #fde047;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 8, 28, 0.45);
+  outline: none;
+}
+
+.msg-friend-picker-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fde047;
+  flex-shrink: 0;
+}
+
+.msg-friend-picker-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.msg-friend-picker-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg-friend-picker-universe {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  color: #cbd5e1;
+}
+
+/* Sidebar Top Action: New Chat Pill Button */
+.btn-msg-new-chat-pill {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.35));
+  border: 1px solid rgba(244, 114, 182, 0.45);
+  color: #fef08a;
+  font-family: 'Cinzel', serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-msg-new-chat-pill:hover {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.45), rgba(168, 85, 247, 0.55));
+  border-color: #fde047;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);
+}
+
+/* Modal Header & Close Controls */
+.msg-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.msg-modal-title {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 0.03em;
+}
+
+.msg-modal-sub {
+  margin: 0.35rem 0 0 0;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.msg-modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f1f5f9;
+  font-size: 1.1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.msg-modal-close:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #f87171;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+/* --- Akhira (YAWN ⚡) Cosmic Ocean Theme --- */
+.view-messages.theme-akhira,
+body.theme-akhira .view-messages {
+  background: radial-gradient(ellipse at 50% 5%, rgba(56, 189, 248, 0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 85% 85%, rgba(129, 140, 248, 0.14) 0%, transparent 65%),
+              #030816;
+}
+
+.view-messages.theme-akhira .msg-top-bar,
+body.theme-akhira .view-messages .msg-top-bar {
+  background: rgba(6, 15, 38, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6), inset 0 0 20px rgba(56, 189, 248, 0.08);
+}
+
+.view-messages.theme-akhira .msg-title,
+body.theme-akhira .view-messages .msg-title {
+  background: linear-gradient(135deg, #e0f2fe 0%, #38bdf8 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.view-messages.theme-akhira .msg-brand-icon,
+body.theme-akhira .view-messages .msg-brand-icon {
+  background: linear-gradient(135deg, #0284c7, #6366f1);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.5);
+}
+
+.view-messages.theme-akhira .msg-conversations-card,
+body.theme-akhira .view-messages .msg-conversations-card {
+  background: linear-gradient(180deg, rgba(8, 20, 50, 0.88) 0%, rgba(4, 12, 32, 0.96) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 16px 40px rgba(2, 6, 23, 0.7);
+}
+
+.view-messages.theme-akhira .msg-chat-card,
+body.theme-akhira .view-messages .msg-chat-card {
+  background: linear-gradient(180deg, rgba(6, 16, 42, 0.92) 0%, rgba(2, 8, 24, 0.98) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 16px 40px rgba(2, 6, 23, 0.7);
+}
+
+.view-messages.theme-akhira .msg-chat-header,
+body.theme-akhira .view-messages .msg-chat-header {
+  background: rgba(4, 12, 34, 0.75);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.view-messages.theme-akhira .msg-bubble-row.mine .msg-bubble-card,
+body.theme-akhira .view-messages .msg-bubble-row.mine .msg-bubble-card {
+  background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35);
+}
+
+.view-messages.theme-akhira .msg-conv-item.active,
+body.theme-akhira .view-messages .msg-conv-item.active {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(99, 102, 241, 0.25) 100%);
+  border-left: 3px solid #38bdf8;
+}
+
+.view-messages.theme-akhira .msg-send-btn,
+body.theme-akhira .view-messages .msg-send-btn {
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  color: #020617;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.45);
+}
+
+.view-messages.theme-akhira .btn-msg-new-chat-pill,
+body.theme-akhira .view-messages .btn-msg-new-chat-pill {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.35));
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #7dd3fc;
+}
+
+.view-messages.theme-akhira .btn-msg-new-chat-pill:hover,
+body.theme-akhira .view-messages .btn-msg-new-chat-pill:hover {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.45), rgba(129, 140, 248, 0.55));
+  border-color: #38bdf8;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+}
+
+.view-messages.theme-akhira .msg-modal-card,
+body.theme-akhira .view-messages .msg-modal-card {
+  background: rgba(4, 14, 38, 0.96);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(56, 189, 248, 0.3);
+}
+
 /* Responsive */
 @media (max-width: 860px) {
   .msg-main-grid {

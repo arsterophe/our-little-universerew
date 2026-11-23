@@ -50,10 +50,11 @@ const EXPECTED = [
   { key: 'abil', universe: 'PINWHEEL', email: 'abil@ourlittleuniverse.com', uid: 'Euc0JLt3kWMveUEIjBwXHfOfvQD3' },
   { key: 'akhira', universe: 'YAWN', email: 'akhira@ourlittleuniverse.com', uid: 'MT14ZHATNqe90frAeQ74QFk4iXs2' },
   { key: 'ela', universe: 'US AGAIN', email: 'ela@ourlittleuniverse.com', uid: 'plxSNowjCkOMfUQMAwnZzQPR9Xr1' },
-  { key: 'ruben', universe: 'ASH', email: 'ruben@ourlittleuniverse.com', uid: '9PMychPZ4rZ4PBCtZB9GiASttc52' }
+  { key: 'ruben', universe: 'ASH', email: 'ruben@ourlittleuniverse.com', uid: '9PMychPZ4rZ4PBCtZB9GiASttc52' },
+  { key: 'royan', universe: 'HOT', email: 'royan@ourlittleuniverse.com', uid: 'swBN9XodDWRuHE5YbYmeoytrcAx2' }
 ];
 
-console.log('1. CANONICAL 7-CHARACTER MAPPINGS & AUTH VERIFICATION');
+console.log('1. CANONICAL 8-CHARACTER MAPPINGS & AUTH VERIFICATION');
 for (const spec of EXPECTED) {
   const cfg = CANONICAL_CHARACTERS[spec.key];
   const rule = CHARACTER_AUTH_RULES[spec.key];

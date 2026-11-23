@@ -1,0 +1,1544 @@
+/* ==========================================================================
+   THE WINDWHISPER RESIDENCE — PINWHEEL (SYMA'S UNIVERSE)
+   Concept: Japanese Traditional House (60%) + Cozy Fantasy Cottage (25%) + Kitsune Sanctuary (15%)
+   Color Palette: Lavender, Soft Blue, Natural Wood, Midnight Blue, Silver, Warm Gold, Soft Cream
+   ========================================================================== */
+
+:root {
+  --res-bg-dark: #0d0a1a;
+  --res-lavender: #c084fc;
+  --res-lavender-glow: rgba(192, 132, 252, 0.45);
+  --res-lavender-deep: #7e22ce;
+  --res-blue-soft: #93c5fd;
+  --res-wood-warm: #452b1b;
+  --res-wood-light: #7c4a2d;
+  --res-wood-tatami: #e6dfcc;
+  --res-gold: #fbbf24;
+  --res-gold-glow: rgba(251, 191, 36, 0.4);
+  --res-cream: #fdfbf7;
+  --res-card-bg: rgba(24, 18, 43, 0.85);
+  --res-card-border: rgba(192, 132, 252, 0.28);
+}
+
+/* --------------------------------------------------------------------------
+   1. MAIN VIEW CONTAINER
+   -------------------------------------------------------------------------- */
+.view-pinwheel-residence {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  display: none;
+  overflow: hidden;
+  user-select: none;
+  z-index: 96;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--res-bg-dark);
+  background-image: 
+    radial-gradient(circle at 50% 20%, rgba(126, 34, 206, 0.18) 0%, transparent 65%),
+    linear-gradient(180deg, #090615 0%, #150d2a 50%, #0d071d 100%);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.view-pinwheel-residence.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   2. DYNAMIC DAY / NIGHT & WEATHER ATMOSPHERE OVERLAYS
+   -------------------------------------------------------------------------- */
+.residence-atmo-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: all 0.8s ease;
+}
+
+/* Morning: Soft golden peach & sunbeams */
+.view-pinwheel-residence.atmo-morning .residence-atmo-layer {
+  background: 
+    linear-gradient(135deg, rgba(254, 215, 170, 0.18) 0%, rgba(244, 114, 182, 0.08) 45%, rgba(147, 197, 253, 0.12) 100%),
+    radial-gradient(circle at 80% 15%, rgba(253, 230, 138, 0.25) 0%, transparent 50%);
+}
+
+/* Afternoon: Bright crisp light & gentle sky blue tint */
+.view-pinwheel-residence.atmo-afternoon .residence-atmo-layer {
+  background: 
+    linear-gradient(180deg, rgba(224, 231, 255, 0.12) 0%, rgba(192, 132, 252, 0.06) 50%, rgba(20, 15, 38, 0.15) 100%);
+}
+
+/* Rainy Day: Misty purple, water droplets, and rain streaks */
+.view-pinwheel-residence.atmo-rain .residence-atmo-layer {
+  background: 
+    linear-gradient(180deg, rgba(30, 27, 75, 0.42) 0%, rgba(49, 46, 129, 0.3) 100%);
+}
+
+.residence-rain-container {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.view-pinwheel-residence.atmo-rain .residence-rain-container {
+  display: block;
+}
+
+.residence-rain-streak {
+  position: absolute;
+  width: 1.5px;
+  height: 48px;
+  background: linear-gradient(180deg, transparent, rgba(147, 197, 253, 0.65), #ffffff);
+  opacity: 0.65;
+  animation: residenceRainFall 0.85s linear infinite;
+}
+
+@keyframes residenceRainFall {
+  0% { transform: translateY(-60px) translateX(0); opacity: 0; }
+  25% { opacity: 0.7; }
+  100% { transform: translateY(105vh) translateX(-20px); opacity: 0.1; }
+}
+
+/* Night: Deep indigo, sparkling starlight & moon glow */
+.view-pinwheel-residence.atmo-night .residence-atmo-layer {
+  background: 
+    radial-gradient(circle at 75% 12%, rgba(224, 231, 255, 0.22) 0%, rgba(30, 12, 55, 0.5) 60%, rgba(10, 5, 22, 0.75) 100%);
+}
+
+/* Floating Sakura Petals Layer */
+.residence-petals-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.residence-petal {
+  position: absolute;
+  font-size: 1.1rem;
+  color: #f472b6;
+  opacity: 0.75;
+  filter: drop-shadow(0 0 5px rgba(244, 114, 182, 0.5));
+  animation: residencePetalFloat 12s infinite linear;
+}
+
+@keyframes residencePetalFloat {
+  0% { transform: translateY(-30px) rotate(0deg) translateX(0); opacity: 0; }
+  15% { opacity: 0.85; }
+  50% { transform: translateY(50vh) rotate(180deg) translateX(-35px); opacity: 0.9; }
+  100% { transform: translateY(105vh) rotate(360deg) translateX(25px); opacity: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   3. TOP NAVIGATION & BRANDING BAR
+   -------------------------------------------------------------------------- */
+.residence-top-bar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgba(15, 10, 30, 0.75);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--res-card-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.residence-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-residence-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: rgba(30, 20, 50, 0.8);
+  border: 1px solid var(--res-card-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-residence-back:hover {
+  background: rgba(192, 132, 252, 0.22);
+  border-color: var(--res-lavender);
+  color: #ffffff;
+  transform: translateX(-2px);
+  box-shadow: 0 0 14px var(--res-lavender-glow);
+}
+
+.residence-title-badge {
+  display: flex;
+  flex-direction: column;
+}
+
+.residence-main-title {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #ffffff 0%, #e9d5ff 40%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.residence-subtitle {
+  margin: 2px 0 0 0;
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+/* Atmosphere & Sound Controls Group */
+.residence-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.residence-atmo-pill {
+  display: flex;
+  background: rgba(22, 15, 42, 0.85);
+  border: 1px solid var(--res-card-border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.btn-atmo-choice {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-atmo-choice:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-atmo-choice.active {
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.4), rgba(126, 34, 206, 0.6));
+  color: #ffffff;
+  box-shadow: 0 0 10px var(--res-lavender-glow);
+}
+
+.btn-residence-chime-ring {
+  background: rgba(28, 18, 52, 0.85);
+  border: 1px solid var(--res-card-border);
+  color: #e2e8f0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.btn-residence-chime-ring:hover {
+  background: rgba(192, 132, 252, 0.25);
+  border-color: var(--res-lavender);
+  box-shadow: 0 0 14px var(--res-lavender-glow);
+  transform: scale(1.03);
+}
+
+.btn-residence-chime-ring.ringing .chime-bell-icon {
+  animation: bellSway 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes bellSway {
+  0% { transform: rotate(-16deg); }
+  100% { transform: rotate(16deg); }
+}
+
+/* --------------------------------------------------------------------------
+   4. ROOM NAVIGATION DOCK (Center / Top Tabs)
+   -------------------------------------------------------------------------- */
+.residence-room-dock {
+  position: relative;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(18, 12, 36, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(192, 132, 252, 0.15);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.residence-room-dock::-webkit-scrollbar {
+  display: none;
+}
+
+.btn-room-nav {
+  background: rgba(25, 17, 48, 0.8);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  color: #cbd5e1;
+  padding: 7px 15px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.btn-room-nav:hover {
+  background: rgba(192, 132, 252, 0.2);
+  border-color: var(--res-lavender);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-room-nav.active {
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.35), rgba(126, 34, 206, 0.6));
+  border-color: var(--res-lavender);
+  color: #ffffff;
+  box-shadow: 0 4px 14px var(--res-lavender-glow);
+}
+
+.room-nav-badge {
+  font-size: 0.68rem;
+  background: rgba(244, 63, 94, 0.85);
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 999px;
+  margin-left: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   5. CENTER STAGE & ROOM VIEWS
+   -------------------------------------------------------------------------- */
+.residence-center-stage {
+  position: relative;
+  flex: 1;
+  z-index: 10;
+  display: flex;
+  overflow: hidden;
+}
+
+.residence-room-container {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 32px;
+  opacity: 0;
+  transform: scale(0.985);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.residence-room-container.active {
+  display: flex;
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Room Header Info Pill */
+.room-info-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(20, 14, 38, 0.82);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--res-card-border);
+  border-radius: 16px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  margin-bottom: 16px;
+}
+
+.room-info-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.room-info-icon {
+  font-size: 1.8rem;
+  background: rgba(192, 132, 252, 0.18);
+  border-radius: 12px;
+  padding: 6px 10px;
+  border: 1px solid rgba(192, 132, 252, 0.3);
+}
+
+.room-info-title {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  color: #f1f5f9;
+}
+
+.room-info-desc {
+  margin: 3px 0 0 0;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.room-info-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-room-action {
+  background: rgba(35, 24, 58, 0.9);
+  border: 1px solid var(--res-card-border);
+  color: #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.btn-room-action:hover {
+  background: rgba(192, 132, 252, 0.3);
+  border-color: var(--res-lavender);
+  color: #ffffff;
+  box-shadow: 0 0 14px var(--res-lavender-glow);
+  transform: translateY(-2px);
+}
+
+.btn-room-action.primary {
+  background: linear-gradient(135deg, #9333ea, #7e22ce);
+  border-color: var(--res-lavender);
+  box-shadow: 0 0 12px var(--res-lavender-glow);
+}
+
+/* Room Scenery Canvas Area */
+.room-scenery-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 380px;
+  border-radius: 20px;
+  border: 1px solid var(--res-card-border);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* --------------------------------------------------------------------------
+   5A. ROOM THEMES & BACKGROUND SCENERIES
+   -------------------------------------------------------------------------- */
+
+/* 1. EXTERIOR: Pagoda eaves, garden, stone path, koi pond, pinwheel, lanterns */
+.room-exterior .room-scenery-canvas {
+  background: 
+    linear-gradient(180deg, rgba(13, 8, 28, 0.3) 0%, rgba(20, 15, 38, 0.85) 100%),
+    url('/assets/pinwheel_world_bg.jpg') center bottom / cover no-repeat;
+}
+
+.scenery-exterior-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.scenery-pagoda-roof {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background: 
+    linear-gradient(180deg, #2b1810 0%, #452b1b 70%, #1a0f0a 100%);
+  border-bottom: 4px solid #7c4a2d;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding-bottom: 4px;
+}
+
+.pagoda-eaves-tile {
+  font-size: 1.2rem;
+  color: var(--res-gold);
+  filter: drop-shadow(0 0 4px var(--res-gold-glow));
+}
+
+.scenery-stone-path {
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  right: 30%;
+  height: 140px;
+  background: radial-gradient(ellipse at bottom, rgba(71, 85, 105, 0.45) 0%, transparent 80%);
+  border-radius: 50% 50% 0 0;
+}
+
+.scenery-koi-pond {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  width: 170px;
+  height: 95px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(56, 189, 248, 0.35) 0%, rgba(14, 116, 144, 0.6) 80%);
+  border: 2px solid rgba(147, 197, 253, 0.4);
+  box-shadow: inset 0 0 16px rgba(14, 116, 144, 0.8), 0 0 18px rgba(56, 189, 248, 0.3);
+  pointer-events: auto;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.koi-fish-swimming {
+  position: absolute;
+  top: 40%;
+  left: 20%;
+  font-size: 1.3rem;
+  animation: koiSwim 8s infinite ease-in-out;
+}
+
+@keyframes koiSwim {
+  0% { transform: translate(0, 0) rotate(15deg); }
+  50% { transform: translate(75px, 20px) rotate(-15deg); }
+  100% { transform: translate(0, 0) rotate(15deg); }
+}
+
+.scenery-wind-chime-prop {
+  position: absolute;
+  top: 70px;
+  right: 120px;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.25s ease;
+}
+
+.scenery-wind-chime-prop:hover {
+  transform: scale(1.1);
+}
+
+.scenery-pinwheel-prop {
+  position: absolute;
+  bottom: 90px;
+  right: 50px;
+  font-size: 2.4rem;
+  filter: drop-shadow(0 0 8px var(--res-lavender-glow));
+  animation: pinwheelSpin 6s linear infinite;
+}
+
+@keyframes pinwheelSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 2. LIVING ROOM: Tatami mats, Shoji screens, Kotatsu, Bookshelf */
+.room-living .room-scenery-canvas {
+  background: 
+    linear-gradient(180deg, rgba(20, 13, 38, 0.85) 0%, rgba(15, 10, 26, 0.95) 100%),
+    radial-gradient(circle at 50% 50%, rgba(192, 132, 252, 0.12) 0%, transparent 70%);
+}
+
+.scenery-tatami-floor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 160px;
+  background: 
+    repeating-linear-gradient(90deg, rgba(230, 223, 204, 0.12) 0px, rgba(230, 223, 204, 0.12) 110px, rgba(78, 59, 42, 0.7) 110px, rgba(78, 59, 42, 0.7) 116px),
+    linear-gradient(180deg, #38291a 0%, #20170e 100%);
+  border-top: 3px solid #7c4a2d;
+  box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.scenery-shoji-wall {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  display: flex;
+  gap: 16px;
+  padding: 20px 40px;
+  pointer-events: none;
+}
+
+.shoji-panel {
+  flex: 1;
+  border: 3px solid #5c3821;
+  background: 
+    repeating-linear-gradient(0deg, transparent 0px, transparent 38px, rgba(92, 56, 33, 0.4) 38px, rgba(92, 56, 33, 0.4) 40px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 38px, rgba(92, 56, 33, 0.4) 38px, rgba(92, 56, 33, 0.4) 40px),
+    rgba(255, 250, 240, 0.15);
+  box-shadow: inset 0 0 20px rgba(192, 132, 252, 0.15);
+  border-radius: 4px;
+}
+
+.scenery-kotatsu-prop {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 120px;
+  background: linear-gradient(135deg, #7c3aed, #581c87);
+  border-radius: 24px;
+  border: 2px solid var(--res-lavender);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--res-lavender-glow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.kotatsu-top-table {
+  width: 190px;
+  height: 48px;
+  background: linear-gradient(180deg, #935630 0%, #683618 100%);
+  border-radius: 12px;
+  border: 1px solid #c48252;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* 3. KITCHEN: Wooden cabinets, steaming kettle, spice jars */
+.room-kitchen .room-scenery-canvas {
+  background: 
+    linear-gradient(180deg, rgba(25, 18, 42, 0.88) 0%, rgba(18, 12, 30, 0.96) 100%),
+    radial-gradient(circle at 60% 40%, rgba(251, 191, 36, 0.1) 0%, transparent 60%);
+}
+
+.scenery-kitchen-counter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 170px;
+  background: linear-gradient(180deg, #452b1b 0%, #2e1a0e 100%);
+  border-top: 6px solid #854d27;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 40px;
+  box-shadow: inset 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+.steaming-kettle {
+  position: relative;
+  font-size: 2.8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.steaming-kettle:hover {
+  transform: scale(1.1);
+}
+
+.kettle-steam-fx {
+  position: absolute;
+  top: -24px;
+  left: 20%;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.75);
+  animation: steamRise 2s infinite ease-out;
+}
+
+@keyframes steamRise {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(-28px) scale(1.4); opacity: 0; }
+}
+
+/* 4. BEDROOM: Japanese Futon, Night Lamp, Moonlit Window */
+.room-bedroom .room-scenery-canvas {
+  background: 
+    linear-gradient(180deg, rgba(16, 10, 32, 0.9) 0%, rgba(10, 6, 20, 0.98) 100%),
+    radial-gradient(circle at 75% 25%, rgba(192, 132, 252, 0.2) 0%, transparent 60%);
+}
+
+.scenery-futon-bed {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 290px;
+  height: 135px;
+  background: linear-gradient(135deg, #fdfbf7 0%, #e9d5ff 50%, #d8b4fe 100%);
+  border-radius: 20px;
+  border: 2px solid var(--res-lavender);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px var(--res-lavender-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  cursor: pointer;
+}
+
+.futon-pillow {
+  width: 75px;
+  height: 48px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #d8b4fe;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.futon-duvet {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #581c87;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scenery-moon-window {
+  position: absolute;
+  top: 25px;
+  right: 50px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid #7c4a2d;
+  background: radial-gradient(circle at 60% 40%, #ffffff 0%, #e0f2fe 35%, #1e1b4b 90%);
+  box-shadow: 0 0 28px rgba(192, 132, 252, 0.4), inset 0 0 16px rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 5. PERSONAL CORNER (ARCHIVE): Showcase shelf, frame stand, memory box */
+.room-archive .room-scenery-canvas {
+  background: 
+    linear-gradient(180deg, rgba(22, 14, 40, 0.9) 0%, rgba(13, 8, 26, 0.98) 100%);
+}
+
+.scenery-archive-shelves {
+  position: absolute;
+  inset: 20px 40px 40px 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.archive-category-showcase {
+  background: rgba(30, 20, 52, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--res-card-border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.archive-category-showcase:hover {
+  background: rgba(45, 28, 80, 0.9);
+  border-color: var(--res-lavender);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--res-lavender-glow);
+}
+
+.archive-showcase-icon {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+}
+
+.archive-showcase-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.archive-showcase-count {
+  font-size: 0.78rem;
+  color: var(--res-blue-soft);
+  margin-top: 4px;
+}
+
+.archive-showcase-preview {
+  height: 80px;
+  background: rgba(15, 10, 26, 0.6);
+  border-radius: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(192, 132, 252, 0.3);
+  overflow: hidden;
+}
+
+/* 6. ENGAWA: Wooden veranda deck, gentle breeze, wind chime, garden view */
+.room-engawa .room-scenery-canvas {
+  background: 
+    linear-gradient(180deg, rgba(12, 8, 25, 0.4) 0%, rgba(20, 14, 38, 0.85) 100%),
+    url('/assets/pinwheel_gazebo_bg.jpg') center bottom / cover no-repeat;
+}
+
+.scenery-engawa-deck {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 160px;
+  background: 
+    repeating-linear-gradient(0deg, #623a1e 0px, #623a1e 28px, #3a200e 28px, #3a200e 30px);
+  border-top: 4px solid #8c532b;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.engawa-curtain-sheer {
+  position: absolute;
+  top: 0;
+  left: 40px;
+  width: 90px;
+  height: 220px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(192, 132, 252, 0.15) 100%);
+  border-radius: 0 0 16px 16px;
+  backdrop-filter: blur(2px);
+  animation: curtainFlutter 4s ease-in-out infinite alternate;
+}
+
+@keyframes curtainFlutter {
+  0% { transform: skewX(-3deg) scaleY(1); }
+  100% { transform: skewX(5deg) scaleY(1.02); }
+}
+
+/* 7. SECRET ATTIC: Sloping cedar beams, skylight, ancient scrolls, stars */
+.room-attic .room-scenery-canvas {
+  background: 
+    linear-gradient(180deg, rgba(15, 8, 30, 0.95) 0%, rgba(8, 4, 18, 0.98) 100%),
+    radial-gradient(circle at 50% 30%, rgba(147, 197, 253, 0.2) 0%, transparent 65%);
+}
+
+.scenery-attic-skylight {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 4px solid #7c4a2d;
+  background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #090615 100%);
+  box-shadow: 0 0 32px rgba(147, 197, 253, 0.5), inset 0 0 20px rgba(192, 132, 252, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.attic-constellation-fx {
+  font-size: 2rem;
+  animation: starPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes starPulse {
+  0% { filter: drop-shadow(0 0 4px #93c5fd); transform: scale(0.95); }
+  100% { filter: drop-shadow(0 0 14px #c084fc); transform: scale(1.08); }
+}
+
+/* --------------------------------------------------------------------------
+   6. INTERACTIVE HOTSPOTS & DECOR SLOTS
+   -------------------------------------------------------------------------- */
+.residence-hotspot {
+  position: absolute;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(22, 14, 40, 0.88);
+  border: 1px solid var(--res-lavender);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), 0 0 10px var(--res-lavender-glow);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.residence-hotspot:hover {
+  background: linear-gradient(135deg, #7e22ce, #9333ea);
+  border-color: #ffffff;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 6px 20px var(--res-lavender-glow);
+}
+
+.hotspot-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--res-gold);
+  box-shadow: 0 0 8px var(--res-gold-glow);
+  animation: dotGlow 1.4s infinite ease-in-out;
+}
+
+@keyframes dotGlow {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(0.85); opacity: 0.6; }
+}
+
+/* Decoration Slots in Room */
+.residence-decor-slot {
+  position: absolute;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 65px;
+  min-height: 65px;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.residence-decor-slot:hover {
+  transform: scale(1.08);
+}
+
+.residence-decor-slot.mode-edit {
+  border: 2px dashed var(--res-gold);
+  border-radius: 12px;
+  background: rgba(251, 191, 36, 0.15);
+  box-shadow: 0 0 14px var(--res-gold-glow);
+}
+
+.decor-item-display {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+}
+
+.decor-item-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba(15, 10, 26, 0.85);
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-top: 2px;
+  color: #e2e8f0;
+}
+
+/* --------------------------------------------------------------------------
+   7. SYMA AVATAR LIVING PRESENCE
+   -------------------------------------------------------------------------- */
+.residence-syma-presence {
+  position: absolute;
+  bottom: 25px;
+  right: 60px;
+  z-index: 14;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.residence-syma-presence:hover {
+  transform: translateY(-4px);
+}
+
+.syma-speech-bubble {
+  position: relative;
+  background: rgba(22, 14, 40, 0.92);
+  border: 1px solid var(--res-lavender);
+  border-radius: 14px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  color: #f1f5f9;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 12px var(--res-lavender-glow);
+  margin-bottom: 8px;
+  max-width: 210px;
+  text-align: center;
+  animation: bubbleFloat 3s infinite ease-in-out alternate;
+}
+
+.syma-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: var(--res-lavender) transparent transparent transparent;
+}
+
+@keyframes bubbleFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.syma-avatar-portrait-wrap {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 3px solid var(--res-lavender);
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 18px var(--res-lavender-glow);
+  background: #1e1233;
+}
+
+.syma-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.syma-presence-badge {
+  margin-top: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #7e22ce, #9333ea);
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--res-lavender);
+}
+
+/* --------------------------------------------------------------------------
+   8. MODALS & DRAWERS (Cooking, Wardrobe, Archive, Decor, Chimes)
+   -------------------------------------------------------------------------- */
+.residence-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 4, 18, 0.78);
+  backdrop-filter: blur(14px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.residence-modal-backdrop.active {
+  display: flex;
+  opacity: 1;
+}
+
+.residence-modal-dialog {
+  background: rgba(22, 15, 42, 0.94);
+  border: 1px solid var(--res-card-border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 32px var(--res-lavender-glow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+  from { transform: scale(0.94) translateY(12px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.residence-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(192, 132, 252, 0.2);
+  background: rgba(15, 10, 30, 0.6);
+}
+
+.residence-modal-header h3 {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-residence-modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-residence-modal-close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.residence-modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+}
+
+/* A. Cooking Modal Layout */
+.cooking-recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.recipe-choice-card {
+  background: rgba(30, 20, 52, 0.7);
+  border: 1px solid var(--res-card-border);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recipe-choice-card:hover {
+  background: rgba(45, 28, 80, 0.85);
+  border-color: var(--res-lavender);
+  transform: translateY(-2px);
+}
+
+.recipe-choice-card.selected {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.35), rgba(88, 28, 135, 0.6));
+  border-color: var(--res-lavender);
+  box-shadow: 0 0 16px var(--res-lavender-glow);
+}
+
+.recipe-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recipe-icon {
+  font-size: 1.6rem;
+}
+
+.recipe-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #ffffff;
+}
+
+.recipe-flavor {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.cooking-process-panel {
+  background: rgba(15, 10, 26, 0.8);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.cooking-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.cooking-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ec4899, #c084fc, #fbbf24);
+  border-radius: 999px;
+  transition: width 0.2s linear;
+}
+
+/* B. Wardrobe Modal Layout */
+.wardrobe-outfits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.wardrobe-card {
+  background: rgba(28, 18, 48, 0.8);
+  border: 1px solid var(--res-card-border);
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.wardrobe-card:hover {
+  border-color: var(--res-lavender);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--res-lavender-glow);
+}
+
+.wardrobe-card.equipped {
+  border-color: var(--res-gold);
+  background: linear-gradient(180deg, rgba(35, 22, 60, 0.9) 0%, rgba(55, 30, 95, 0.9) 100%);
+  box-shadow: 0 0 20px var(--res-gold-glow);
+}
+
+.wardrobe-img-wrap {
+  width: 110px;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  border: 2px solid rgba(192, 132, 252, 0.3);
+}
+
+.wardrobe-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wardrobe-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.wardrobe-type {
+  font-size: 0.72rem;
+  color: var(--res-blue-soft);
+  margin-bottom: 8px;
+}
+
+.btn-wear-outfit {
+  margin-top: auto;
+  width: 100%;
+  padding: 7px;
+  border-radius: 8px;
+  border: 1px solid var(--res-lavender);
+  background: rgba(147, 51, 234, 0.5);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-wear-outfit:hover {
+  background: var(--res-lavender-deep);
+  box-shadow: 0 0 12px var(--res-lavender-glow);
+}
+
+/* C. Decoration Drawer Layout */
+.decor-drawer-categories {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  scrollbar-width: none;
+}
+
+.btn-decor-cat {
+  background: rgba(28, 18, 50, 0.8);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  color: #94a3b8;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn-decor-cat.active {
+  background: var(--res-lavender-deep);
+  border-color: var(--res-lavender);
+  color: #ffffff;
+  box-shadow: 0 0 10px var(--res-lavender-glow);
+}
+
+.decor-items-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.decor-item-card {
+  background: rgba(30, 20, 52, 0.7);
+  border: 1px solid var(--res-card-border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.decor-item-card:hover {
+  background: rgba(45, 28, 80, 0.9);
+  border-color: var(--res-lavender);
+  transform: translateY(-2px);
+}
+
+.decor-item-card.locked {
+  opacity: 0.55;
+  filter: grayscale(0.5);
+}
+
+/* D. Sleep & Wake Up Overlay */
+.residence-sleep-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: #06030c;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #f8fafc;
+}
+
+.residence-sleep-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.sleep-moon-icon {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 0 24px var(--res-lavender-glow));
+  animation: moonRest 3s ease-in-out infinite alternate;
+  margin-bottom: 16px;
+}
+
+@keyframes moonRest {
+  0% { transform: scale(0.95); }
+  100% { transform: scale(1.05); }
+}
+
+.sleep-greeting-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+.sleep-greeting-desc {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.btn-wake-up {
+  margin-top: 24px;
+  background: linear-gradient(135deg, #9333ea, #7e22ce);
+  border: 1px solid var(--res-lavender);
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--res-lavender-glow);
+  transition: all 0.25s ease;
+}
+
+.btn-wake-up:hover {
+  transform: scale(1.05);
+}
+
+/* E. Aquarium Decoration in Archive */
+.archive-aquarium-box {
+  width: 100%;
+  height: 110px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.5) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.3);
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.aquarium-fish-actor {
+  position: absolute;
+  font-size: 1.3rem;
+  animation: fishSwimAround 7s infinite ease-in-out;
+}
+
+@keyframes fishSwimAround {
+  0% { transform: translate(10px, 10px); }
+  50% { transform: translate(120px, 45px) scaleX(-1); }
+  100% { transform: translate(10px, 10px); }
+}
+
+/* --------------------------------------------------------------------------
+   9. RESPONSIVE DESIGN FOR TABLET & MOBILE
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .residence-top-bar {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .residence-room-container {
+    padding: 14px 16px;
+  }
+
+  .archive-category-showcase {
+    padding: 12px;
+  }
+
+  .scenery-archive-shelves {
+    grid-template-columns: repeat(2, 1fr);
+    inset: 10px 15px 15px 15px;
+  }
+
+  .cooking-recipes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wardrobe-outfits-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .room-info-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .room-info-left {
+    width: 100%;
+  }
+
+  .room-info-title {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .room-info-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .room-info-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .residence-main-title {
+    font-size: 1rem;
+  }
+
+  .residence-subtitle {
+    display: none;
+  }
+
+  .btn-residence-back {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
+  .btn-room-nav {
+    padding: 5px 10px;
+    font-size: 0.74rem;
+  }
+
+  .room-scenery-canvas {
+    min-height: 290px;
+  }
+
+  .residence-syma-presence {
+    bottom: 12px;
+    right: 16px;
+  }
+
+  .syma-speech-bubble {
+    font-size: 0.7rem;
+    max-width: 160px;
+    padding: 6px 10px;
+  }
+
+  .syma-avatar-portrait-wrap {
+    width: 64px;
+    height: 64px;
+  }
+}

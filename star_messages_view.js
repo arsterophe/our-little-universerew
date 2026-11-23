@@ -87,12 +87,18 @@ export function initStarMessagesView({
   function getOriginClass(univ) {
     if (univ === 'to_you' || univ === 'toyou') return 'theme-toyou';
     if (univ === 'shadow') return 'theme-shadow';
+    if (univ === 'pinwheel' || univ === 'abil') return 'theme-pinwheel';
+    if (univ === 'yawn' || univ === 'akhira') return 'theme-yawn';
+    if (univ === 'us_again' || univ === 'usagain' || univ === 'ela') return 'theme-usagain';
     return 'theme-kidult';
   }
 
   function getUniverseTitle(univ) {
     if (univ === 'to_you' || univ === 'toyou') return "TO YOU · LALA'S UNIVERSE";
     if (univ === 'shadow') return "SHADOW · LELE'S UNIVERSE";
+    if (univ === 'pinwheel' || univ === 'abil') return "PINWHEEL · SYMA'S UNIVERSE 🎐";
+    if (univ === 'yawn' || univ === 'akhira') return "YAWN · AKHIRA'S UNIVERSE ⚡";
+    if (univ === 'us_again' || univ === 'usagain' || univ === 'ela') return "US AGAIN · ELA'S UNIVERSE 🪷";
     return "KIDULT · NYANYA'S UNIVERSE";
   }
 
@@ -107,8 +113,21 @@ export function initStarMessagesView({
 
     if (!viewStarMessages) return;
 
+    // Hide any active world views to prevent collision
+    [
+      'view-kidult-world', 'view-toyou-world', 'view-shadow-world',
+      'view-pinwheel-world', 'view-yawn-world', 'view-ash-world',
+      'view-usagain-world', 'view-hot-world'
+    ].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('active');
+        el.setAttribute('aria-hidden', 'true');
+      }
+    });
+
     // Apply theme
-    viewStarMessages.classList.remove('theme-kidult', 'theme-toyou', 'theme-to_you', 'theme-shadow');
+    viewStarMessages.classList.remove('theme-kidult', 'theme-toyou', 'theme-to_you', 'theme-shadow', 'theme-pinwheel', 'theme-yawn');
     viewStarMessages.classList.add(getOriginClass(activeOriginUniverse));
     viewStarMessages.classList.add('active');
     viewStarMessages.setAttribute('aria-hidden', 'false');
@@ -233,7 +252,18 @@ export function initStarMessagesView({
     }
 
     unsubscribeRealtime = dbSubscribeStarMessages(activeAuthUser, (stars) => {
-      allStarMessages = stars || [];
+      let list = stars || [];
+      const initialStars = getInitialCosmicStars(activeUserCharKey);
+      if (list.length === 0) {
+        list = initialStars;
+      } else {
+        initialStars.forEach((initStar) => {
+          if (!list.some(m => m.id === initStar.id || (m.senderCharacter === initStar.senderCharacter && m.id?.startsWith('star-seed')))) {
+            list.push(initStar);
+          }
+        });
+      }
+      allStarMessages = list;
       updateUnreadCounter();
       if (currentTab === 'explore') renderSkyStars();
       else if (currentTab === 'inbox') renderInboxList();
@@ -251,12 +281,28 @@ export function initStarMessagesView({
       cached = JSON.parse(localStorage.getItem(`olu_star_messages_${userUid}`) || '[]');
     } catch (_) {}
 
+    const initialStars = getInitialCosmicStars(activeUserCharKey);
+
     if (cached.length === 0) {
-      // Seed initial welcoming stars for the trio so the sky is magically alive!
-      cached = getInitialCosmicStars(activeUserCharKey);
+      // Seed initial welcoming stars so the sky is magically alive!
+      cached = initialStars;
       try {
         localStorage.setItem(`olu_star_messages_${userUid}`, JSON.stringify(cached));
       } catch (_) {}
+    } else {
+      // Ensure Syma and other canonical stars are merged if cache only had older subset
+      let changed = false;
+      initialStars.forEach((initStar) => {
+        if (!cached.some(m => m.id === initStar.id || (m.senderCharacter === initStar.senderCharacter && m.id?.startsWith('star-seed')))) {
+          cached.push(initStar);
+          changed = true;
+        }
+      });
+      if (changed) {
+        try {
+          localStorage.setItem(`olu_star_messages_${userUid}`, JSON.stringify(cached));
+        } catch (_) {}
+      }
     }
 
     allStarMessages = cached;
@@ -328,6 +374,66 @@ export function initStarMessagesView({
         read: true,
         readAt: now - 3600000 * 7,
         favorites: { [charKey]: true }
+      },
+      {
+        id: 'star-seed-4',
+        senderUid: 'Euc0JLt3kWMveUEIjBwXHfOfvQD3',
+        senderCharacter: 'abil',
+        senderName: 'Syma',
+        senderAvatar: '/assets/avatar_abil_hd.jpg',
+        recipientUid: charKey === 'abil' ? '1uwba7MrGVU3xHu57VVLvztskrg2' : (CANONICAL_CHARACTERS[charKey]?.uid || 'Euc0JLt3kWMveUEIjBwXHfOfvQD3'),
+        recipientCharacter: charKey === 'abil' ? 'nyanya' : charKey,
+        recipientName: charKey === 'abil' ? 'Nyanya' : (CANONICAL_CHARACTERS[charKey]?.name || 'Sahabat'),
+        text: 'A quiet world, filled with endless possibilities. Dari puncak tebing PINWHEEL, angin sepoi beraroma sakura membisikkan damai dan kehangatan untukmu di setiap semesta 🎐☁️',
+        category: 'greeting',
+        starType: 'cyan',
+        x: 74.0,
+        y: 56.0,
+        universeOrigin: 'pinwheel',
+        createdAt: now - 3600000 * 3,
+        read: false,
+        readAt: null,
+        favorites: {}
+      },
+      {
+        id: 'star-seed-5',
+        senderUid: 'MT14ZHATNqe90frAeQ74QFk4iXs2',
+        senderCharacter: 'akhira',
+        senderName: 'Akhira',
+        senderAvatar: '/assets/avatar_akhira_hd.jpg',
+        recipientUid: charKey === 'akhira' ? '1uwba7MrGVU3xHu57VVLvztskrg2' : (CANONICAL_CHARACTERS[charKey]?.uid || 'MT14ZHATNqe90frAeQ74QFk4iXs2'),
+        recipientCharacter: charKey === 'akhira' ? 'nyanya' : charKey,
+        recipientName: charKey === 'akhira' ? 'Nyanya' : (CANONICAL_CHARACTERS[charKey]?.name || 'Sahabat'),
+        text: 'Where the world slows down, and you can finally rest. Dari palung terdalam samudra YAWN, semoga arus ketenangan membawakan kedamaian untuk jiwamu malam ini ⚡🌊',
+        category: 'warmth',
+        starType: 'cyan',
+        x: 35.0,
+        y: 68.0,
+        universeOrigin: 'yawn',
+        createdAt: now - 3600000 * 4,
+        read: false,
+        readAt: null,
+        favorites: { [charKey]: true }
+      },
+      {
+        id: 'star-seed-6',
+        senderUid: 'plxSNowjCkOMfUQMAwnZzQPR9Xr1',
+        senderCharacter: 'ela',
+        senderName: 'Ela',
+        senderAvatar: '/assets/avatar_ela_hd.jpg',
+        recipientUid: charKey === 'ela' ? '1uwba7MrGVU3xHu57VVLvztskrg2' : (CANONICAL_CHARACTERS[charKey]?.uid || 'plxSNowjCkOMfUQMAwnZzQPR9Xr1'),
+        recipientCharacter: charKey === 'ela' ? 'nyanya' : charKey,
+        recipientName: charKey === 'ela' ? 'Nyanya' : (CANONICAL_CHARACTERS[charKey]?.name || 'Sahabat'),
+        text: 'In the silence, the soul blooms. Dari suaka danau The Silent Lotus, keheningan membawa ketenangan dan doa terbaik untuk langkahmu hari ini 🪷✨',
+        category: 'warmth',
+        starType: 'rose',
+        x: 58.0,
+        y: 76.0,
+        universeOrigin: 'us_again',
+        createdAt: now - 3600000 * 1,
+        read: false,
+        readAt: null,
+        favorites: { [charKey]: true }
       }
     ];
   }
@@ -366,7 +472,10 @@ export function initStarMessagesView({
     allStarMessages.forEach((msg, idx) => {
       const node = document.createElement('button');
       node.type = 'button';
-      node.className = 'celestial-star-node';
+      const isSyma = (msg.senderCharacter === 'abil' || msg.universeOrigin === 'pinwheel');
+      const isAkhira = (msg.senderCharacter === 'akhira' || msg.universeOrigin === 'yawn');
+      const isEla = (msg.senderCharacter === 'ela' || msg.universeOrigin === 'usagain' || msg.universeOrigin === 'us_again');
+      node.className = `celestial-star-node ${isSyma ? 'star-node-pinwheel' : ''} ${isAkhira ? 'star-node-yawn' : ''} ${isEla ? 'star-node-usagain' : ''}`;
       node.setAttribute('data-star-id', msg.id);
       node.setAttribute('aria-label', `Pesan Bintang dari ${msg.senderName}`);
 
@@ -380,14 +489,18 @@ export function initStarMessagesView({
       const isRecipient = (msg.recipientUid === activeAuthUser?.uid) || (msg.recipientCharacter === activeUserCharKey);
       const isUnread = isRecipient && !msg.read;
 
+      const starColor = isSyma ? '#38bdf8' : (isAkhira ? '#67e8f9' : (isEla ? '#f472b6' : typeConfig.color));
+      const starGlow = isSyma ? 'rgba(56, 189, 248, 0.95)' : (isAkhira ? 'rgba(103, 232, 249, 0.95)' : (isEla ? 'rgba(244, 114, 182, 0.95)' : typeConfig.glow));
+      const starIcon = isSyma ? '☁️' : (isAkhira ? '⚡' : (isEla ? '🪷' : (catConfig.icon || '★')));
+
       node.innerHTML = `
         <div class="star-glyph-wrap">
-          <span class="star-core-glyph" style="color: ${typeConfig.color}; filter: drop-shadow(0 0 10px ${typeConfig.glow});">★</span>
+          <span class="star-core-glyph" style="color: ${starColor}; filter: drop-shadow(0 0 10px ${starGlow}) drop-shadow(0 0 18px ${starGlow});">★</span>
           <span class="star-halo-ring"></span>
           ${isUnread ? '<span class="star-unread-indicator"></span>' : ''}
         </div>
         <span class="star-floating-label">
-          ${catConfig.icon} ${msg.senderName} ✦
+          ${starIcon} ${msg.senderName} ✦
         </span>
       `;
 
@@ -635,9 +748,9 @@ export function initStarMessagesView({
     if (!recipientCardsContainer) return;
     recipientCardsContainer.innerHTML = '';
 
-    const allFriends = ['nyanya', 'lala', 'lele'];
+    const allFriends = Object.keys(CANONICAL_CHARACTERS);
     // Filter out the active user so they cannot send to themselves
-    const availableRecipients = allFriends.filter(k => k !== activeUserCharKey);
+    const availableRecipients = allFriends.filter(k => k !== activeUserCharKey && CANONICAL_CHARACTERS[k]);
 
     if (!availableRecipients.includes(selectedRecipientChar)) {
       selectedRecipientChar = availableRecipients[0] || 'lala';
